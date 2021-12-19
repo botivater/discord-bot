@@ -1,0 +1,9 @@
+{
+  "name": "@friendshipbubble/discord-bot",
+  "version": "0.0.1",
+  "description": "The official Friendship Bubble Discord bot.",
+  "main": "./bin/bot",
+  "repository": "https://github.com/friendshipbubble/discord-bot",
+  "author": "Jonas Claes",
+  "license": "GPL-3.0-or-later"
+}
