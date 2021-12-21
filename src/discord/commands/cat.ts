@@ -13,9 +13,13 @@ export default {
         try {
             await interaction.deferReply();
 
-            const attachment = new MessageAttachment("./assets/cats/0.jpg");
 
-            await interaction.editReply({ files: [attachment] });
+            setTimeout(async () => {
+                const randomNumber = Math.floor(Math.random() * 57);
+                const attachment = new MessageAttachment(`./assets/cats/${randomNumber}.jpg`);
+
+                await interaction.editReply({ files: [attachment] });
+            }, 2000);
         } catch (e) {
             logger.error(e);
             interaction.editReply("Miauw! Er is een fout opgetreden!");
