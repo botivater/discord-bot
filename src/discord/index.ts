@@ -65,8 +65,6 @@ export default class Discord {
     protected static async handleInteractionCreate(
         interaction: Interaction<CacheType>
     ) {
-        // console.log(interaction);
-
         if (!interaction.isCommand()) return;
 
         const { commandName } = interaction;
