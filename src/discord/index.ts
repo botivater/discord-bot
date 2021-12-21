@@ -9,6 +9,7 @@ import { syncAllUsersInAllGuilds } from "./sync";
 // Commands
 import ping from "./commands/ping";
 import cat from "./commands/cat";
+import selfcare from "./commands/selfcare";
 
 export default class Discord {
     // eslint-disable-next-line no-use-before-define
@@ -56,7 +57,7 @@ export default class Discord {
             const discordClient = Discord.getInstance().client;
 
             syncAllUsersInAllGuilds(discordClient);
-        }, 30000);
+        }, 60000);
 
         logger.info("Discord bot is ready.");
     }
@@ -64,7 +65,7 @@ export default class Discord {
     protected static async handleInteractionCreate(
         interaction: Interaction<CacheType>
     ) {
-        console.log(interaction);
+        // console.log(interaction);
 
         if (!interaction.isCommand()) return;
 
@@ -79,13 +80,21 @@ export default class Discord {
                 await cat.handle(interaction);
                 break;
 
+            case selfcare.command.name:
+                await selfcare.handle(interaction);
+                break;
+
             default:
                 break;
         }
     }
 
     protected registerCommands() {
-        const commands = [ping.command, cat.command].map((command) =>
+        const commands = [
+            ping.command,
+            cat.command,
+            selfcare.command
+        ].map((command) =>
             command.toJSON()
         );
 

@@ -61,7 +61,7 @@ export const syncAllUsersInGuild = async function (client: Client, guild: Guild)
 
             if (channel && channel.isText()) {
                 channel.send({
-                    content: `Iemand heeft zijn naam veranderd.\nGebruiker: <@${guildMember.user.id}>\nOude naam:${dbGuildMember.name}\nNieuwe naam:${username}`,
+                    content: `Iemand heeft zijn naam veranderd.\nGebruiker: <@${guildMember.user.id}>\nOude naam: ${dbGuildMember.name}\nNieuwe naam: ${username}`,
                     allowedMentions: {
                         parse: []
                     }

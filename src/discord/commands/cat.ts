@@ -6,8 +6,8 @@ import fetch from "node-fetch";
 export default {
     command: new SlashCommandBuilder()
         .setName("cat")
-        .setDescription("Gets a random cat from the internet."),
-    async handle (interaction: Interaction) {
+        .setDescription("Laat Mira een kat ophalen en tonen!"),
+    async handle(interaction: Interaction) {
         if (!interaction.isCommand()) return;
 
         try {
