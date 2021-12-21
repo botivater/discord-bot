@@ -12,9 +12,9 @@ export default {
         const selfcareTips = constants.selfcare.tips;
         const randomTip = selfcareTips[Math.floor(Math.random() * selfcareTips.length)];
 
-        interaction.deferReply();
-        setTimeout(() => {
-            interaction.editReply({
+        await interaction.deferReply();
+        setTimeout(async () => {
+            await interaction.editReply({
                 content: `Mira's tip:\n${randomTip}`
             });
         }, 2000);

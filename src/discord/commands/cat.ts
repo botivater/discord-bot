@@ -22,7 +22,7 @@ export default {
             }, 2000);
         } catch (e) {
             logger.error(e);
-            interaction.editReply("Miauw! Er is een fout opgetreden!");
+            await interaction.editReply("Miauw! Er is een fout opgetreden!");
         }
     }
 };
