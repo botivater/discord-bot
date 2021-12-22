@@ -42,26 +42,15 @@ export const syncAllUsersInGuild = async function (client: Client, guild: Guild)
             dbGuildMember = await knex("guild_members").where("uid", guildMember.id).first();
         }
 
-        // Check if the username or the nickname contain valid pronouns.
-        // if (PronounChecker.checkString(guildMember.nickname || "") || PronounChecker.checkString(guildMember.user.username || "")) continue;
 
-        // if (channel && channel.isText()) {
-        //     channel.send({
-        //         content: `Iemand zijn naam is ongeldig!\nGebruiker: <@${guildMember.user.id}>\nReden: geen geldige pronouns gevonden`,
-        //         allowedMentions: {
-        //             parse: []
-        //         }
-        //     });
-        // }
-
-        // console.log(guildMember);
 
         if (dbGuildMember.name !== username) {
-            // console.log(guildMember);
-
             if (channel && channel.isText()) {
+                // Check if the username or the nickname contain valid pronouns.
+                const validPronouns = PronounChecker.checkString(guildMember.nickname || "") || PronounChecker.checkString(guildMember.user.username || "");
+
                 channel.send({
-                    content: `Iemand heeft zijn naam veranderd.\nGebruiker: <@${guildMember.user.id}>\nOude naam: ${dbGuildMember.name}\nNieuwe naam: ${username}`,
+                    content: `Iemand heeft zijn naam veranderd.\nGebruiker: <@${guildMember.user.id}>\nOude naam: ${dbGuildMember.name}\nNieuwe naam: ${username}\nPronouns zijn ${validPronouns ? "in orde" : "ongeldig!"}`,
                     allowedMentions: {
                         parse: []
                     }
