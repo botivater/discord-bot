@@ -13,6 +13,7 @@ import selfcare from "./commands/selfcare";
 import toneindicator from "./commands/toneindicator";
 import dev from "./commands/dev";
 import findafriend from "./commands/findafriend";
+import whatareyouthinkingabout from "./commands/whatareyouthinkingabout";
 
 export default class Discord {
     // eslint-disable-next-line no-use-before-define
@@ -89,6 +90,10 @@ export default class Discord {
                 await selfcare.handle(interaction);
                 break;
 
+            case whatareyouthinkingabout.command.name:
+                await whatareyouthinkingabout.handle(interaction);
+                break;
+
             case toneindicator.command.name:
                 await toneindicator.handle(interaction);
                 break;
@@ -106,10 +111,11 @@ export default class Discord {
         const commands = [
             ping.command,
             cat.command,
+            findafriend.command,
             selfcare.command,
+            whatareyouthinkingabout.command,
             toneindicator.command,
             dev.command,
-            findafriend.command
         ].map((command) =>
             command.toJSON()
         );
