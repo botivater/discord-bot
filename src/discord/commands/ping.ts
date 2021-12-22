@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { Interaction } from "discord.js";
+import { GuildMember, Interaction } from "discord.js";
+import { isMemberDeveloper } from "../../common";
 
 export default {
     command: new SlashCommandBuilder()
@@ -8,6 +9,10 @@ export default {
     async handle(interaction: Interaction) {
         if (!interaction.isCommand()) return;
 
-        await interaction.reply("Pong!");
+        if (isMemberDeveloper(<GuildMember>interaction.member)) {
+            await interaction.reply("Pong! Pong! Pong!");
+        } else {
+            await interaction.reply("Pong!");
+        }
     }
 };

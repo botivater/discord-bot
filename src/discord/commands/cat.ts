@@ -1,6 +1,6 @@
 // https://aws.random.cat/meow
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { Interaction, Message } from "discord.js";
+import { Interaction } from "discord.js";
 import { logger } from "../../logger";
 
 export default {
