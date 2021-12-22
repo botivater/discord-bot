@@ -1,4 +1,4 @@
-import { hideLinkEmbed, hyperlink, SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "@discordjs/builders";
 import { Interaction, Message } from "discord.js";
 
 export default {
@@ -17,7 +17,7 @@ export default {
         });
 
         if (message instanceof Message) {
-            await message.react(":smile:");
+            await message.react("😄");
         }
     }
 };
