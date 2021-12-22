@@ -12,6 +12,7 @@ import cat from "./commands/cat";
 import selfcare from "./commands/selfcare";
 import toneindicator from "./commands/toneindicator";
 import dev from "./commands/dev";
+import findafriend from "./commands/findafriend";
 
 export default class Discord {
     // eslint-disable-next-line no-use-before-define
@@ -80,6 +81,10 @@ export default class Discord {
                 await cat.handle(interaction);
                 break;
 
+            case findafriend.command.name:
+                await findafriend.handle(interaction);
+                break;
+
             case selfcare.command.name:
                 await selfcare.handle(interaction);
                 break;
@@ -103,7 +108,8 @@ export default class Discord {
             cat.command,
             selfcare.command,
             toneindicator.command,
-            dev.command
+            dev.command,
+            findafriend.command
         ].map((command) =>
             command.toJSON()
         );
@@ -112,9 +118,9 @@ export default class Discord {
         const rest = new REST({ version: "9" }).setToken(Config.getBotToken());
 
         // Globally register commands
-        // rest.put(Routes.applicationCommands(Config.getApplicationId()), {
-        //     body: [],
-        // });
+        rest.put(Routes.applicationCommands(Config.getApplicationId()), {
+            body: [],
+        });
 
         // Prod server commands
         // TODO: Remove me!
