@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { hideLinkEmbed, hyperlink, SlashCommandBuilder } from "@discordjs/builders";
 import { Interaction } from "discord.js";
 
 export default {
@@ -8,8 +8,13 @@ export default {
     async handle(interaction: Interaction) {
         if (!interaction.isCommand()) return;
 
+        const devLink = hyperlink("hier", "https://jonasclaes.be");
+        const devLinkHideEmbed = hideLinkEmbed(devLink);
+        const repoLink = hyperlink("hier", "https://github.com/friendshipbubble/discord-bot");
+        const repoLinkHideEmbed = hideLinkEmbed(repoLink);
+
         await interaction.reply({
-            content: "Hey!\nIk ben Mira, en ik ben de kat van Lauri!\n<@487283576325275648> heeft mij speciaal gemaakt voor de Friendship Bubble en onderhoudt mij dagelijks!\nJe kan [hier](https://jonasclaes.be) meer informatie over hem vinden.\nJe kan mijn bits en bytes [hier](https://github.com/friendshipbubble/discord-bot) vinden!",
+            content: `Hey!\nIk ben Mira, en ik ben de kat van Lauri!\n<@487283576325275648> heeft mij speciaal gemaakt voor de Friendship Bubble en onderhoudt mij dagelijks!\nJe kan ${devLinkHideEmbed} meer informatie over hem vinden.\nJe kan mijn bits en bytes ${repoLinkHideEmbed} vinden!`,
             allowedMentions: {
                 parse: []
             }
