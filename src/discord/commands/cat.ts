@@ -1,6 +1,6 @@
 // https://aws.random.cat/meow
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { Interaction, MessageAttachment } from "discord.js";
+import { Interaction } from "discord.js";
 import { logger } from "../../logger";
 
 export default {
@@ -18,7 +18,7 @@ export default {
                 const randomNumber = Math.floor(Math.random() * 57);
 
                 await interaction.editReply({ files: [`https://static.friendshipbubble.nl/mira/cats/${randomNumber}.jpg`] });
-            }, 2000);
+            }, 1000);
         } catch (e) {
             logger.error(e);
             await interaction.editReply("Miauw! Er is een fout opgetreden!");

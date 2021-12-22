@@ -17,6 +17,6 @@ export default {
             await interaction.editReply({
                 content: `Mira's tip:\n${randomTip}`
             });
-        }, 2000);
+        }, 1000);
     }
 };
