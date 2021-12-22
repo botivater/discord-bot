@@ -25,8 +25,6 @@ export const syncAllUsersInGuild = async function (client: Client, guild: Guild)
     const dbGuild = await knex("guilds").where("uid", guild.id).first();
 
     for (const guildMember of guild.members.cache.values()) {
-        // nickname is the server username of the user.
-
         if (guildMember.user.bot === true) continue;
 
         const username = guildMember.nickname || guildMember.user.username || "";
@@ -42,15 +40,13 @@ export const syncAllUsersInGuild = async function (client: Client, guild: Guild)
             dbGuildMember = await knex("guild_members").where("uid", guildMember.id).first();
         }
 
-
-
         if (dbGuildMember.name !== username) {
             if (channel && channel.isText()) {
                 // Check if the username or the nickname contain valid pronouns.
                 const validPronouns = PronounChecker.checkString(guildMember.nickname || "") || PronounChecker.checkString(guildMember.user.username || "");
 
                 channel.send({
-                    content: `Iemand heeft zijn naam veranderd.\nGebruiker: <@${guildMember.user.id}>\nOude naam: ${dbGuildMember.name}\nNieuwe naam: ${username}\nPronouns zijn ${validPronouns ? "in orde" : "ongeldig!"}`,
+                    content: `Iemand heeft zijn naam veranderd.\nGebruiker: <@${guildMember.user.id}>\nOude naam: ${dbGuildMember.name}\nNieuwe naam: ${username}\nPronouns: ${validPronouns ? "In orde" : "Ongeldig!"}`,
                     allowedMentions: {
                         parse: []
                     }
