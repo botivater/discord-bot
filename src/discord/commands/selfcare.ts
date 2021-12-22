@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { Interaction } from "discord.js";
+import { Interaction, Message } from "discord.js";
 import constants from "../../../constants.json";
 
 export default {
@@ -17,6 +17,13 @@ export default {
             await interaction.editReply({
                 content: `Mira's tip:\n${randomTip}`
             });
+
+            const message = await interaction.fetchReply();
+
+            if (message instanceof Message) {
+                await message.react("👍");
+                await message.react("👎");
+            }
         }, 1000);
     }
 };
