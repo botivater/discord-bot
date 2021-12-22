@@ -10,6 +10,7 @@ import { syncAllUsersInAllGuilds } from "./sync";
 import ping from "./commands/ping";
 import cat from "./commands/cat";
 import selfcare from "./commands/selfcare";
+import toneindicator from "./commands/toneindicator";
 
 export default class Discord {
     // eslint-disable-next-line no-use-before-define
@@ -82,6 +83,10 @@ export default class Discord {
                 await selfcare.handle(interaction);
                 break;
 
+            case toneindicator.command.name:
+                await toneindicator.handle(interaction);
+                break;
+
             default:
                 break;
         }
@@ -91,7 +96,8 @@ export default class Discord {
         const commands = [
             ping.command,
             cat.command,
-            selfcare.command
+            selfcare.command,
+            toneindicator.command
         ].map((command) =>
             command.toJSON()
         );
