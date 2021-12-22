@@ -16,9 +16,8 @@ export default {
 
             setTimeout(async () => {
                 const randomNumber = Math.floor(Math.random() * 57);
-                const attachment = new MessageAttachment(`./assets/cats/${randomNumber}.jpg`);
 
-                await interaction.editReply({ files: [attachment] });
+                await interaction.editReply({ files: [`https://static.friendshipbubble.nl/mira/cats/${randomNumber}.jpg`] });
             }, 2000);
         } catch (e) {
             logger.error(e);
