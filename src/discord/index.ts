@@ -106,9 +106,9 @@ export default class Discord {
         const rest = new REST({ version: "9" }).setToken(Config.getBotToken());
 
         // Globally register commands
-        rest.put(Routes.applicationCommands(Config.getApplicationId()), {
-            body: commands,
-        });
+        // rest.put(Routes.applicationCommands(Config.getApplicationId()), {
+        //     body: [],
+        // });
 
         // Prod server commands
         // TODO: Remove me!
