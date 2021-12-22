@@ -9,7 +9,7 @@ export default {
         if (!interaction.isCommand()) return;
 
         await interaction.reply({
-            content: "Hey!\nIk ben Mira, en ik ben de kat van Lauri!\n<@487283576325275648> heeft mij speciaal gemaakt voor de Friendship Bubble en onderhoudt mij dagelijks!\nJe kan [hier](https://jonasclaes.be) meer informatie over hem vinden.",
+            content: "Hey!\nIk ben Mira, en ik ben de kat van Lauri!\n<@487283576325275648> heeft mij speciaal gemaakt voor de Friendship Bubble en onderhoudt mij dagelijks!\nJe kan [hier](https://jonasclaes.be) meer informatie over hem vinden.\nJe kan mijn bits en bytes [hier](https://github.com/friendshipbubble/discord-bot) vinden!",
             allowedMentions: {
                 parse: []
             }
