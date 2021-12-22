@@ -18,12 +18,6 @@ export default {
                 const randomNumber = Math.floor(Math.random() * 57);
 
                 await interaction.editReply({ files: [`https://static.friendshipbubble.nl/mira/cats/${randomNumber}.jpg`] });
-
-                const message = await interaction.fetchReply();
-
-                if (message instanceof Message) {
-                    await message.react("❤️");
-                }
             }, 1000);
         } catch (e) {
             logger.error(e);
