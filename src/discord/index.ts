@@ -14,6 +14,8 @@ import toneindicator from "./commands/toneindicator";
 import dev from "./commands/dev";
 import findafriend from "./commands/findafriend";
 import whatareyouthinkingabout from "./commands/whatareyouthinkingabout";
+import statistics from "./commands/statistics";
+import affirmations from "./commands/affirmations";
 
 export default class Discord {
   // eslint-disable-next-line no-use-before-define
@@ -92,12 +94,20 @@ export default class Discord {
         await whatareyouthinkingabout.handle(interaction);
         break;
 
+      case affirmations.command.name:
+        await affirmations.handle(interaction);
+        break;
+
       case toneindicator.command.name:
         await toneindicator.handle(interaction);
         break;
 
       case dev.command.name:
         await dev.handle(interaction);
+        break;
+
+      case statistics.command.name:
+        await statistics.handle(interaction);
         break;
 
       default:
@@ -112,8 +122,10 @@ export default class Discord {
       findafriend.command,
       selfcare.command,
       whatareyouthinkingabout.command,
+      affirmations.command,
       toneindicator.command,
       dev.command,
+      statistics.command,
     ].map((command) => command.toJSON());
 
     // Register commands
