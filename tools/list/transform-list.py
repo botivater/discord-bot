@@ -36,7 +36,7 @@ def main(argv):
 
             tips_list.append(tip)
 
-    print("Processed %i tips!" % len(tips_list))
+    print("Processed %i lines!" % len(tips_list))
     print("Converting to JSON now...")
 
     with open(outputfile, 'w') as outfile:
