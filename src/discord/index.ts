@@ -49,8 +49,11 @@ export default class Discord {
 
     this.registerCommands();
 
-    this.client.once("ready", this.handleReadyEvent);
-    this.client.on("interactionCreate", this.handleInteractionCreate);
+    this.client.once("ready", this.handleReadyEvent.bind(this));
+    this.client.on(
+      "interactionCreate",
+      this.handleInteractionCreate.bind(this)
+    );
 
     this.client.login(process.env.BOT_TOKEN);
   }
