@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { GuildMember, Interaction } from "discord.js";
 import { logger } from "../../logger";
 import constants from "../../../constants.json";
-import { isMemberDeveloper } from "../../common";
+import { checkRole, isMemberDeveloper, roles } from "../../common";
 
 export default {
   command: new SlashCommandBuilder()
@@ -12,7 +12,12 @@ export default {
     if (!interaction.isCommand()) return;
 
     try {
-      if (isMemberDeveloper(<GuildMember>interaction.member)) {
+      if (
+        checkRole(<GuildMember>interaction.member, [
+          roles.DEVELOPER,
+          roles.OWNER,
+        ])
+      ) {
         const randomText =
           constants.treat.texts[
             Math.floor(Math.random() * constants.treat.texts.length)

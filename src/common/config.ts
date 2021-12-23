@@ -15,6 +15,14 @@ export default class Config {
     return process.env.SYSTEM_CHANNEL || "";
   }
 
+  public static getOwnerRoleId(): string {
+    return process.env.OWNER_ROLE || "";
+  }
+
+  public static getModeratorRoleId(): string {
+    return process.env.MODERATOR_ROLE || "";
+  }
+
   public static getDeveloperRoleId(): string {
     return process.env.DEVELOPER_ROLE || "";
   }
