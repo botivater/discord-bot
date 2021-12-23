@@ -1,7 +1,7 @@
 import { CacheType, Client, Intents, Interaction } from "discord.js";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
-import { inlineCode } from "@discordjs/builders";
+import { inlineCode, SlashCommandBuilder } from "@discordjs/builders";
 import Config from "../common/config";
 import { logger } from "../logger";
 import { syncAllUsersInAllGuilds } from "./sync";
@@ -16,12 +16,25 @@ import findafriend from "./commands/findafriend";
 import whatareyouthinkingabout from "./commands/whatareyouthinkingabout";
 import statistics from "./commands/statistics";
 import affirmations from "./commands/affirmations";
+import { RESTPostAPIApplicationCommandsJSONBody } from "discord.js/node_modules/discord-api-types";
+
+export type CommandMap = {
+  [index: string]: (interaction: Interaction) => Promise<void>;
+};
+
+export type CommandSignature = {
+  command: SlashCommandBuilder;
+  handle: (interaction: Interaction) => Promise<void>;
+};
 
 export default class Discord {
   // eslint-disable-next-line no-use-before-define
   protected static instance: Discord | null = null;
 
   protected client: Client;
+
+  protected commandMap: CommandMap = {};
+  protected restCommandArray: RESTPostAPIApplicationCommandsJSONBody[] = [];
 
   constructor() {
     logger.info("Discord bot is starting up.");
@@ -36,26 +49,24 @@ export default class Discord {
 
     this.registerCommands();
 
-    this.client.once("ready", Discord.handleReadyEvent);
-    this.client.on("interactionCreate", Discord.handleInteractionCreate);
+    this.client.once("ready", this.handleReadyEvent);
+    this.client.on("interactionCreate", this.handleInteractionCreate);
 
     this.client.login(process.env.BOT_TOKEN);
   }
 
-  protected static async handleReadyEvent() {
-    const client = Discord.getInstance().client;
-
-    const channel = client.channels.cache.get(Config.getSystemChannelId());
+  protected async handleReadyEvent() {
+    const channel = this.client.channels.cache.get(Config.getSystemChannelId());
 
     if (channel && channel.isText()) {
       channel.send(`Miauw! Revision: ${inlineCode(Config.getRevisionId())}`);
     }
 
-    client?.user?.setPresence({
+    this.client?.user?.setPresence({
       activities: [{ name: "Lauri", type: "LISTENING" }],
     });
 
-    syncAllUsersInAllGuilds(client);
+    syncAllUsersInAllGuilds(this.client);
 
     setInterval(() => {
       const discordClient = Discord.getInstance().client;
@@ -66,67 +77,31 @@ export default class Discord {
     logger.info("Discord bot is ready.");
   }
 
-  protected static async handleInteractionCreate(
-    interaction: Interaction<CacheType>
-  ) {
-    if (!interaction.isCommand()) return;
+  protected async handleInteractionCreate(interaction: Interaction<CacheType>) {
+    if (interaction.isCommand()) {
+      const { commandName } = interaction;
 
-    const { commandName } = interaction;
-
-    switch (commandName) {
-      case ping.command.name:
-        await ping.handle(interaction);
-        break;
-
-      case cat.command.name:
-        await cat.handle(interaction);
-        break;
-
-      case findafriend.command.name:
-        await findafriend.handle(interaction);
-        break;
-
-      case selfcare.command.name:
-        await selfcare.handle(interaction);
-        break;
-
-      case whatareyouthinkingabout.command.name:
-        await whatareyouthinkingabout.handle(interaction);
-        break;
-
-      case affirmations.command.name:
-        await affirmations.handle(interaction);
-        break;
-
-      case toneindicator.command.name:
-        await toneindicator.handle(interaction);
-        break;
-
-      case dev.command.name:
-        await dev.handle(interaction);
-        break;
-
-      case statistics.command.name:
-        await statistics.handle(interaction);
-        break;
-
-      default:
-        break;
+      if (this.commandMap.hasOwnProperty(commandName)) {
+        this.commandMap;
+      }
     }
   }
 
+  protected registerCommand(command: CommandSignature) {
+    this.restCommandArray.push(command.command.toJSON());
+    this.commandMap[command.command.name] = command.handle;
+  }
+
   protected registerCommands() {
-    const commands = [
-      ping.command,
-      cat.command,
-      findafriend.command,
-      selfcare.command,
-      whatareyouthinkingabout.command,
-      affirmations.command,
-      toneindicator.command,
-      dev.command,
-      statistics.command,
-    ].map((command) => command.toJSON());
+    this.registerCommand(ping);
+    this.registerCommand(cat);
+    this.registerCommand(findafriend);
+    this.registerCommand(selfcare);
+    this.registerCommand(whatareyouthinkingabout);
+    this.registerCommand(affirmations);
+    this.registerCommand(toneindicator);
+    this.registerCommand(dev);
+    this.registerCommand(statistics);
 
     // Register commands
     const rest = new REST({ version: "9" }).setToken(Config.getBotToken());
@@ -144,7 +119,7 @@ export default class Discord {
         "803327192662671463"
       ),
       {
-        body: commands,
+        body: this.restCommandArray,
       }
     );
   }
