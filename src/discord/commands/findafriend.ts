@@ -11,27 +11,23 @@ export default {
     if (!interaction.isCommand()) return;
 
     try {
-      await interaction.deferReply();
+      const randomNumber = Math.floor(
+        Math.random() * constants.findafriend.amount
+      );
+      const randomText =
+        constants.findafriend.texts[
+          Math.floor(Math.random() * constants.findafriend.texts.length)
+        ];
 
-      setTimeout(async () => {
-        const randomNumber = Math.floor(
-          Math.random() * constants.findafriend.amount
-        );
-        const randomText =
-          constants.findafriend.texts[
-            Math.floor(Math.random() * constants.findafriend.texts.length)
-          ];
-
-        await interaction.editReply({
-          content: randomText,
-          files: [
-            `https://static.friendshipbubble.nl/mira/pets/${randomNumber}.jpg`,
-          ],
-        });
-      }, 1000);
+      await interaction.reply({
+        content: randomText,
+        files: [
+          `https://static.friendshipbubble.nl/mira/pets/${randomNumber}.jpg`,
+        ],
+      });
     } catch (e) {
       logger.error(e);
-      await interaction.editReply("Miauw! Er is een fout opgetreden!");
+      await interaction.reply("Miauw! Er is een fout opgetreden!");
     }
   },
 };

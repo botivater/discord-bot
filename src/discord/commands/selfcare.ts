@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { Interaction } from "discord.js";
 import constants from "../../../constants.json";
+import { logger } from "../../logger";
 
 export default {
   command: new SlashCommandBuilder()
@@ -9,15 +10,17 @@ export default {
   async handle(interaction: Interaction) {
     if (!interaction.isCommand()) return;
 
-    const selfcareTips = constants.selfcare.tips;
-    const randomTip =
-      selfcareTips[Math.floor(Math.random() * selfcareTips.length)];
+    try {
+      const selfcareTips = constants.selfcare.tips;
+      const randomTip =
+        selfcareTips[Math.floor(Math.random() * selfcareTips.length)];
 
-    await interaction.deferReply();
-    setTimeout(async () => {
-      await interaction.editReply({
+      await interaction.reply({
         content: `Mira's tip:\n${randomTip}`,
       });
-    }, 1000);
+    } catch (e) {
+      logger.error(e);
+      await interaction.reply("Miauw! Er is een fout opgetreden!");
+    }
   },
 };

@@ -11,19 +11,15 @@ export default {
     if (!interaction.isCommand()) return;
 
     try {
-      await interaction.deferReply();
+      const randomText =
+        constants.affirmation.texts[
+          Math.floor(Math.random() * constants.affirmation.texts.length)
+        ];
 
-      setTimeout(async () => {
-        const randomText =
-          constants.affirmation.texts[
-            Math.floor(Math.random() * constants.affirmation.texts.length)
-          ];
-
-        await interaction.editReply({ content: randomText });
-      }, 1000);
+      await interaction.reply({ content: randomText });
     } catch (e) {
       logger.error(e);
-      await interaction.editReply("Miauw! Er is een fout opgetreden!");
+      await interaction.reply("Miauw! Er is een fout opgetreden!");
     }
   },
 };

@@ -26,7 +26,7 @@ export default {
       if (isMemberDeveloper(<GuildMember>interaction.member)) {
         setTimeout(async () => {
           await interaction.editReply("Nog niets te zien hier...");
-        }, 1000);
+        }, 500);
       } else {
         await interaction.editReply("Dit commando mag jij niet uitvoeren.");
       }
