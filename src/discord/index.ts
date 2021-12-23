@@ -85,7 +85,7 @@ export default class Discord {
       const { commandName } = interaction;
 
       if (this.commandMap.hasOwnProperty(commandName)) {
-        this.commandMap;
+        this.commandMap[commandName](interaction);
       }
     }
   }
