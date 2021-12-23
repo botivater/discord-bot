@@ -4,27 +4,33 @@ export default class Config {
   protected static revisionId: string | null = null;
 
   public static getBotToken(): string {
-    return process.env.BOT_TOKEN || "";
+    if (!process.env.BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
+    return process.env.BOT_TOKEN;
   }
 
   public static getApplicationId(): string {
-    return process.env.APPLICATION_ID || "";
+    if (!process.env.APPLICATION_ID) throw new Error("Missing APPLICATION_ID");
+    return process.env.APPLICATION_ID;
   }
 
   public static getSystemChannelId(): string {
-    return process.env.SYSTEM_CHANNEL || "";
+    if (!process.env.SYSTEM_CHANNEL) throw new Error("Missing SYSTEM_CHANNEL");
+    return process.env.SYSTEM_CHANNEL;
   }
 
   public static getOwnerRoleId(): string {
-    return process.env.OWNER_ROLE || "";
+    if (!process.env.OWNER_ROLE) throw new Error("Missing OWNER_ROLE");
+    return process.env.OWNER_ROLE;
   }
 
   public static getModeratorRoleId(): string {
-    return process.env.MODERATOR_ROLE || "";
+    if (!process.env.MODERATOR_ROLE) throw new Error("Missing MODERATOR_ROLE");
+    return process.env.MODERATOR_ROLE;
   }
 
   public static getDeveloperRoleId(): string {
-    return process.env.DEVELOPER_ROLE || "";
+    if (!process.env.DEVELOPER_ROLE) throw new Error("Missing DEVELOPER_ROLE");
+    return process.env.DEVELOPER_ROLE;
   }
 
   public static getRevisionId(): string {
@@ -32,7 +38,7 @@ export default class Config {
     this.revisionId = execSync("git rev-parse HEAD")
       .toString()
       .trim()
-      .slice(0, 7);
+      .slice(0, 10);
     return this.revisionId;
   }
 }

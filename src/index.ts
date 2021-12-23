@@ -1,12 +1,10 @@
-import dotenv from "dotenv";
+require("dotenv").config();
 import Discord from "./discord";
 
 export default class FriendshipBubbleDiscordBot {
   protected discord: Discord;
 
   constructor() {
-    dotenv.config();
-
     this.discord = Discord.getInstance();
   }
 }

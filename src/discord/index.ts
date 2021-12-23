@@ -18,6 +18,7 @@ import statistics from "./commands/statistics";
 import affirmations from "./commands/affirmations";
 import { RESTPostAPIApplicationCommandsJSONBody } from "discord.js/node_modules/discord-api-types";
 import treat from "./commands/treat";
+import setBirthday from "./commands/set-birthday";
 
 export type CommandMap = {
   [index: string]: (interaction: Interaction) => Promise<void>;
@@ -63,7 +64,7 @@ export default class Discord {
     const channel = this.client.channels.cache.get(Config.getSystemChannelId());
 
     if (channel && channel.isText()) {
-      channel.send(`Miauw! Revision: ${inlineCode(Config.getRevisionId())}`);
+      // channel.send(`Miauw! Revision: ${inlineCode(Config.getRevisionId())}`);
     }
 
     this.client?.user?.setPresence({
@@ -107,6 +108,7 @@ export default class Discord {
     this.registerCommand(dev);
     this.registerCommand(statistics);
     this.registerCommand(treat);
+    this.registerCommand(setBirthday);
 
     // Register commands
     const rest = new REST({ version: "9" }).setToken(Config.getBotToken());
