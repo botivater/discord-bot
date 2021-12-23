@@ -2,7 +2,8 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { GuildMember, Interaction } from "discord.js";
 import { logger } from "../../logger";
 import constants from "../../../constants.json";
-import { checkRole, isMemberDeveloper, roles } from "../../common";
+import { checkRole } from "../../common";
+import Config from "../../common/config";
 
 export default {
   command: new SlashCommandBuilder()
@@ -12,24 +13,17 @@ export default {
     if (!interaction.isCommand()) return;
 
     try {
-      if (
-        checkRole(<GuildMember>interaction.member, [
-          roles.DEVELOPER,
-          roles.OWNER,
-        ])
-      ) {
-        const randomText =
-          constants.treat.texts[
-            Math.floor(Math.random() * constants.treat.texts.length)
-          ];
+      const randomText =
+        constants.treat.texts[
+          Math.floor(Math.random() * constants.treat.texts.length)
+        ];
 
-        await interaction.reply({ content: randomText });
-      } else {
-        await interaction.editReply("Dit commando mag jij niet uitvoeren.");
-      }
+      await interaction.reply({ content: randomText });
     } catch (e) {
       logger.error(e);
-      await interaction.reply("Miauw! Er is een fout opgetreden!");
+      await interaction.reply(
+        "Miauw! Er is een fout opgetreden! Je moet een kat ook niet een hele server laten runnen..."
+      );
     }
   },
 };
