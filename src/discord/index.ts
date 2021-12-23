@@ -17,6 +17,7 @@ import whatareyouthinkingabout from "./commands/whatareyouthinkingabout";
 import statistics from "./commands/statistics";
 import affirmations from "./commands/affirmations";
 import { RESTPostAPIApplicationCommandsJSONBody } from "discord.js/node_modules/discord-api-types";
+import treat from "./commands/treat";
 
 export type CommandMap = {
   [index: string]: (interaction: Interaction) => Promise<void>;
@@ -105,6 +106,7 @@ export default class Discord {
     this.registerCommand(toneindicator);
     this.registerCommand(dev);
     this.registerCommand(statistics);
+    this.registerCommand(treat);
 
     // Register commands
     const rest = new REST({ version: "9" }).setToken(Config.getBotToken());
