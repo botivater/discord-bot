@@ -5,6 +5,9 @@ import { inlineCode, SlashCommandBuilder } from "@discordjs/builders";
 import Config from "../common/config";
 import { logger } from "../logger";
 import { syncAllUsersInAllGuilds } from "./sync";
+import collectors from "./collectors";
+import { RESTPostAPIApplicationCommandsJSONBody } from "discord.js/node_modules/discord-api-types";
+import PronounChecker from "../common/pronounChecker";
 
 // Commands
 import ping from "./commands/ping";
@@ -16,7 +19,6 @@ import findafriend from "./commands/findafriend";
 import whatareyouthinkingabout from "./commands/whatareyouthinkingabout";
 import statistics from "./commands/statistics";
 import affirmations from "./commands/affirmations";
-import { RESTPostAPIApplicationCommandsJSONBody } from "discord.js/node_modules/discord-api-types";
 import treat from "./commands/treat";
 import setBirthday from "./commands/set-birthday";
 
@@ -45,7 +47,16 @@ export default class Discord {
       intents: [
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_MEMBERS,
+        Intents.FLAGS.GUILD_BANS,
+        Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+        Intents.FLAGS.GUILD_INVITES,
         Intents.FLAGS.GUILD_PRESENCES,
+        Intents.FLAGS.GUILD_MESSAGES,
+        Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+        Intents.FLAGS.GUILD_MESSAGE_TYPING,
+        Intents.FLAGS.DIRECT_MESSAGES,
+        Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+        Intents.FLAGS.DIRECT_MESSAGE_TYPING,
       ],
     });
 
@@ -71,8 +82,10 @@ export default class Discord {
       activities: [{ name: "Lauri", type: "LISTENING" }],
     });
 
+    // Do a first sync on startup.
     syncAllUsersInAllGuilds(this.client);
 
+    // Background sync for user name changes etc.
     setInterval(() => {
       const discordClient = Discord.getInstance().client;
 
@@ -80,6 +93,85 @@ export default class Discord {
     }, 60000);
 
     logger.info("Discord bot is ready.");
+
+    // Setup the collectors
+    // These process the reactions to messages like auto-role adds.
+    collectors.setup(this.client);
+
+    this.client.on("messageReactionAdd", (reaction, user) => {
+      if (reaction.message.channelId === Config.getSystemChannelId()) {
+        // console.log(reaction, user);
+
+        if (user.bot) return;
+
+        const guild = this.client.guilds.cache.get("803327192662671463");
+        if (!guild) return;
+
+        const guildMember = guild.members.cache.get(user.id);
+        if (!guildMember) return;
+
+        let newNickname = guildMember.nickname || "";
+
+        const pronouns = PronounChecker.getPronouns(newNickname).join("/");
+
+        switch (reaction.emoji.name) {
+          case "🟦":
+            if (pronouns) {
+              newNickname = newNickname.replace(pronouns, "hij/hem");
+            } else {
+              newNickname = `${newNickname} hij/hem`;
+            }
+            break;
+
+          case "🟥":
+            if (pronouns) {
+              newNickname = newNickname.replace(pronouns, "zij/haar");
+            } else {
+              newNickname = `${newNickname} zij/haar`;
+            }
+            break;
+
+          case "🟩":
+            if (pronouns) {
+              newNickname = newNickname.replace(pronouns, "hen/hun");
+            } else {
+              newNickname = `${newNickname} hen/hun`;
+            }
+            break;
+
+          case "🟨":
+            if (pronouns) {
+              newNickname = newNickname.replace(pronouns, "die/diens");
+            } else {
+              newNickname = `${newNickname} die/diens`;
+            }
+            break;
+        }
+
+        guildMember.setNickname(newNickname);
+      }
+    });
+
+    this.client.on("messageReactionRemove", (reaction, user) => {
+      if (reaction.message.channelId === Config.getSystemChannelId()) {
+        // console.log(reaction, user);
+
+        if (user.bot) return;
+
+        const guild = this.client.guilds.cache.get("803327192662671463");
+        if (!guild) return;
+
+        const guildMember = guild.members.cache.get(user.id);
+        if (!guildMember) return;
+
+        let newNickname = guildMember.nickname || "";
+
+        const pronouns = PronounChecker.getPronouns(newNickname).join("/");
+        newNickname = newNickname.replace(pronouns, "unknown");
+
+        guildMember.setNickname(newNickname);
+      }
+    });
   }
 
   protected async handleInteractionCreate(interaction: Interaction<CacheType>) {

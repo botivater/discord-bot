@@ -1,5 +1,6 @@
 export default class PronounChecker {
   protected static validPronouns = [
+    "unknown",
     "hij",
     "hem",
     "zij",
@@ -16,5 +17,15 @@ export default class PronounChecker {
     }
 
     return false;
+  }
+
+  public static getPronouns(string = ""): string[] {
+    const pronouns = [];
+
+    for (const pronoun of this.validPronouns) {
+      if (string.includes(pronoun)) pronouns.push(pronoun);
+    }
+
+    return pronouns;
   }
 }
