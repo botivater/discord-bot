@@ -41,7 +41,7 @@ export default class Discord {
   protected restCommandArray: RESTPostAPIApplicationCommandsJSONBody[] = [];
 
   constructor() {
-    logger.info("Discord bot is starting up.");
+    logger.info("Discord bot is starting up...");
 
     this.client = new Client({
       intents: [
@@ -96,7 +96,7 @@ export default class Discord {
 
     // Setup the collectors
     // These process the reactions to messages like auto-role adds.
-    collectors.setup(this.client);
+    // collectors.setup(this.client);
 
     this.client.on("messageReactionAdd", (reaction, user) => {
       if (reaction.message.channelId === Config.getSystemChannelId()) {
