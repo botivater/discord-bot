@@ -21,7 +21,7 @@ export default class Web {
     this.setupRoutes();
 
     this.server = http.createServer(this.app);
-    this.server.listen(port);
+    this.server.listen(port, "0.0.0.0");
 
     logger.info("Web server is ready.");
   }
