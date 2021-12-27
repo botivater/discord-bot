@@ -5,6 +5,7 @@ import interactionCreate from "./interactionCreate";
 import { inlineCode } from "@discordjs/builders";
 import { syncAllUsersInAllGuilds } from "../sync";
 import { Client } from "discord.js";
+import collectors from "../collectors";
 
 const handle = async (client: Client) => {
     // This is a workaround to specify that "this" is an instance of Discord.
@@ -44,86 +45,9 @@ const handle = async (client: Client) => {
         syncAllUsersInAllGuilds(discordClient);
     }, 60000);
 
+    collectors.setup(client);
+
     logger.info("Discord bot is ready.");
-
-    // Setup the collectors
-    // These process the reactions to messages like auto-role adds.
-    // collectors.setup(this.client);
-
-    // this.client.on("messageReactionAdd", (reaction, user) => {
-    //   if (reaction.message.channelId === Config.getSystemChannelId()) {
-    //     // console.log(reaction, user);
-
-    //     if (user.bot) return;
-
-    //     const guild = this.client.guilds.cache.get("803327192662671463");
-    //     if (!guild) return;
-
-    //     const guildMember = guild.members.cache.get(user.id);
-    //     if (!guildMember) return;
-
-    //     let newNickname = guildMember.nickname || "";
-
-    //     const pronouns = PronounChecker.getPronouns(newNickname).join("/");
-
-    //     switch (reaction.emoji.name) {
-    //       case "🟦":
-    //         if (pronouns) {
-    //           newNickname = newNickname.replace(pronouns, "hij/hem");
-    //         } else {
-    //           newNickname = `${newNickname} hij/hem`;
-    //         }
-    //         break;
-
-    //       case "🟥":
-    //         if (pronouns) {
-    //           newNickname = newNickname.replace(pronouns, "zij/haar");
-    //         } else {
-    //           newNickname = `${newNickname} zij/haar`;
-    //         }
-    //         break;
-
-    //       case "🟩":
-    //         if (pronouns) {
-    //           newNickname = newNickname.replace(pronouns, "hen/hun");
-    //         } else {
-    //           newNickname = `${newNickname} hen/hun`;
-    //         }
-    //         break;
-
-    //       case "🟨":
-    //         if (pronouns) {
-    //           newNickname = newNickname.replace(pronouns, "die/diens");
-    //         } else {
-    //           newNickname = `${newNickname} die/diens`;
-    //         }
-    //         break;
-    //     }
-
-    //     guildMember.setNickname(newNickname);
-    //   }
-    // });
-
-    // this.client.on("messageReactionRemove", (reaction, user) => {
-    //   if (reaction.message.channelId === Config.getSystemChannelId()) {
-    //     // console.log(reaction, user);
-
-    //     if (user.bot) return;
-
-    //     const guild = this.client.guilds.cache.get("803327192662671463");
-    //     if (!guild) return;
-
-    //     const guildMember = guild.members.cache.get(user.id);
-    //     if (!guildMember) return;
-
-    //     let newNickname = guildMember.nickname || "";
-
-    //     const pronouns = PronounChecker.getPronouns(newNickname).join("/");
-    //     newNickname = newNickname.replace(pronouns, "unknown");
-
-    //     guildMember.setNickname(newNickname);
-    //   }
-    // });
 };
 
 export default {

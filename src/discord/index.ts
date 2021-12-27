@@ -3,6 +3,8 @@ import { logger } from "../logger";
 
 // Events
 import interactionCreate from "./events/interactionCreate";
+import messageReactionAdd from "./events/messageReactionAdd";
+import messageReactionRemove from "./events/messageReactionRemove";
 import ready from "./events/ready";
 
 export default class Discord {
@@ -28,12 +30,22 @@ export default class Discord {
                 Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
                 Intents.FLAGS.DIRECT_MESSAGE_TYPING,
             ],
+            // partials: ["MESSAGE", "CHANNEL", "REACTION"],
         });
 
+        // Set event handlers
         this.client.once("ready", ready.handle.bind(this));
         this.client.on(
             "interactionCreate",
             interactionCreate.handle.bind(this)
+        );
+        this.client.on(
+            "messageReactionAdd",
+            messageReactionAdd.handle.bind(this)
+        );
+        this.client.on(
+            "messageReactionRemove",
+            messageReactionRemove.handle.bind(this)
         );
 
         this.client.login(process.env.BOT_TOKEN);
