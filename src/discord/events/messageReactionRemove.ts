@@ -2,6 +2,7 @@ import Config from "@/common/config";
 import emojis from "@/common/emojis";
 import PronounChecker from "@/common/pronounChecker";
 import FriendshipBubbleDiscordBot from "@/index";
+import { logger } from "@/logger";
 import {
     MessageReaction,
     PartialMessageReaction,
@@ -16,8 +17,8 @@ const handle = async (
     const discord = FriendshipBubbleDiscordBot.getDiscord();
     const client = discord.getClient();
 
-    // if (reaction.partial) await reaction.fetch();
-    // if (user.partial) await user.fetch();
+    if (reaction.partial) await reaction.fetch();
+    if (user.partial) await user.fetch();
 
     if (reaction.message.channelId === Config.getSystemChannelId()) {
         // console.log(reaction, user);
@@ -29,6 +30,8 @@ const handle = async (
 
         const guildMember = guild.members.cache.get(user.id);
         if (!guildMember) return;
+
+        logger.info(`Changing pronouns of ${guildMember.nickname}`);
 
         let newNickname = guildMember.nickname || "";
 
@@ -76,7 +79,15 @@ const handle = async (
             newNickname = newNickname.replace(pronouns, "unknown");
         }
 
-        guildMember.setNickname(newNickname);
+        try {
+            guildMember.setNickname(newNickname);
+        } catch (e) {
+            logger.error(e);
+        }
+
+        logger.info(
+            `Changed pronouns of ${guildMember.nickname} to ${newNickname}`
+        );
     }
 };
 

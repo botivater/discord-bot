@@ -1,4 +1,7 @@
 export default class PronounChecker {
+    protected static pronounRegex =
+        /(hij|hem|zij|haar|hen|hun|die|diens|unknown)/g;
+
     protected static validPronouns = [
         "unknown",
         "hij",
@@ -20,11 +23,7 @@ export default class PronounChecker {
     }
 
     public static getPronouns(string = ""): string[] {
-        const pronouns = [];
-
-        for (const pronoun of this.validPronouns) {
-            if (string.includes(pronoun)) pronouns.push(pronoun);
-        }
+        const pronouns = string.match(this.pronounRegex) || [];
 
         return pronouns;
     }

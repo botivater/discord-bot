@@ -2,6 +2,7 @@ import Config from "@/common/config";
 import emojis from "@/common/emojis";
 import PronounChecker from "@/common/pronounChecker";
 import FriendshipBubbleDiscordBot from "@/index";
+import { logger } from "@/logger";
 import {
     MessageReaction,
     PartialMessageReaction,
@@ -31,8 +32,10 @@ const handle = async (
     const discord = FriendshipBubbleDiscordBot.getDiscord();
     const client = discord.getClient();
 
-    // if (reaction.partial) await reaction.fetch();
-    // if (user.partial) await user.fetch();
+    if (reaction.partial) await reaction.fetch();
+    if (user.partial) await user.fetch();
+
+    logger.verbose(`Got reaction with emoji: ${reaction.emoji.name}`);
 
     if (reaction.message.channelId === Config.getSystemChannelId()) {
         // console.log(reaction, user);
@@ -45,13 +48,15 @@ const handle = async (
         const guildMember = guild.members.cache.get(user.id);
         if (!guildMember) return;
 
+        logger.info(`Changing pronouns of ${guildMember.nickname}`);
+
         let newNickname = guildMember.nickname || "";
 
-        const pronouns = PronounChecker.getPronouns(newNickname).join("/");
+        const pronouns = PronounChecker.getPronouns(newNickname);
 
         switch (reaction.emoji.name) {
             case emojis[1]:
-                if (pronouns) {
+                if (pronouns.length > 0) {
                     newNickname = createPronoun(newNickname, "hij");
                 } else {
                     newNickname = `${newNickname} hij`;
@@ -59,7 +64,7 @@ const handle = async (
                 break;
 
             case emojis[2]:
-                if (pronouns) {
+                if (pronouns.length > 0) {
                     newNickname = createPronoun(newNickname, "hem");
                 } else {
                     newNickname = `${newNickname} hem`;
@@ -67,7 +72,7 @@ const handle = async (
                 break;
 
             case emojis[3]:
-                if (pronouns) {
+                if (pronouns.length > 0) {
                     newNickname = createPronoun(newNickname, "zij");
                 } else {
                     newNickname = `${newNickname} zij`;
@@ -75,7 +80,7 @@ const handle = async (
                 break;
 
             case emojis[4]:
-                if (pronouns) {
+                if (pronouns.length > 0) {
                     newNickname = createPronoun(newNickname, "haar");
                 } else {
                     newNickname = `${newNickname} haar`;
@@ -83,7 +88,7 @@ const handle = async (
                 break;
 
             case emojis[5]:
-                if (pronouns) {
+                if (pronouns.length > 0) {
                     newNickname = createPronoun(newNickname, "hen");
                 } else {
                     newNickname = `${newNickname} hen`;
@@ -91,7 +96,7 @@ const handle = async (
                 break;
 
             case emojis[6]:
-                if (pronouns) {
+                if (pronouns.length > 0) {
                     newNickname = createPronoun(newNickname, "hun");
                 } else {
                     newNickname = `${newNickname} hun`;
@@ -99,7 +104,7 @@ const handle = async (
                 break;
 
             case emojis[7]:
-                if (pronouns) {
+                if (pronouns.length > 0) {
                     newNickname = createPronoun(newNickname, "die");
                 } else {
                     newNickname = `${newNickname} die`;
@@ -107,7 +112,7 @@ const handle = async (
                 break;
 
             case emojis[8]:
-                if (pronouns) {
+                if (pronouns.length > 0) {
                     newNickname = createPronoun(newNickname, "diens");
                 } else {
                     newNickname = `${newNickname} diens`;
@@ -115,7 +120,15 @@ const handle = async (
                 break;
         }
 
-        guildMember.setNickname(newNickname);
+        try {
+            guildMember.setNickname(newNickname);
+        } catch (e) {
+            logger.error(e);
+        }
+
+        logger.info(
+            `Changed pronouns of ${guildMember.nickname} to ${newNickname}`
+        );
     }
 };
 
