@@ -9,7 +9,8 @@ import collectors from "../collectors";
 
 const handle = async (client: Client) => {
     // This is a workaround to specify that "this" is an instance of Discord.
-    await interactionCreate.registerCommands(client);
+    // TODO: Re-enable this (disabled to developer faster)
+    // await interactionCreate.registerCommands(client);
 
     const channel = client.channels.cache.get(Config.getSystemChannelId());
 
@@ -45,7 +46,8 @@ const handle = async (client: Client) => {
         syncAllUsersInAllGuilds(discordClient);
     }, 60000);
 
-    collectors.setup(client);
+    // TODO: APIify this
+    // collectors.setup(client);
 
     logger.info("Discord bot is ready.");
 };

@@ -1,8 +1,10 @@
 import http from "http";
 import express from "express";
 import bodyParser from "body-parser";
-import { logger } from "../logger";
+import { logger } from "@/logger";
 import { miraRouter } from "./routers/mira";
+import { discordRouter } from "./routers/discord";
+import { poweredBy } from "./middleware/poweredBy";
 
 export default class Web {
     protected static instance: Web | null = null;
@@ -15,18 +17,21 @@ export default class Web {
         logger.info("Web server is starting up...");
         this.app = express();
 
+        this.app.use(poweredBy);
+
         this.app.use(bodyParser.urlencoded({ extended: true }));
         this.app.use(bodyParser.json());
 
         this.setupRoutes();
 
         this.server = http.createServer(this.app);
-        this.server.listen(port, "0.0.0.0");
-
-        logger.info("Web server is ready.");
+        this.server.listen(port, "0.0.0.0", () => {
+            logger.info("Web server is ready.");
+        });
     }
 
     protected setupRoutes() {
+        this.app.use("/api/discord", discordRouter);
         this.app.use("/api/mira", miraRouter);
     }
 
