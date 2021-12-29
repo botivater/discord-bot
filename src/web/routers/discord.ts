@@ -69,7 +69,8 @@ discordRouter.get("/guilds/:id", async (req, res) => {
 discordRouter.get("/guilds/:id/channels", async (req, res) => {
     try {
         const { id } = req.params;
-        const data = await getGuildChannels(id);
+        const { type = "" } = req.query;
+        const data = await getGuildChannels(id, <string>type);
 
         return res.json(APIResponse.fromData(StatusCode.OK, data));
     } catch (e) {

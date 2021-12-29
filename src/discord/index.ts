@@ -39,14 +39,16 @@ export default class Discord {
             "interactionCreate",
             interactionCreate.handle.bind(this)
         );
-        this.client.on(
-            "messageReactionAdd",
-            messageReactionAdd.handle.bind(this)
-        );
-        this.client.on(
-            "messageReactionRemove",
-            messageReactionRemove.handle.bind(this)
-        );
+
+        // TODO: API handle
+        // this.client.on(
+        //     "messageReactionAdd",
+        //     messageReactionAdd.handle.bind(this)
+        // );
+        // this.client.on(
+        //     "messageReactionRemove",
+        //     messageReactionRemove.handle.bind(this)
+        // );
 
         this.client.login(process.env.BOT_TOKEN);
     }

@@ -1,5 +1,5 @@
 import FriendshipBubbleDiscordBot from "@/index";
-import { ThreadChannel } from "discord.js";
+import { CategoryChannel, GuildChannel, ThreadChannel } from "discord.js";
 import { FriendshipBubble } from "typings/FriendshipBubble";
 
 export const speak = async (channelId: string, message: string) => {
@@ -38,16 +38,22 @@ export const getGuild = async (
 };
 
 export const getGuildChannels = async (
-    id: FriendshipBubble.DiscordBot.Snowflake
-): Promise<FriendshipBubble.DiscordBot.ThreadChannel[]> => {
+    id: FriendshipBubble.DiscordBot.Snowflake,
+    type: string
+): Promise<FriendshipBubble.DiscordBot.GuildChannel[]> => {
     const client = FriendshipBubbleDiscordBot.getDiscord().getClient();
-    const data: FriendshipBubble.DiscordBot.ThreadChannel[] = [];
+    const data: FriendshipBubble.DiscordBot.GuildChannel[] = [];
 
     const guild = client.guilds.cache.get(id);
     if (!guild) throw new Error("Guild not found.");
 
     for (const channel of guild.channels.cache.values()) {
-        data.push(<ThreadChannel>channel);
+        if (channel.isThread()) continue;
+        if (channel instanceof CategoryChannel) continue;
+        if (type === "text" && !channel.isText()) continue;
+        if (type === "voice" && !channel.isVoice()) continue;
+
+        data.push(<GuildChannel>channel);
     }
 
     return data;

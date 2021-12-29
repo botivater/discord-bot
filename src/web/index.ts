@@ -1,10 +1,13 @@
 import http from "http";
 import express from "express";
 import bodyParser from "body-parser";
+import cors from "cors";
 import { logger } from "@/logger";
 import { miraRouter } from "./routers/mira";
 import { discordRouter } from "./routers/discord";
 import { poweredBy } from "./middleware/poweredBy";
+import { randomPause } from "./middleware/randomPause";
+import Config, { BotMode } from "@/common/config";
 
 export default class Web {
     protected static instance: Web | null = null;
@@ -17,7 +20,13 @@ export default class Web {
         logger.info("Web server is starting up...");
         this.app = express();
 
+        this.app.use(cors());
+
         this.app.use(poweredBy);
+
+        if (Config.getBotMode() === BotMode.DEVELOPMENT) {
+            this.app.use(randomPause);
+        }
 
         this.app.use(bodyParser.urlencoded({ extended: true }));
         this.app.use(bodyParser.json());
