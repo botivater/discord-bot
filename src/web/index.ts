@@ -16,7 +16,7 @@ export default class Web {
 
     protected app: express.Express;
 
-    // protected server: http.Server;
+    protected server: http.Server;
 
     constructor(port = 3000) {
         logger.info("Web server is starting up...");
@@ -38,11 +38,10 @@ export default class Web {
         this.app.use(routingErrorHandler);
         this.app.use(errorHandler);
 
-        this.app.listen(3000);
-        // this.server = http.createServer(this.app);
-        // this.server.listen(port, "0.0.0.0", () => {
-        //     logger.info("Web server is ready.");
-        // });
+        this.server = http.createServer(this.app);
+        this.server.listen(port, "0.0.0.0", () => {
+            logger.info("Web server is ready.");
+        });
     }
 
     protected setupRoutes() {
