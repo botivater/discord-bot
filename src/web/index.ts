@@ -8,13 +8,15 @@ import { discordRouter } from "./routers/discord";
 import { poweredBy } from "./middleware/poweredBy";
 import { randomPause } from "./middleware/randomPause";
 import Config, { BotMode } from "@/common/config";
+import { errorHandler } from "./middleware/errorHandler";
+import { routingErrorHandler } from "./middleware/routingErrorHandler";
 
 export default class Web {
     protected static instance: Web | null = null;
 
     protected app: express.Express;
 
-    protected server: http.Server;
+    // protected server: http.Server;
 
     constructor(port = 3000) {
         logger.info("Web server is starting up...");
@@ -33,10 +35,14 @@ export default class Web {
 
         this.setupRoutes();
 
-        this.server = http.createServer(this.app);
-        this.server.listen(port, "0.0.0.0", () => {
-            logger.info("Web server is ready.");
-        });
+        this.app.use(routingErrorHandler);
+        this.app.use(errorHandler);
+
+        this.app.listen(3000);
+        // this.server = http.createServer(this.app);
+        // this.server.listen(port, "0.0.0.0", () => {
+        //     logger.info("Web server is ready.");
+        // });
     }
 
     protected setupRoutes() {

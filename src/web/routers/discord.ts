@@ -1,4 +1,5 @@
-import { Router } from "express";
+import GuildChannelNotFoundError from "@/errors/GuildChannelNotFoundError";
+import { NextFunction, Request, Response, Router } from "express";
 import { FriendshipBubble } from "typings/FriendshipBubble";
 import APIResponseDto from "../dto/APIResponse.dto";
 import { StatusCode } from "../enum/StatusCode";
@@ -17,102 +18,58 @@ discordRouter.get("/", async (req, res) => {
     return res.json({ status: "OK" });
 });
 
-discordRouter.get("/guilds", async (req, res) => {
-    try {
-        const data = await getAllGuilds();
+discordRouter.get(
+    "/guilds",
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const data = await getAllGuilds();
 
-        return res.json(APIResponse.fromData(StatusCode.OK, data));
-    } catch (e) {
-        if (e instanceof Error) {
-            return res.json(
-                APIResponse.fromError(
-                    StatusCode.INTERNAL_SERVER_ERROR,
-                    e.message
-                )
-            );
-        } else {
-            return res.json(
-                APIResponse.fromError(
-                    StatusCode.INTERNAL_SERVER_ERROR,
-                    "Unknown error!"
-                )
-            );
+            return res.json(APIResponse.fromData(StatusCode.OK, data));
+        } catch (e) {
+            next(e);
         }
     }
-});
+);
 
-discordRouter.get("/guilds/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
-        const data = await getGuild(id);
+discordRouter.get(
+    "/guilds/:id",
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { id } = req.params;
+            const data = await getGuild(id);
 
-        return res.json(APIResponse.fromData(StatusCode.OK, data));
-    } catch (e) {
-        if (e instanceof Error) {
-            return res.json(
-                APIResponse.fromError(
-                    StatusCode.INTERNAL_SERVER_ERROR,
-                    e.message
-                )
-            );
-        } else {
-            return res.json(
-                APIResponse.fromError(
-                    StatusCode.INTERNAL_SERVER_ERROR,
-                    "Unknown error!"
-                )
-            );
+            return res.json(APIResponse.fromData(StatusCode.OK, data));
+        } catch (e) {
+            next(e);
         }
     }
-});
+);
 
-discordRouter.get("/guilds/:id/channels", async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { type = "" } = req.query;
-        const data = await getGuildChannels(id, <string>type);
+discordRouter.get(
+    "/guilds/:id/channels",
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { id } = req.params;
+            const { type = "" } = req.query;
+            const data = await getGuildChannels(id, <string>type);
 
-        return res.json(APIResponse.fromData(StatusCode.OK, data));
-    } catch (e) {
-        if (e instanceof Error) {
-            return res.json(
-                APIResponse.fromError(
-                    StatusCode.INTERNAL_SERVER_ERROR,
-                    e.message
-                )
-            );
-        } else {
-            return res.json(
-                APIResponse.fromError(
-                    StatusCode.INTERNAL_SERVER_ERROR,
-                    "Unknown error!"
-                )
-            );
+            return res.json(APIResponse.fromData(StatusCode.OK, data));
+        } catch (e) {
+            next(e);
         }
     }
-});
+);
 
-discordRouter.get("/guilds/:id/members", async (req, res) => {
-    try {
-        const { id } = req.params;
-        const data = await getGuildMembers(id);
+discordRouter.get(
+    "/guilds/:id/members",
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { id } = req.params;
+            const data = await getGuildMembers(id);
 
-        return res.json(APIResponse.fromData(StatusCode.OK, data));
-    } catch (e) {
-        if (e instanceof Error) {
-            return res.json(
-                APIResponse.fromError(
-                    StatusCode.INTERNAL_SERVER_ERROR,
-                    e.message
-                )
-            );
-        } else {
-            return res.json(
-                APIResponse.fromError(
-                    StatusCode.INTERNAL_SERVER_ERROR,
-                    "Unknown error!"
-                )
-            );
+            return res.json(APIResponse.fromData(StatusCode.OK, data));
+        } catch (e) {
+            next(e);
         }
     }
-});
+);

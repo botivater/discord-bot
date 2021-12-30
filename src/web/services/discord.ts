@@ -1,14 +1,19 @@
+import GuildChannelNotFoundError from "@/errors/GuildChannelNotFoundError";
+import GuildChannelNotTextChannelError from "@/errors/GuildChannelNotTextChannelError";
+import GuildNotFoundError from "@/errors/GuildNotFoundError";
+import MissingParameterError from "@/errors/MissingParameterError";
 import FriendshipBubbleDiscordBot from "@/index";
 import { CategoryChannel, GuildChannel, ThreadChannel } from "discord.js";
 import { FriendshipBubble } from "typings/FriendshipBubble";
 
 export const speak = async (channelId: string, message: string) => {
-    if (!channelId || !message) throw new Error("Missing parameter");
+    if (!channelId) throw new MissingParameterError("channelId");
+    if (!message) throw new MissingParameterError("message");
 
     const client = FriendshipBubbleDiscordBot.getDiscord().getClient();
     const channel = client.channels.cache.get(channelId);
-    if (!channel) throw new Error("Channel not found");
-    if (!channel.isText()) throw new Error("Channel is not a text channel");
+    if (!channel) throw new GuildChannelNotFoundError(channelId);
+    if (!channel.isText()) throw new GuildChannelNotTextChannelError(channelId);
 
     await channel.send(message);
 };
@@ -45,7 +50,7 @@ export const getGuildChannels = async (
     const data: FriendshipBubble.DiscordBot.GuildChannel[] = [];
 
     const guild = client.guilds.cache.get(id);
-    if (!guild) throw new Error("Guild not found.");
+    if (!guild) throw new GuildNotFoundError(id);
 
     for (const channel of guild.channels.cache.values()) {
         if (channel.isThread()) continue;
@@ -66,7 +71,7 @@ export const getGuildMembers = async (
     const data: FriendshipBubble.DiscordBot.GuildMember[] = [];
 
     const guild = client.guilds.cache.get(id);
-    if (!guild) throw new Error("Guild not found.");
+    if (!guild) throw new GuildNotFoundError(id);
 
     for (const member of guild.members.cache.values()) {
         data.push(member);

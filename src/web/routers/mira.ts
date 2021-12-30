@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { StatusCode } from "../enum/StatusCode";
+import APIResponse from "../responses/APIResponse";
 import { speak } from "../services/discord";
 
 export const miraRouter = Router();
@@ -13,20 +15,9 @@ miraRouter.post("/speak", async (req, res) => {
 
         await speak(channelId, message);
 
-        return res.json({
-            status: "OK",
-        });
-    } catch (error) {
-        if (error instanceof Error) {
-            return res.json({
-                status: "ERROR",
-                error: error.message,
-            });
-        }
-
-        return res.json({
-            status: "ERROR",
-            error,
-        });
+        return res.json(APIResponse.fromData(StatusCode.OK, null));
+    } catch (e) {
+        const response = APIResponse.fromError(e);
+        return res.status(response.statusCode).json(response);
     }
 });
