@@ -60,4 +60,22 @@ export default class Config {
             .slice(0, 10);
         return this.revisionId;
     }
+
+    public static getAPIAuth0Domain(): string {
+        if (!process.env.API_AUTH0_DOMAIN)
+            throw new Error("Missing API_AUTH0_DOMAIN");
+        return process.env.API_AUTH0_DOMAIN;
+    }
+
+    public static getAPIAuth0ClientId(): string {
+        if (!process.env.API_AUTH0_CLIENT_ID)
+            throw new Error("Missing API_AUTH0_CLIENT_ID");
+        return process.env.API_AUTH0_CLIENT_ID;
+    }
+
+    public static getAPIAuth0Audience(): string {
+        if (!process.env.API_AUTH0_AUDIENCE)
+            throw new Error("Missing API_AUTH0_AUDIENCE");
+        return process.env.API_AUTH0_AUDIENCE;
+    }
 }

@@ -10,6 +10,7 @@ import { randomPause } from "./middleware/randomPause";
 import Config, { BotMode } from "@/common/config";
 import { errorHandler } from "./middleware/errorHandler";
 import { routingErrorHandler } from "./middleware/routingErrorHandler";
+import { auth } from "express-oauth2-jwt-bearer";
 
 export default class Web {
     protected static instance: Web | null = null;
@@ -22,16 +23,24 @@ export default class Web {
         logger.info("Web server is starting up...");
         this.app = express();
 
-        this.app.use(cors());
-
         this.app.use(poweredBy);
 
         if (Config.getBotMode() === BotMode.DEVELOPMENT) {
             this.app.use(randomPause);
         }
 
+        this.app.use(cors());
+
+        
         this.app.use(bodyParser.urlencoded({ extended: true }));
         this.app.use(bodyParser.json());
+
+        this.app.use(
+            auth({
+                audience: Config.getAPIAuth0Audience(),
+                issuerBaseURL: `https://${Config.getAPIAuth0Domain()}`,
+            })
+        );
 
         this.setupRoutes();
 
