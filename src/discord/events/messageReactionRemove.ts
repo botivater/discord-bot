@@ -1,7 +1,7 @@
 import Config from "@/common/config";
 import emojis from "@/common/emojis";
 import PronounChecker from "@/common/pronounChecker";
-import FriendshipBubbleDiscordBot from "@/index";
+import discord from "@/discord";
 import { logger } from "@/logger";
 import {
     MessageReaction,
@@ -14,7 +14,6 @@ const handle = async (
     reaction: MessageReaction | PartialMessageReaction,
     user: User | PartialUser
 ) => {
-    const discord = FriendshipBubbleDiscordBot.getDiscord();
     const client = discord.getClient();
 
     if (reaction.partial) await reaction.fetch();
