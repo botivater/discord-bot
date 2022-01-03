@@ -8,11 +8,13 @@
     "license": "GPL-3.0-or-later",
     "scripts": {
         "dev": "nodemon",
-        "build": "ttsc -P ./tsconfig.json"
+        "build": "ttsc"
     },
     "dependencies": {
         "@discordjs/builders": "^0.9.0",
         "@discordjs/rest": "^0.1.0-canary.0",
+        "@mikro-orm/core": "^4.5.10",
+        "@mikro-orm/mysql": "^4.5.10",
         "body-parser": "^1.19.1",
         "cors": "^2.8.5",
         "discord-api-types": "^0.25.2",
