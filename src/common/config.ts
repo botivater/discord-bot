@@ -1,3 +1,4 @@
+import { Configuration } from "@mikro-orm/core";
 import { execSync } from "child_process";
 
 export enum BotMode {
@@ -61,9 +62,14 @@ export default class Config {
         return this.revisionId;
     }
 
+    public static getDatabaseName(): string {
+        if (!process.env.DATABASE_NAME)
+            throw new Error("Missing DATABASE_NAME");
+        return process.env.DATABASE_NAME;
+    }
+
     public static getDatabaseURL(): string {
-        if (!process.env.DATABASE_URL)
-            throw new Error("Missing DATABASE_URL");
+        if (!process.env.DATABASE_URL) throw new Error("Missing DATABASE_URL");
         return process.env.DATABASE_URL;
     }
 

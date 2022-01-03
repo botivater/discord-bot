@@ -12,7 +12,7 @@ const mikroOrmConfig:
     | Configuration<IDatabaseDriver<Connection>>
     | Options<IDatabaseDriver<Connection>> = {
     entities: [GuildEntity, GuildMemberEntity],
-    dbName: "discord-bot",
+    dbName: Config.getDatabaseName(),
     type: "mysql",
     clientUrl: Config.getDatabaseURL(),
 };
