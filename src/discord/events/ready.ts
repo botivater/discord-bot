@@ -1,9 +1,9 @@
-import Discord from "..";
+import discord from "@/discord";
 import Config, { BotMode } from "@/common/config";
 import { logger } from "@/logger";
-import interactionCreate from "./interactionCreate";
+import interactionCreate from "@/discord/events/interactionCreate";
 import { inlineCode } from "@discordjs/builders";
-import { syncAllUsersInAllGuilds } from "../sync";
+import { syncAllUsersInAllGuilds } from "@/discord/sync";
 import { Client } from "discord.js";
 import collectors from "../collectors";
 
@@ -41,7 +41,7 @@ const handle = async (client: Client) => {
 
     // Background sync for user name changes etc.
     setInterval(() => {
-        const discordClient = Discord.getInstance().getClient();
+        const discordClient = discord.getClient();
 
         syncAllUsersInAllGuilds(discordClient);
     }, 60000);

@@ -12,14 +12,14 @@ import { errorHandler } from "./middleware/errorHandler";
 import { routingErrorHandler } from "./middleware/routingErrorHandler";
 import { auth } from "express-oauth2-jwt-bearer";
 
-export default class Web {
+class Web {
     protected static instance: Web | null = null;
 
     protected app: express.Express;
 
     protected server: http.Server;
 
-    constructor(port = 3000) {
+    constructor() {
         logger.info("Web server is starting up...");
         this.app = express();
 
@@ -48,7 +48,7 @@ export default class Web {
         this.app.use(errorHandler);
 
         this.server = http.createServer(this.app);
-        this.server.listen(port, "0.0.0.0", () => {
+        this.server.listen(Config.getAPIPort(), "0.0.0.0", () => {
             logger.info("Web server is ready.");
         });
     }
@@ -57,10 +57,6 @@ export default class Web {
         this.app.use("/api/discord", discordRouter);
         this.app.use("/api/mira", miraRouter);
     }
-
-    public static getInstance(port = 3000) {
-        if (this.instance) return this.instance;
-        this.instance = new Web(port);
-        return this.instance;
-    }
 }
+
+export default new Web();

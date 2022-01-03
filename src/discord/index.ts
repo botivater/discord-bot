@@ -7,7 +7,7 @@ import messageReactionAdd from "./events/messageReactionAdd";
 import messageReactionRemove from "./events/messageReactionRemove";
 import ready from "./events/ready";
 
-export default class Discord {
+class Discord {
     protected static instance: Discord | null = null;
 
     protected client: Client;
@@ -53,14 +53,9 @@ export default class Discord {
         this.client.login(process.env.BOT_TOKEN);
     }
 
-    public static getInstance() {
-        if (this.instance) return this.instance;
-
-        this.instance = new Discord();
-        return this.instance;
-    }
-
     public getClient(): Client {
         return this.client;
     }
 }
+
+export default new Discord();

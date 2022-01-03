@@ -1,16 +1,18 @@
 import { Client, Guild } from "discord.js";
 import PronounChecker from "../../common/pronounChecker";
 import Config from "../../common/config";
-import { knex } from "../../common/database";
+import database from "@/database";
+import { GuildEntity } from "@/database/entities/GuildEntity";
+import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
 
 export const syncAllUsersInAllGuilds = async function (client: Client) {
     for (const guild of client.guilds.cache.values()) {
-        const dbGuild = await knex("guilds").where("uid", guild.id).first();
+        const orm = await database.getORM();
+        let dbGuild = await orm.em.findOne(GuildEntity, { uid: guild.id });
         if (!dbGuild) {
-            await knex("guilds").insert({
-                uid: guild.id,
-                name: guild.name,
-            });
+            dbGuild = new GuildEntity(guild.id, guild.name);
+            orm.em.persist(dbGuild);
+            await orm.em.flush();
         }
 
         syncAllUsersInGuild(client, guild);
@@ -23,7 +25,8 @@ export const syncAllUsersInGuild = async function (
 ) {
     const channel = client.channels.cache.get(Config.getSystemChannelId());
 
-    const dbGuild = await knex("guilds").where("uid", guild.id).first();
+    const orm = await database.getORM();
+    let dbGuild = await orm.em.findOneOrFail(GuildEntity, { uid: guild.id });
 
     for (const guildMember of guild.members.cache.values()) {
         if (guildMember.user.bot === true) continue;
@@ -31,19 +34,18 @@ export const syncAllUsersInGuild = async function (
         const username =
             guildMember.nickname || guildMember.user.username || "";
 
-        let dbGuildMember = await knex("guild_members")
-            .where("uid", guildMember.id)
-            .first();
-        if (!dbGuildMember) {
-            await knex("guild_members").insert({
-                guild_id: dbGuild.id,
-                uid: guildMember.id,
-                name: username,
-            });
+        let dbGuildMember = await orm.em.findOne(GuildMemberEntity, {
+            uid: guildMember.id,
+        });
 
-            dbGuildMember = await knex("guild_members")
-                .where("uid", guildMember.id)
-                .first();
+        if (!dbGuildMember) {
+            dbGuildMember = new GuildMemberEntity(
+                guildMember.id,
+                dbGuild,
+                username
+            );
+            orm.em.persist(dbGuildMember);
+            await orm.em.flush();
         }
 
         if (dbGuildMember.name !== username) {
@@ -67,9 +69,8 @@ export const syncAllUsersInGuild = async function (
                 });
             }
 
-            await knex("guild_members").where("id", dbGuildMember.id).update({
-                name: username,
-            });
+            dbGuildMember.name = username;
+            await orm.em.flush();
         }
     }
 };

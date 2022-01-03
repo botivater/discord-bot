@@ -61,6 +61,16 @@ export default class Config {
         return this.revisionId;
     }
 
+    public static getDatabaseURL(): string {
+        if (!process.env.DATABASE_URL)
+            throw new Error("Missing DATABASE_URL");
+        return process.env.DATABASE_URL;
+    }
+
+    public static getAPIPort(): number {
+        return Number(process.env.API_PORT || "3000");
+    }
+
     public static getAPIAuth0Domain(): string {
         if (!process.env.API_AUTH0_DOMAIN)
             throw new Error("Missing API_AUTH0_DOMAIN");
