@@ -83,6 +83,8 @@ const registerCommands = async (client: Client) => {
                 if (!interaction.isCommand()) return;
 
                 try {
+                    await interaction.deferReply();
+
                     const randomText =
                         commandListEntity.options[
                             Math.floor(
@@ -90,7 +92,7 @@ const registerCommands = async (client: Client) => {
                             )
                         ];
 
-                    await interaction.reply({ content: randomText });
+                    await interaction.editReply({ content: randomText });
                 } catch (e) {
                     logger.error(e);
                     await interaction.reply(
