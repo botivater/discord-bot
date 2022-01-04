@@ -107,7 +107,7 @@ const registerCommands = async (client: Client) => {
     const rest = new REST({ version: "9" }).setToken(Config.getBotToken());
 
     // Globally register commands
-    rest.put(Routes.applicationCommands(Config.getApplicationId()), {
+    await rest.put(Routes.applicationCommands(Config.getApplicationId()), {
         body: [],
     });
 
