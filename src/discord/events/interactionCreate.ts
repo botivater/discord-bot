@@ -10,22 +10,18 @@ import {
 } from "discord.js";
 import Config, { BotMode } from "@/common/config";
 import { logger } from "@/logger";
+import { SlashCommandBuilder } from "@discordjs/builders";
+import database from "@/database";
+import { CommandListEntity } from "@/database/entities/CommandListEntity";
 
 // Commands
 import ping from "../commands/ping";
 import cat from "../commands/cat";
-import selfcare from "../commands/selfcare";
 import toneindicator from "../commands/toneindicator";
 import dev from "../commands/dev";
 import findafriend from "../commands/findafriend";
-import whatareyouthinkingabout from "../commands/whatareyouthinkingabout";
 import statistics from "../commands/statistics";
-import affirmations from "../commands/affirmations";
-import treat from "../commands/treat";
 import setBirthday from "../commands/set-birthday";
-import { SlashCommandBuilder } from "@discordjs/builders";
-import database from "@/database";
-import { CommandListEntity } from "@/database/entities/CommandListEntity";
 
 export type CommandMap = {
     [index: string]: (interaction: Interaction) => Promise<void>;
