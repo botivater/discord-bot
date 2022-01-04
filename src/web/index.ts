@@ -18,7 +18,7 @@ import { auth } from "express-oauth2-jwt-bearer";
 import { miraRouter } from "./routers/mira";
 import { discordRouter } from "./routers/discord";
 import { commandRouter } from "./routers/command.router";
-import { discordBotRouter } from "./routers/discord-bot.router";
+import { discordBotRouter } from "./routers/discordBot.router";
 
 class Web {
     protected app: express.Express | undefined = undefined;

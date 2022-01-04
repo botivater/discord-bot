@@ -36,7 +36,14 @@ class CommandController {
         next: NextFunction
     ) {
         try {
-            throw new NotImplementedError(req.originalUrl);
+            const { id } = req.params;
+
+            return res.json(
+                APIResponse.fromData(
+                    StatusCode.OK,
+                    await commandListService.findListCommand({ id: Number(id) })
+                )
+            );
         } catch (e) {
             next(e);
         }
@@ -53,7 +60,7 @@ class CommandController {
             return res.json(
                 APIResponse.fromData(
                     StatusCode.OK,
-                    await commandListService.storeListCommands({ name, description, options, guildId })
+                    await commandListService.storeListCommand({ name, description, options, guildId })
                 )
             );
         } catch (e) {
@@ -67,7 +74,15 @@ class CommandController {
         next: NextFunction
     ) {
         try {
-            throw new NotImplementedError(req.originalUrl);
+            const { id } = req.params;
+            const { name, description, options } = req.body;
+
+            return res.json(
+                APIResponse.fromData(
+                    StatusCode.OK,
+                    await commandListService.updateListCommand({ id: Number(id) }, { name, description, options })
+                )
+            );
         } catch (e) {
             next(e);
         }
@@ -84,7 +99,7 @@ class CommandController {
             return res.json(
                 APIResponse.fromData(
                     StatusCode.OK,
-                    await commandListService.deleteListCommands({ id: Number(id) })
+                    await commandListService.deleteListCommand({ id: Number(id) })
                 )
             );
         } catch (e) {

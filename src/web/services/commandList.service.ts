@@ -13,7 +13,19 @@ class CommandListService {
         return this.em.find(CommandListEntity, {});
     }
 
-    public async storeListCommands(data: {
+    public async findListCommand(data: { id: number }) {
+        if (!this.em) this.em = database.getORM().em;
+        const { id } = data;
+
+        const dbCommandList = await this.em.findOne(CommandListEntity, {
+            id,
+        });
+        if (!dbCommandList) throw new Error("Not found error");
+
+        return dbCommandList;
+    }
+
+    public async storeListCommand(data: {
         name: string;
         description: string;
         options: string[];
@@ -39,9 +51,31 @@ class CommandListService {
         return commandListEntity;
     }
 
-    public async deleteListCommands(data: {
-        id: number
-    }) {
+    public async updateListCommand(
+        find: {
+            id: number;
+        },
+        data: { name: string; description: string; options: string[] }
+    ) {
+        if (!this.em) this.em = database.getORM().em;
+        const { id } = find;
+        const { name, description, options } = data;
+
+        const dbCommandList = await this.em.findOne(CommandListEntity, {
+            id,
+        });
+        if (!dbCommandList) throw new Error("Not found error");
+
+        dbCommandList.name = name;
+        dbCommandList.description = description;
+        dbCommandList.options = options;
+
+        await this.em.flush();
+
+        return dbCommandList;
+    }
+
+    public async deleteListCommand(data: { id: number }) {
         if (!this.em) this.em = database.getORM().em;
         const { id } = data;
 
