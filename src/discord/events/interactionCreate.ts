@@ -61,14 +61,10 @@ const registerCommands = async (client: Client) => {
     registerCommand(ping);
     registerCommand(cat);
     registerCommand(findafriend);
-    registerCommand(selfcare);
-    registerCommand(whatareyouthinkingabout);
-    registerCommand(affirmations);
     registerCommand(toneindicator);
     registerCommand(dev);
-    registerCommand(statistics);
-    registerCommand(treat);
-    registerCommand(setBirthday);
+    // registerCommand(statistics);
+    // registerCommand(setBirthday);
 
     // Register database commands
     const orm = database.getORM();

@@ -42,6 +42,10 @@ def main(argv):
     with open(outputfile, 'w') as outfile:
         json.dump(tips_list, outfile)
 
+    with open(outputfile.replace('json', 'commas.txt'), 'w') as outfile:
+        for tip in tips_list:
+            outfile.write(tip + ';')
+
     print("Done!")
 
 if __name__ == "__main__":
