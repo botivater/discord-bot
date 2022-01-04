@@ -12,8 +12,8 @@ import { GuildEntity } from "./GuildEntity";
 
 @Entity({ tableName: "guildMember" })
 export class GuildMemberEntity extends BaseEntity {
+    // Should not be unique since a member can belong to 2 guilds, whilst having the same uid.
     @Property({ length: 64, nullable: false })
-    @Unique()
     uid!: string;
 
     @Property({ nullable: true })

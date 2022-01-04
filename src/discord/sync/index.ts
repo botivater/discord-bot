@@ -35,7 +35,7 @@ export const syncAllUsersInGuild = async function (
             guildMember.nickname || guildMember.user.username || "";
 
         let dbGuildMember = await orm.em.findOne(GuildMemberEntity, {
-            uid: guildMember.id,
+            $and: [ { uid: guildMember.id }, { guild: dbGuild.id } ]
         });
 
         if (!dbGuildMember) {

@@ -77,6 +77,7 @@ const registerCommands = async (client: Client) => {
 
     // Register commands to guilds.
     for (const guild of client.guilds.cache.values()) {
+        if (Config.getBotMode() === BotMode.DEVELOPMENT && process.env.DEV_GUILD_ID !== guild.id) continue;
         logger.verbose("Adding commands to guild: " + guild.name);
         await rest.put(
             Routes.applicationGuildCommands(
