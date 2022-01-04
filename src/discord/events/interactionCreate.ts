@@ -24,6 +24,8 @@ import affirmations from "../commands/affirmations";
 import treat from "../commands/treat";
 import setBirthday from "../commands/set-birthday";
 import { SlashCommandBuilder } from "@discordjs/builders";
+import database from "@/database";
+import { CommandListEntity } from "@/database/entities/CommandListEntity";
 
 export type CommandMap = {
     [index: string]: (interaction: Interaction) => Promise<void>;
@@ -34,8 +36,8 @@ export type CommandSignature = {
     handle: (interaction: Interaction) => Promise<void>;
 };
 
-const commandMap: CommandMap = {};
-const restCommandArray: RESTPostAPIApplicationCommandsJSONBody[] = [];
+let commandMap: CommandMap = {};
+let restCommandArray: RESTPostAPIApplicationCommandsJSONBody[] = [];
 
 const handle = async (interaction: Interaction<CacheType>) => {
     if (interaction.isCommand()) {
@@ -53,6 +55,9 @@ const registerCommand = (command: CommandSignature) => {
 };
 
 const registerCommands = async (client: Client) => {
+    commandMap = {};
+    restCommandArray = [];
+
     registerCommand(ping);
     registerCommand(cat);
     registerCommand(findafriend);
@@ -64,6 +69,39 @@ const registerCommands = async (client: Client) => {
     registerCommand(statistics);
     registerCommand(treat);
     registerCommand(setBirthday);
+
+    // Register database commands
+    const orm = database.getORM();
+    const commandListEntities = await orm.em.find(CommandListEntity, {});
+    for (const commandListEntity of commandListEntities) {
+        let command = {
+            command: new SlashCommandBuilder()
+                .setName(commandListEntity.name)
+                .setDescription(commandListEntity.description)
+                .setDefaultPermission(false),
+            async handle(interaction: Interaction) {
+                if (!interaction.isCommand()) return;
+
+                try {
+                    const randomText =
+                        commandListEntity.options[
+                            Math.floor(
+                                Math.random() * commandListEntity.options.length
+                            )
+                        ];
+
+                    await interaction.reply({ content: randomText });
+                } catch (e) {
+                    logger.error(e);
+                    await interaction.reply(
+                        "Miauw! Er is een fout opgetreden!"
+                    );
+                }
+            },
+        };
+
+        registerCommand(command);
+    }
 
     // Register commands
     const rest = new REST({ version: "9" }).setToken(Config.getBotToken());
@@ -77,7 +115,11 @@ const registerCommands = async (client: Client) => {
 
     // Register commands to guilds.
     for (const guild of client.guilds.cache.values()) {
-        if (Config.getBotMode() === BotMode.DEVELOPMENT && process.env.DEV_GUILD_ID !== guild.id) continue;
+        if (
+            Config.getBotMode() === BotMode.DEVELOPMENT &&
+            process.env.DEV_GUILD_ID !== guild.id
+        )
+            continue;
         logger.verbose("Adding commands to guild: " + guild.name);
         await rest.put(
             Routes.applicationGuildCommands(

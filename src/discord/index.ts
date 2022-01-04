@@ -8,11 +8,9 @@ import messageReactionRemove from "./events/messageReactionRemove";
 import ready from "./events/ready";
 
 class Discord {
-    protected static instance: Discord | null = null;
+    protected client: Client | null = null;
 
-    protected client: Client;
-
-    constructor() {
+    public async setup() {
         logger.info("Discord bot is starting up...");
 
         this.client = new Client({
@@ -54,6 +52,7 @@ class Discord {
     }
 
     public getClient(): Client {
+        if (!this.client) throw new Error('Client is undefined.');
         return this.client;
     }
 }

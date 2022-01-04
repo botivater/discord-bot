@@ -2,6 +2,7 @@ import GuildChannelNotFoundError from "@/errors/GuildChannelNotFoundError";
 import GuildChannelNotTextChannelError from "@/errors/GuildChannelNotTextChannelError";
 import GuildNotFoundError from "@/errors/GuildNotFoundError";
 import MissingParameterError from "@/errors/MissingParameterError";
+import NotImplementedError from "@/errors/NotImplementedError";
 import RouteNotFoundError from "@/errors/RouteNotFoundError";
 import { logger } from "@/logger";
 import { UnauthorizedError } from "express-oauth2-jwt-bearer";
@@ -30,6 +31,12 @@ export default class APIResponse<T> implements APIResponseDto<T> {
             case error instanceof UnauthorizedError:
                 return new APIResponse({
                     statusCode: StatusCode.UNAUTHORIZED,
+                    error,
+                });
+
+            case error instanceof NotImplementedError:
+                return new APIResponse({
+                    statusCode: StatusCode.NOT_IMPLEMENTED,
                     error,
                 });
 

@@ -1,8 +1,18 @@
 require("dotenv").config();
-import "@/discord";
-import "@/web";
-import '@/database';
+import discord from "@/discord";
+import web from "@/web";
+import database from '@/database';
 
-export default class FriendshipBubbleDiscordBot {
+class FriendshipBubbleDiscordBot {
+    constructor() {
+        this.setup();
+    }
+
+    public async setup() {
+        await database.setup();
+        await web.setup();
+        await discord.setup();
+    }
 }
 
+export default new FriendshipBubbleDiscordBot();

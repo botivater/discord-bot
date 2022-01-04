@@ -7,7 +7,7 @@ import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
 
 export const syncAllUsersInAllGuilds = async function (client: Client) {
     for (const guild of client.guilds.cache.values()) {
-        const orm = await database.getORM();
+        const orm = database.getORM();
         let dbGuild = await orm.em.findOne(GuildEntity, { uid: guild.id });
         if (!dbGuild) {
             dbGuild = new GuildEntity(guild.id, guild.name);
@@ -25,7 +25,7 @@ export const syncAllUsersInGuild = async function (
 ) {
     const channel = client.channels.cache.get(Config.getSystemChannelId());
 
-    const orm = await database.getORM();
+    const orm = database.getORM();
     let dbGuild = await orm.em.findOneOrFail(GuildEntity, { uid: guild.id });
 
     for (const guildMember of guild.members.cache.values()) {

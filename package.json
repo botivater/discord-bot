@@ -16,6 +16,7 @@
         "@mikro-orm/cli": "^4.5.10",
         "@mikro-orm/core": "^4.5.10",
         "@mikro-orm/mysql": "^4.5.10",
+        "@mikro-orm/reflection": "^4.5.10",
         "body-parser": "^1.19.1",
         "cors": "^2.8.5",
         "discord-api-types": "^0.25.2",

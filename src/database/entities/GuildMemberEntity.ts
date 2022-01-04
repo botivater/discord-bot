@@ -11,12 +11,13 @@ import {
 import { GuildEntity } from "./GuildEntity";
 
 @Entity({ tableName: "guildMember" })
+@Unique({ properties: ['uid', 'guild'] })
 export class GuildMemberEntity extends BaseEntity {
     // Should not be unique since a member can belong to 2 guilds, whilst having the same uid.
-    @Property({ length: 64, nullable: false })
+    @Property({ length: 64 })
     uid!: string;
 
-    @Property({ nullable: true })
+    @Property()
     name?: string;
 
     @ManyToOne(() => GuildEntity)
