@@ -39,6 +39,29 @@ class CommandListService {
         return commandListEntity;
     }
 
+    public async deleteListCommands(data: {
+        id: number
+    }) {
+        if (!this.em) this.em = database.getORM().em;
+        const { id } = data;
+
+        const dbCommandList = await this.em.findOne(CommandListEntity, {
+            id,
+        });
+        if (!dbCommandList) throw new Error("Not found error");
+
+        dbCommandList.guilds.init();
+        for (const dbGuild of dbCommandList.guilds) {
+            dbGuild.guildCommandLists.remove(dbCommandList);
+        }
+
+        this.em.remove(dbCommandList);
+
+        await this.em.flush();
+
+        return null;
+    }
+
     public async attachListCommandToGuild(data: {
         commandListId: number;
         guildId: number;

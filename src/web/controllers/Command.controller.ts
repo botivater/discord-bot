@@ -79,7 +79,14 @@ class CommandController {
         next: NextFunction
     ) {
         try {
-            throw new NotImplementedError(req.originalUrl);
+            const { id } = req.params;
+
+            return res.json(
+                APIResponse.fromData(
+                    StatusCode.OK,
+                    await commandListService.deleteListCommands({ id: Number(id) })
+                )
+            );
         } catch (e) {
             next(e);
         }
