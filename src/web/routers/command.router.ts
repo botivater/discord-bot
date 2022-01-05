@@ -4,6 +4,11 @@ import CommandController from "../controllers/Command.controller";
 export const commandRouter = Router();
 
 commandRouter.get("/", CommandController.index);
+
+// Usage
+commandRouter.get("/usage", CommandController.getAllUsage);
+
+// Command lists (sentence lists)
 commandRouter.get("/lists", CommandController.getAllListCommands);
 commandRouter.post("/lists", CommandController.createListCommand);
 commandRouter.post("/lists/attach", CommandController.attachListCommand);

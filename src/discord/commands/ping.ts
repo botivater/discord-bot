@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { GuildMember, Interaction } from "discord.js";
 import { isMemberDeveloper } from "../../common";
+import logUsage from "../helpers/logUsage";
 
 export default {
     command: new SlashCommandBuilder()
@@ -15,5 +16,7 @@ export default {
         } else {
             await interaction.reply("Pong!");
         }
+
+        await logUsage.interaction(interaction);
     },
 };

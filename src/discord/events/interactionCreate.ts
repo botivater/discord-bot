@@ -22,6 +22,10 @@ import dev from "../commands/dev";
 import findafriend from "../commands/findafriend";
 import statistics from "../commands/statistics";
 import setBirthday from "../commands/set-birthday";
+import { CommandInvocationEntity } from "@/database/entities/CommandInvocationEntity";
+import { GuildEntity } from "@/database/entities/GuildEntity";
+import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
+import logUsage from "../helpers/logUsage";
 
 export type CommandMap = {
     [index: string]: (interaction: Interaction) => Promise<void>;
@@ -59,7 +63,7 @@ const registerCommands = async (client: Client) => {
     registerCommand(findafriend);
     registerCommand(toneindicator);
     registerCommand(dev);
-    // registerCommand(statistics);
+    registerCommand(statistics);
     // registerCommand(setBirthday);
 
     // Register database commands
@@ -85,6 +89,8 @@ const registerCommands = async (client: Client) => {
                         ];
 
                     await interaction.editReply({ content: randomText });
+
+                    await logUsage.interaction(interaction);
                 } catch (e) {
                     logger.error(e);
                     await interaction.reply(

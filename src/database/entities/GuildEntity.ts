@@ -7,6 +7,7 @@ import {
     Property,
     Unique,
 } from "@mikro-orm/core";
+import { CommandInvocationEntity } from "./CommandInvocationEntity";
 import { CommandListEntity } from "./CommandListEntity";
 import { GuildMemberEntity } from "./GuildMemberEntity";
 
@@ -24,6 +25,9 @@ export class GuildEntity extends BaseEntity {
 
     @ManyToMany()
     guildCommandLists = new Collection<CommandListEntity>(this);
+
+    @OneToMany(() => CommandInvocationEntity, commandInvocation => commandInvocation.guild)
+    commandInvocations = new Collection<CommandInvocationEntity>(this);
 
     constructor(uid: string, name?: string) {
         super();

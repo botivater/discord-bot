@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { Interaction } from "discord.js";
+import logUsage from "../helpers/logUsage";
 
 export default {
     command: new SlashCommandBuilder()
@@ -14,5 +15,7 @@ export default {
                 "https://static.friendshipbubble.nl/mira/other/tone-indicator.jpg",
             ],
         });
+
+        await logUsage.interaction(interaction);
     },
 };

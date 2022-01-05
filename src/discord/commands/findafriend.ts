@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { Interaction } from "discord.js";
 import { logger } from "../../logger";
 import constants from "../../../constants.json";
+import logUsage from "../helpers/logUsage";
 
 export default {
     command: new SlashCommandBuilder()
@@ -28,6 +29,8 @@ export default {
                     `https://static.friendshipbubble.nl/mira/pets/${randomNumber}.jpg`,
                 ],
             });
+
+            await logUsage.interaction(interaction);
         } catch (e) {
             logger.error(e);
             await interaction.reply("Miauw! Er is een fout opgetreden!");

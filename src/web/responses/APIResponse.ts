@@ -73,13 +73,13 @@ export default class APIResponse<T> implements APIResponseDto<T> {
             case error instanceof Error:
                 return new APIResponse({
                     statusCode: StatusCode.INTERNAL_SERVER_ERROR,
-                    error: "An unknown error occurred.",
+                    error,
                 });
 
             case error instanceof String:
                 return new APIResponse({
                     statusCode: StatusCode.INTERNAL_SERVER_ERROR,
-                    error: "An unknown error occurred.",
+                    error,
                 });
 
             default:

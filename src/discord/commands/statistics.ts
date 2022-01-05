@@ -1,17 +1,10 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { GuildMember, Interaction } from "discord.js";
 import { logger } from "../../logger";
-import constants from "../../../constants.json";
-import Config from "../../common/config";
-import { isMemberDeveloper } from "../../common";
-
-const permissions = [
-    {
-        id: Config.getDeveloperRoleId(),
-        type: "ROLE",
-        permission: true,
-    },
-];
+import { checkRole } from "../../common";
+import logUsage from "../helpers/logUsage";
+import Role from "@/common/role";
+import commandUsageService from "@/web/services/commandUsage.service";
 
 export default {
     command: new SlashCommandBuilder()
@@ -24,10 +17,19 @@ export default {
         try {
             await interaction.deferReply();
 
-            if (isMemberDeveloper(<GuildMember>interaction.member)) {
-                setTimeout(async () => {
-                    await interaction.editReply("Nog niets te zien hier...");
-                }, 500);
+            if (!checkRole(<GuildMember> interaction.member, [Role.OWNER, Role.DEVELOPER, Role.MODERATOR])) {
+                let content = '';
+                const statistics = await commandUsageService.findAll();
+
+                for (const statistic of statistics) {
+                    content += `/${statistic.commandName} is ${statistic.invocations} keer gebruikt.\n`;
+                }
+
+                await interaction.editReply({
+                    content
+                })
+
+                await logUsage.interaction(interaction);
             } else {
                 await interaction.editReply(
                     "Dit commando mag jij niet uitvoeren."

@@ -3,11 +3,20 @@ import { NextFunction, Request, Response } from "express";
 import { StatusCode } from "../enum/StatusCode";
 import APIResponse from "../responses/APIResponse";
 import commandListService from "../services/commandList.service";
+import commandUsageService from "../services/commandUsage.service";
 
 class CommandController {
     public async index(req: Request, res: Response, next: NextFunction) {
         try {
             return res.json(APIResponse.fromData(StatusCode.OK, null));
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    public async getAllUsage(req: Request, res: Response, next: NextFunction) {
+        try {
+            return res.json(APIResponse.fromData(StatusCode.OK, await commandUsageService.findAll()));
         } catch (e) {
             next(e);
         }

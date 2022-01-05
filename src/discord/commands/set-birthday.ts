@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { GuildMember, Interaction } from "discord.js";
 import { checkRole } from "../../common";
 import Role from "../../common/role";
+import logUsage from "../helpers/logUsage";
 
 export default {
     command: <SlashCommandBuilder>new SlashCommandBuilder()
@@ -57,6 +58,8 @@ export default {
                     }
                 )}!`
             );
+
+            await logUsage.interaction(interaction);
         } else {
             await interaction.editReply("Dit commando mag jij niet uitvoeren.");
         }

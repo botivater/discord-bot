@@ -1,3 +1,4 @@
+import { CommandInvocationEntity } from "@/database/entities/CommandInvocationEntity";
 import { CommandListEntity } from "@/database/entities/CommandListEntity";
 import { GuildEntity } from "@/database/entities/GuildEntity";
 import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
@@ -13,7 +14,7 @@ import Config from "./config";
 const mikroOrmConfig:
     | Configuration<IDatabaseDriver<Connection>>
     | Options<IDatabaseDriver<Connection>> = {
-    entities: [GuildEntity, GuildMemberEntity, CommandListEntity],
+    entities: [GuildEntity, GuildMemberEntity, CommandListEntity, CommandInvocationEntity],
     metadataProvider: TsMorphMetadataProvider,
     dbName: Config.getDatabaseName(),
     type: "mysql",
