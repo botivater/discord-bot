@@ -17,7 +17,7 @@ export default {
         try {
             await interaction.deferReply();
 
-            if (!checkRole(<GuildMember> interaction.member, [Role.OWNER, Role.DEVELOPER, Role.MODERATOR])) {
+            if (checkRole(<GuildMember> interaction.member, [Role.OWNER, Role.DEVELOPER, Role.MODERATOR])) {
                 let content = '';
                 const statistics = await commandUsageService.findAll();
 
