@@ -11,7 +11,7 @@ import {
 import { CommandInvocationEntity } from "./CommandInvocationEntity";
 import { GuildEntity } from "./GuildEntity";
 
-@Entity({ tableName: "guildMember" })
+@Entity({ tableName: "guild_member" })
 @Unique({ properties: ['uid', 'guild'] })
 export class GuildMemberEntity extends BaseEntity {
     // Should not be unique since a member can belong to 2 guilds, whilst having the same uid.
