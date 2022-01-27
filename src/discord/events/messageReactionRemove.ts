@@ -1,6 +1,3 @@
-import Config from "@/common/config";
-import emojis from "@/common/emojis";
-import PronounChecker from "@/common/pronounChecker";
 import discord from "@/discord";
 import { logger } from "@/logger";
 import {
@@ -9,6 +6,47 @@ import {
     PartialUser,
     User,
 } from "discord.js";
+import { BuildingBlockType } from "./buildingBlocks/BuildingBlockType";
+import emojis from "@/common/emojis";
+
+// Building blocks
+import sendMessage, { SendMessageTo } from "./buildingBlocks/sendMessage";
+import addRole from "./buildingBlocks/addRole";
+import removeRole from "./buildingBlocks/removeRole";
+
+type ActionType = {
+    buildingBlockType: BuildingBlockType;
+    options?: any;
+};
+
+const actions: ActionType[] = [
+    // {
+    //     buildingBlockType: BuildingBlockType.NONE, // 0
+    // },
+    // {
+    //     // Sending a message requires extra configuration.
+    //     buildingBlockType: BuildingBlockType.SEND_MESSAGE, // 1
+    //     options: {
+    //         toType: SendMessageTo.USER, // Send to sender
+    //         to: "487283576325275648",
+    //         messageFormat: `{{ pickFirstName guildMember.nickname }} reacted to your message!`,
+    //     },
+    // },
+    {
+        buildingBlockType: 3,
+        options: {
+            roleId: "936251843724599326",
+            check: `${emojis.b}${emojis.e}`,
+        },
+    },
+    {
+        buildingBlockType: 3,
+        options: {
+            roleId: "936255651066314752",
+            check: `${emojis.n}${emojis.l}`,
+        },
+    },
+];
 
 const handle = async (
     reaction: MessageReaction | PartialMessageReaction,
@@ -19,74 +57,80 @@ const handle = async (
     if (reaction.partial) await reaction.fetch();
     if (user.partial) await user.fetch();
 
-    if (reaction.message.channelId === Config.getSystemChannelId()) {
-        // console.log(reaction, user);
+    if (user.bot) return;
+    if (reaction.message.id !== `936231659479650334`) return;
 
-        if (user.bot) return;
+    logger.verbose(`Got reaction with emoji: ${reaction.emoji.name}`);
 
-        const guild = client.guilds.cache.get("803327192662671463");
-        if (!guild) return;
+    // Check if the reaction was in a guild.
+    if (!reaction.message.guildId) return;
 
-        const guildMember = guild.members.cache.get(user.id);
-        if (!guildMember) return;
+    // Get the guild this reaction was sent in.
+    const guild = client.guilds.cache.get(reaction.message.guildId);
+    if (!guild) return;
 
-        logger.info(`Changing pronouns of ${guildMember.nickname}`);
+    // Get the member of the guild that sent this reaction.
+    const guildMember = guild.members.cache.get(user.id);
+    if (!guildMember) return;
 
-        let newNickname = guildMember.nickname || "";
-
-        const pronouns = PronounChecker.getPronouns(newNickname).join("/");
-
-        let newPronouns = PronounChecker.getPronouns(newNickname);
-
-        switch (reaction.emoji.name) {
-            case emojis[1]:
-                newPronouns = newPronouns.filter((elem) => elem !== "hij");
-                break;
-
-            case emojis[2]:
-                newPronouns = newPronouns.filter((elem) => elem !== "hem");
-                break;
-
-            case emojis[3]:
-                newPronouns = newPronouns.filter((elem) => elem !== "zij");
-                break;
-
-            case emojis[4]:
-                newPronouns = newPronouns.filter((elem) => elem !== "haar");
-                break;
-
-            case emojis[5]:
-                newPronouns = newPronouns.filter((elem) => elem !== "hen");
-                break;
-
-            case emojis[6]:
-                newPronouns = newPronouns.filter((elem) => elem !== "hun");
-                break;
-
-            case emojis[7]:
-                newPronouns = newPronouns.filter((elem) => elem !== "die");
-                break;
-
-            case emojis[8]:
-                newPronouns = newPronouns.filter((elem) => elem !== "diens");
-                break;
+    // Handle the list of actions.
+    for (const action of actions) {
+        if (action.buildingBlockType === BuildingBlockType.NONE) {
+            // Do nothing;
+            continue;
         }
 
-        if (newPronouns.length > 0) {
-            newNickname = newNickname.replace(pronouns, newPronouns.join("/"));
-        } else {
-            newNickname = newNickname.replace(pronouns, "unknown");
+        if (action.buildingBlockType === BuildingBlockType.SEND_MESSAGE) {
+            if (!action.options) break;
+
+            const { toType, to, messageFormat } = action.options;
+
+            const options = {
+                toType,
+                to,
+                messageFormat,
+                messageParameters: {
+                    guild,
+                    guildMember,
+                    user,
+                    reaction,
+                },
+            };
+
+            if (options.toType === SendMessageTo.SENDER) options.to = user.id;
+
+            await sendMessage.handle(options);
+
+            continue;
         }
 
-        try {
-            guildMember.setNickname(newNickname);
-        } catch (e) {
-            logger.error(e);
+        if (action.buildingBlockType === BuildingBlockType.ADD_ROLE) {
+            const { roleId, check } = action.options;
+
+                await addRole.handle({
+                    guildId: guild.id,
+                    guildMemberId: guildMember.id,
+                    roleId,
+                    reaction: reaction.emoji.name || "",
+                    check,
+                });
+
+                continue;
         }
 
-        logger.info(
-            `Changed pronouns of ${guildMember.nickname} to ${newNickname}`
-        );
+        if (action.buildingBlockType === BuildingBlockType.REMOVE_ROLE) {
+            const { roleId, check } = action.options;
+
+            await removeRole.handle({
+                guildId: guild.id,
+                guildMemberId: guildMember.id,
+                roleId,
+                reaction: reaction.emoji.name || "",
+                check,
+            });
+
+            continue;
+        }
     }
 };
 

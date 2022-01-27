@@ -1,6 +1,3 @@
-import Config from "@/common/config";
-import emojis from "@/common/emojis";
-import PronounChecker from "@/common/pronounChecker";
 import discord from "@/discord";
 import { logger } from "@/logger";
 import {
@@ -9,125 +6,179 @@ import {
     PartialUser,
     User,
 } from "discord.js";
+import { BuildingBlockType } from "./buildingBlocks/BuildingBlockType";
+import emojis from "@/common/emojis";
 
-const createPronoun = (oldNickname: string, append: string): string => {
-    const oldPronouns = PronounChecker.getPronouns(oldNickname);
+// Building blocks
+import sendMessage, { SendMessageTo } from "./buildingBlocks/sendMessage";
+import addRole from "./buildingBlocks/addRole";
+import removeRole from "./buildingBlocks/removeRole";
+import database from "@/database";
+import { CommandFlowEntity } from "@/database/entities/CommandFlowEntity";
 
-    const newPronouns = oldPronouns.filter((elem) => elem !== "unknown");
-
-    newPronouns.push(append);
-
-    const newNickname = oldNickname.replace(
-        oldPronouns.join("/"),
-        newPronouns.join("/")
-    );
-
-    return newNickname;
+type ActionType = {
+    buildingBlockType: BuildingBlockType;
+    options?: any;
 };
+
+const actions: ActionType[] = [
+    {
+        buildingBlockType: BuildingBlockType.NONE, // 0
+    },
+    {
+        // Sending a message requires extra configuration.
+        buildingBlockType: BuildingBlockType.SEND_MESSAGE, // 1
+        options: {
+            toType: SendMessageTo.USER, // Send to sender
+            to: "487283576325275648",
+            messageFormat: `{{ pickFirstName guildMember.nickname }} reacted to your message!`,
+        },
+    },
+    {
+        buildingBlockType: 2,
+        options: {
+            roleId: "936251843724599326",
+            check: `${emojis.b}${emojis.e}`,
+        },
+    },
+    {
+        buildingBlockType: 2,
+        options: {
+            roleId: "936255651066314752",
+            check: `${emojis.n}${emojis.l}`,
+        },
+    },
+];
 
 const handle = async (
     reaction: MessageReaction | PartialMessageReaction,
     user: User | PartialUser
 ) => {
-    const client = discord.getClient();
+    try {
+        const client = discord.getClient();
 
-    if (reaction.partial) await reaction.fetch();
-    if (user.partial) await user.fetch();
-
-    logger.verbose(`Got reaction with emoji: ${reaction.emoji.name}`);
-
-    if (reaction.message.channelId === Config.getSystemChannelId()) {
-        // console.log(reaction, user);
+        if (reaction.partial) await reaction.fetch();
+        if (reaction.message.partial) await reaction.message.fetch();
+        if (user.partial) await user.fetch();
 
         if (user.bot) return;
 
-        const guild = client.guilds.cache.get("803327192662671463");
+        logger.verbose(`Got reaction with emoji: ${reaction.emoji.name}`);
+
+        // Check if the reaction was in a guild.
+        if (!reaction.message.guildId) return;
+
+        // Get the guild this reaction was sent in.
+        const guild = client.guilds.cache.get(reaction.message.guildId);
         if (!guild) return;
 
+        // Get the member of the guild that sent this reaction.
         const guildMember = guild.members.cache.get(user.id);
         if (!guildMember) return;
 
-        logger.info(`Changing pronouns of ${guildMember.nickname}`);
-
-        let newNickname = guildMember.nickname || "";
-
-        const pronouns = PronounChecker.getPronouns(newNickname);
-
-        switch (reaction.emoji.name) {
-            case emojis[1]:
-                if (pronouns.length > 0) {
-                    newNickname = createPronoun(newNickname, "hij");
-                } else {
-                    newNickname = `${newNickname} hij`;
-                }
-                break;
-
-            case emojis[2]:
-                if (pronouns.length > 0) {
-                    newNickname = createPronoun(newNickname, "hem");
-                } else {
-                    newNickname = `${newNickname} hem`;
-                }
-                break;
-
-            case emojis[3]:
-                if (pronouns.length > 0) {
-                    newNickname = createPronoun(newNickname, "zij");
-                } else {
-                    newNickname = `${newNickname} zij`;
-                }
-                break;
-
-            case emojis[4]:
-                if (pronouns.length > 0) {
-                    newNickname = createPronoun(newNickname, "haar");
-                } else {
-                    newNickname = `${newNickname} haar`;
-                }
-                break;
-
-            case emojis[5]:
-                if (pronouns.length > 0) {
-                    newNickname = createPronoun(newNickname, "hen");
-                } else {
-                    newNickname = `${newNickname} hen`;
-                }
-                break;
-
-            case emojis[6]:
-                if (pronouns.length > 0) {
-                    newNickname = createPronoun(newNickname, "hun");
-                } else {
-                    newNickname = `${newNickname} hun`;
-                }
-                break;
-
-            case emojis[7]:
-                if (pronouns.length > 0) {
-                    newNickname = createPronoun(newNickname, "die");
-                } else {
-                    newNickname = `${newNickname} die`;
-                }
-                break;
-
-            case emojis[8]:
-                if (pronouns.length > 0) {
-                    newNickname = createPronoun(newNickname, "diens");
-                } else {
-                    newNickname = `${newNickname} diens`;
-                }
-                break;
-        }
-
-        try {
-            guildMember.setNickname(newNickname);
-        } catch (e) {
-            logger.error(e);
-        }
-
-        logger.info(
-            `Changed pronouns of ${guildMember.nickname} to ${newNickname}`
+        logger.verbose("Fetching flow from database.");
+        logger.verbose(
+            `Query: guid: ${guild.id}, messageId: ${reaction.message.id}`
         );
+
+        // Get the command flow from the database.
+        const orm = database.getORM();
+        const commandFlows = await orm.em.find(
+            CommandFlowEntity,
+            {
+                $and: [
+                    {
+                        guild: {
+                            uid: guild.id,
+                        },
+                    },
+                    {
+                        messageId: reaction.message.id,
+                    },
+                ],
+            },
+            {
+                orderBy: {
+                    order: "asc",
+                },
+            }
+        );
+
+        if (commandFlows.length === 0) return;
+
+        // Handle the list of actions.
+        for (const commandFlow of commandFlows) {
+            logger.verbose(
+                `Handling command flow part ${commandFlow.order} of flow for message ${commandFlow.messageId}.`
+            );
+
+            if (commandFlow.buildingBlockType === BuildingBlockType.NONE) {
+                // Do nothing;
+                continue;
+            }
+
+            if (
+                commandFlow.buildingBlockType === BuildingBlockType.SEND_MESSAGE
+            ) {
+                const { toType, to, messageFormat } = JSON.parse(
+                    commandFlow.options
+                );
+
+                const options = {
+                    toType,
+                    to,
+                    messageFormat,
+                    messageParameters: {
+                        guild,
+                        guildMember,
+                        user,
+                        reaction,
+                    },
+                };
+
+                if (options.toType === SendMessageTo.SENDER)
+                    options.to = user.id;
+                    console.log(`Set to to ${options.to}`)
+
+                console.log(options);
+
+                await sendMessage.handle(options);
+
+                continue;
+            }
+
+            if (commandFlow.buildingBlockType === BuildingBlockType.ADD_ROLE) {
+                const { roleId, check } = JSON.parse(commandFlow.options);
+
+                await addRole.handle({
+                    guildId: guild.id,
+                    guildMemberId: guildMember.id,
+                    roleId,
+                    reaction: reaction.emoji.name || "",
+                    check,
+                });
+
+                continue;
+            }
+
+            if (
+                commandFlow.buildingBlockType === BuildingBlockType.REMOVE_ROLE
+            ) {
+                const { roleId, check } = JSON.parse(commandFlow.options);
+
+                await removeRole.handle({
+                    guildId: guild.id,
+                    guildMemberId: guildMember.id,
+                    roleId,
+                    reaction: reaction.emoji.name || "",
+                    check,
+                });
+
+                continue;
+            }
+        }
+    } catch (err) {
+        logger.error(err);
     }
 };
 

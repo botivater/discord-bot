@@ -1,4 +1,4 @@
-import { Client, Intents, Interaction } from "discord.js";
+import { Client, Intents } from "discord.js";
 import { logger } from "../logger";
 
 // Events
@@ -28,7 +28,7 @@ class Discord {
                 Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
                 Intents.FLAGS.DIRECT_MESSAGE_TYPING,
             ],
-            // partials: ["MESSAGE", "CHANNEL", "REACTION"],
+            partials: ["MESSAGE", "CHANNEL", "REACTION"],
         });
 
         // Set event handlers
@@ -38,15 +38,15 @@ class Discord {
             interactionCreate.handle.bind(this)
         );
 
-        // TODO: API handle
-        // this.client.on(
-        //     "messageReactionAdd",
-        //     messageReactionAdd.handle.bind(this)
-        // );
-        // this.client.on(
-        //     "messageReactionRemove",
-        //     messageReactionRemove.handle.bind(this)
-        // );
+        this.client.on(
+            "messageReactionAdd",
+            messageReactionAdd.handle.bind(this)
+        );
+
+        this.client.on(
+            "messageReactionRemove",
+            messageReactionRemove.handle.bind(this)
+        );
 
         this.client.login(process.env.BOT_TOKEN);
     }

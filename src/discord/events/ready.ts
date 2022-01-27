@@ -10,7 +10,7 @@ import collectors from "../collectors";
 const handle = async (client: Client) => {
     // This is a workaround to specify that "this" is an instance of Discord.
     // TODO: Re-enable this (disabled to developer faster)
-    await interactionCreate.registerCommands(client);
+    // await interactionCreate.registerCommands(client);
 
     const channel = client.channels.cache.get(Config.getSystemChannelId());
 
