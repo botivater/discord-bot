@@ -105,9 +105,17 @@ class DiscordService {
         channelId: string;
         messageText: string;
         reactions: string[];
+        commandFlows: {
+            onType: OnType;
+            buildingBlockType: BuildingBlockType;
+            options: any;
+            order: number;
+            checkType?: CheckType;
+            checkValue?: any;
+        }[];
     }) {
         if (!this.em) this.em = database.getORM().em.fork();
-        const { guildId, channelId, messageText, reactions } = data;
+        const { guildId, channelId, messageText, reactions, commandFlows } = data;
 
         const dbGuild = await this.em.findOne(GuildEntity, { id: guildId });
         if (!dbGuild) throw new GuildNotFoundError();
@@ -122,36 +130,49 @@ class DiscordService {
             messageSent.react(reaction);
         }
 
-        this.em.persist([
-            new CommandFlowEntity(
+        for (const commandFlow of commandFlows) {
+            this.em.persist(new CommandFlowEntity(
                 dbGuild,
                 messageSent.id,
-                OnType.REACTION_ADD,
-                BuildingBlockType.SEND_MESSAGE,
-                JSON.stringify({
-                    toType: SendMessageTo.CHANNEL,
-                    to: channelId,
-                    messageFormat: "{{pickFirstName guildMember.nickname }} reacted a 🇧🇪!"
-                }),
-                0,
-                CheckType.REACTION_EMOJI,
-                "🇧🇪",
-            ),
-            new CommandFlowEntity(
-                dbGuild,
-                messageSent.id,
-                OnType.REACTION_ADD,
-                BuildingBlockType.SEND_MESSAGE,
-                JSON.stringify({
-                    toType: SendMessageTo.CHANNEL,
-                    to: channelId,
-                    messageFormat: "{{pickFirstName guildMember.nickname }} reacted a 🇳🇱!"
-                }),
-                1,
-                CheckType.REACTION_EMOJI,
-                "🇳🇱",
-            )
-        ]);
+                commandFlow.onType,
+                commandFlow.buildingBlockType,
+                JSON.stringify(commandFlow.options),
+                commandFlow.order,
+                commandFlow.checkType,
+                commandFlow.checkValue
+            ));
+        }
+
+        // this.em.persist([
+        //     new CommandFlowEntity(
+        //         dbGuild,
+        //         messageSent.id,
+        //         OnType.REACTION_ADD,
+        //         BuildingBlockType.SEND_MESSAGE,
+        //         JSON.stringify({
+        //             toType: SendMessageTo.CHANNEL,
+        //             to: channelId,
+        //             messageFormat: "{{pickFirstName guildMember.nickname }} reacted a 🇧🇪!"
+        //         }),
+        //         0,
+        //         CheckType.REACTION_EMOJI,
+        //         "🇧🇪",
+        //     ),
+        //     new CommandFlowEntity(
+        //         dbGuild,
+        //         messageSent.id,
+        //         OnType.REACTION_ADD,
+        //         BuildingBlockType.SEND_MESSAGE,
+        //         JSON.stringify({
+        //             toType: SendMessageTo.CHANNEL,
+        //             to: channelId,
+        //             messageFormat: "{{pickFirstName guildMember.nickname }} reacted a 🇳🇱!"
+        //         }),
+        //         1,
+        //         CheckType.REACTION_EMOJI,
+        //         "🇳🇱",
+        //     )
+        // ]);
 
         await this.em.flush();
     }

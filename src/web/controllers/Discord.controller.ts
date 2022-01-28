@@ -111,7 +111,8 @@ class DiscordController {
         next: NextFunction
     ) {
         try {
-            const { guildId, channelId, messageText, reactions } = req.body;
+            const { guildId, channelId, messageText, reactions, commandFlows } =
+                req.body;
 
             return res.json(
                 APIResponse.fromData(
@@ -121,6 +122,7 @@ class DiscordController {
                         channelId,
                         messageText,
                         reactions,
+                        commandFlows,
                     })
                 )
             );
