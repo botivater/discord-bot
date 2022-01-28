@@ -76,11 +76,6 @@ const handle = async (
         const guildMember = guild.members.cache.get(user.id);
         if (!guildMember) return;
 
-        logger.verbose("Fetching flow from database.");
-        logger.verbose(
-            `Query: guid: ${guild.id}, messageId: ${reaction.message.id}`
-        );
-
         // Get the command flow from the database.
         const orm = database.getORM();
         const commandFlows = await orm.em.find(
@@ -136,11 +131,9 @@ const handle = async (
                     },
                 };
 
-                if (options.toType === SendMessageTo.SENDER)
+                if (options.toType === SendMessageTo.SENDER) {
                     options.to = user.id;
-                    console.log(`Set to to ${options.to}`)
-
-                console.log(options);
+                }
 
                 await sendMessage.handle(options);
 

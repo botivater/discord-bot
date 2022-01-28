@@ -3,8 +3,7 @@ import { logger } from "../logger";
 
 // Events
 import interactionCreate from "./events/interactionCreate";
-import messageReactionAdd from "./events/messageReactionAdd";
-import messageReactionRemove from "./events/messageReactionRemove";
+import messageReaction from "./events/messageReaction";
 import ready from "./events/ready";
 
 class Discord {
@@ -40,12 +39,12 @@ class Discord {
 
         this.client.on(
             "messageReactionAdd",
-            messageReactionAdd.handle.bind(this)
+            messageReaction.handle.bind(this)
         );
 
         this.client.on(
             "messageReactionRemove",
-            messageReactionRemove.handle.bind(this)
+            messageReaction.handle.bind(this)
         );
 
         this.client.login(process.env.BOT_TOKEN);
