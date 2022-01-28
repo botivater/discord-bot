@@ -7,7 +7,6 @@ import {
     User,
 } from "discord.js";
 import { BuildingBlockType } from "./buildingBlocks/BuildingBlockType";
-import emojis from "@/common/emojis";
 
 // Building blocks
 import sendMessage, { SendMessageTo } from "./buildingBlocks/sendMessage";
@@ -16,43 +15,21 @@ import removeRole from "./buildingBlocks/removeRole";
 import database from "@/database";
 import { CommandFlowEntity } from "@/database/entities/CommandFlowEntity";
 
-type ActionType = {
-    buildingBlockType: BuildingBlockType;
-    options?: any;
-};
+export enum OnType {
+    NONE,
+    REACTION_ADD,
+    REACTION_REMOVE,
+}
 
-const actions: ActionType[] = [
-    {
-        buildingBlockType: BuildingBlockType.NONE, // 0
-    },
-    {
-        // Sending a message requires extra configuration.
-        buildingBlockType: BuildingBlockType.SEND_MESSAGE, // 1
-        options: {
-            toType: SendMessageTo.USER, // Send to sender
-            to: "487283576325275648",
-            messageFormat: `{{ pickFirstName guildMember.nickname }} reacted to your message!`,
-        },
-    },
-    {
-        buildingBlockType: 2,
-        options: {
-            roleId: "936251843724599326",
-            check: `${emojis.b}${emojis.e}`,
-        },
-    },
-    {
-        buildingBlockType: 2,
-        options: {
-            roleId: "936255651066314752",
-            check: `${emojis.n}${emojis.l}`,
-        },
-    },
-];
+export enum CheckType {
+    NONE,
+    REACTION_EMOJI,
+}
 
 const handle = async (
     reaction: MessageReaction | PartialMessageReaction,
-    user: User | PartialUser
+    user: User | PartialUser,
+    onType: OnType = OnType.NONE
 ) => {
     try {
         const client = discord.getClient();
@@ -78,8 +55,8 @@ const handle = async (
 
         // Get the command flow from the database.
         const orm = database.getORM();
-        const commandFlows = await orm.em.find(
-            CommandFlowEntity,
+        const commandFlowsRepository = orm.em.fork().getRepository(CommandFlowEntity);
+        const commandFlows = await commandFlowsRepository.find(
             {
                 $and: [
                     {
@@ -90,6 +67,9 @@ const handle = async (
                     {
                         messageId: reaction.message.id,
                     },
+                    {
+                        onType
+                    }
                 ],
             },
             {
@@ -101,11 +81,27 @@ const handle = async (
 
         if (commandFlows.length === 0) return;
 
+        console.log(commandFlows);
+
         // Handle the list of actions.
         for (const commandFlow of commandFlows) {
             logger.verbose(
                 `Handling command flow part ${commandFlow.order} of flow for message ${commandFlow.messageId}.`
             );
+
+            commandFlow.onType === OnType.REACTION_ADD ? console.log("OnType: ADD") : null;
+            commandFlow.onType === OnType.REACTION_REMOVE ? console.log("OnType: REMOVE") : null;
+
+            console.log(commandFlow.options);
+
+            // Check if the flow should be executed.
+            if (commandFlow.checkType) {
+                if (commandFlow.checkType === CheckType.NONE) {
+                    // Do nothing.
+                }
+
+                if (commandFlow.checkType === CheckType.REACTION_EMOJI && commandFlow.checkValue !== reaction.emoji.name) continue;
+            }
 
             if (commandFlow.buildingBlockType === BuildingBlockType.NONE) {
                 // Do nothing;
@@ -141,14 +137,12 @@ const handle = async (
             }
 
             if (commandFlow.buildingBlockType === BuildingBlockType.ADD_ROLE) {
-                const { roleId, check } = JSON.parse(commandFlow.options);
+                const { roleId } = JSON.parse(commandFlow.options);
 
                 await addRole.handle({
                     guildId: guild.id,
                     guildMemberId: guildMember.id,
                     roleId,
-                    reaction: reaction.emoji.name || "",
-                    check,
                 });
 
                 continue;
@@ -157,14 +151,12 @@ const handle = async (
             if (
                 commandFlow.buildingBlockType === BuildingBlockType.REMOVE_ROLE
             ) {
-                const { roleId, check } = JSON.parse(commandFlow.options);
+                const { roleId } = JSON.parse(commandFlow.options);
 
                 await removeRole.handle({
                     guildId: guild.id,
                     guildMemberId: guildMember.id,
                     roleId,
-                    reaction: reaction.emoji.name || "",
-                    check,
                 });
 
                 continue;

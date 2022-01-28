@@ -26,7 +26,16 @@ export class CommandFlowEntity extends BaseEntity {
     messageId!: string;
 
     @Property()
+    onType!: number;
+
+    @Property()
     buildingBlockType!: number;
+
+    @Property()
+    checkType?: number;
+
+    @Property()
+    checkValue?: string;
 
     @Property()
     options!: string;
@@ -37,15 +46,22 @@ export class CommandFlowEntity extends BaseEntity {
     constructor(
         guild: GuildEntity,
         messageId: string,
+        onType: number,
         buildingBlockType: number,
         options: string,
         order: number,
+        checkType?: number,
+        checkValue?: string,
     ) {
         super();
         this.guild = guild;
         this.messageId = messageId;
+        this.onType = onType;
         this.buildingBlockType = buildingBlockType;
         this.options = options;
         this.order = order;
+
+        this.checkType = checkType;
+        this.checkValue = checkValue;
     }
 }

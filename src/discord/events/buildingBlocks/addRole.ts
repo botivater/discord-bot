@@ -4,15 +4,10 @@ export type AddRoleConfiguration = {
     guildId: string;
     guildMemberId: string;
     roleId: string;
-    reaction: string;
-    check: string;
 }
 
 const handle = async (configuration: AddRoleConfiguration) => {
     const client = discord.getClient();
-
-    // Check if reacted emoji is equal to the check emoji.
-    if (configuration.check && configuration.reaction !== configuration.check) return;
 
     const guild = client.guilds.cache.get(configuration.guildId);
     if (!guild) return;
