@@ -7,24 +7,15 @@ import {
     User,
 } from "discord.js";
 import { BuildingBlockType } from "./buildingBlocks/BuildingBlockType";
+import database from "@/database";
+import { CommandFlowEntity } from "@/database/entities/CommandFlowEntity";
+import { OnType } from "./buildingBlocks/OnType";
+import { CheckType } from "./buildingBlocks/CheckType";
 
 // Building blocks
 import sendMessage, { SendMessageTo } from "./buildingBlocks/sendMessage";
 import addRole from "./buildingBlocks/addRole";
 import removeRole from "./buildingBlocks/removeRole";
-import database from "@/database";
-import { CommandFlowEntity } from "@/database/entities/CommandFlowEntity";
-
-export enum OnType {
-    NONE,
-    REACTION_ADD,
-    REACTION_REMOVE,
-}
-
-export enum CheckType {
-    NONE,
-    REACTION_EMOJI,
-}
 
 const handle = async (
     reaction: MessageReaction | PartialMessageReaction,
@@ -81,8 +72,6 @@ const handle = async (
 
         if (commandFlows.length === 0) return;
 
-        console.log(commandFlows);
-
         // Handle the list of actions.
         for (const commandFlow of commandFlows) {
             logger.verbose(
@@ -103,11 +92,13 @@ const handle = async (
                 if (commandFlow.checkType === CheckType.REACTION_EMOJI && commandFlow.checkValue !== reaction.emoji.name) continue;
             }
 
+            // Do nothing.
             if (commandFlow.buildingBlockType === BuildingBlockType.NONE) {
                 // Do nothing;
                 continue;
             }
 
+            // Send a message.
             if (
                 commandFlow.buildingBlockType === BuildingBlockType.SEND_MESSAGE
             ) {
@@ -136,6 +127,7 @@ const handle = async (
                 continue;
             }
 
+            // Add a role
             if (commandFlow.buildingBlockType === BuildingBlockType.ADD_ROLE) {
                 const { roleId } = JSON.parse(commandFlow.options);
 
@@ -148,6 +140,7 @@ const handle = async (
                 continue;
             }
 
+            // Remove a role
             if (
                 commandFlow.buildingBlockType === BuildingBlockType.REMOVE_ROLE
             ) {

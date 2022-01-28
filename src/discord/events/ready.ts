@@ -5,7 +5,6 @@ import interactionCreate from "@/discord/events/interactionCreate";
 import { inlineCode } from "@discordjs/builders";
 import { syncAllUsersInAllGuilds } from "@/discord/sync";
 import { Client } from "discord.js";
-import collectors from "../collectors";
 
 const handle = async (client: Client) => {
     // This is a workaround to specify that "this" is an instance of Discord.
@@ -45,9 +44,6 @@ const handle = async (client: Client) => {
 
         syncAllUsersInAllGuilds(discordClient);
     }, 60000);
-
-    // TODO: APIify this
-    // collectors.setup(client);
 
     logger.info("Discord bot is ready.");
 };

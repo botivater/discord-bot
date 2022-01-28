@@ -4,7 +4,8 @@ import {
     PartialUser,
     User,
 } from "discord.js";
-import messageReaction, { OnType } from "./messageReaction";
+import { OnType } from "./buildingBlocks/OnType";
+import messageReaction from "./messageReaction";
 
 const handle = async (
     reaction: MessageReaction | PartialMessageReaction,
