@@ -11,3 +11,9 @@ discordRouter.get("/guilds", DiscordController.getAllGuilds);
 discordRouter.get("/guilds/:id", DiscordController.getGuild);
 discordRouter.get("/guilds/:id/channels", DiscordController.getGuildChannels);
 discordRouter.get("/guilds/:id/members", DiscordController.getGuildMembers);
+
+// Reaction collector
+discordRouter.get("/reactionCollectors", DiscordController.getAllReactionCollectors);
+discordRouter.get("/reactionCollectors/:id", DiscordController.getReactionCollector);
+discordRouter.post("/reactionCollectors", DiscordController.createReactionCollector);
+discordRouter.delete("/reactionCollectors/:id", DiscordController.deleteReactionCollector);

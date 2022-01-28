@@ -7,6 +7,12 @@ import { CategoryChannel, GuildChannel, ThreadChannel } from "discord.js";
 import { FriendshipBubble } from "typings/FriendshipBubble";
 import { Connection, EntityManager, IDatabaseDriver } from "@mikro-orm/core";
 import database from "@/database";
+import { CommandFlowEntity } from "@/database/entities/CommandFlowEntity";
+import { GuildEntity } from "@/database/entities/GuildEntity";
+import { OnType } from "@/discord/events/buildingBlocks/OnType";
+import { BuildingBlockType } from "@/discord/events/buildingBlocks/BuildingBlockType";
+import { CheckType } from "@/discord/events/buildingBlocks/CheckType";
+import { SendMessageTo } from "@/discord/events/buildingBlocks/sendMessage";
 
 class DiscordService {
     protected em: EntityManager<IDatabaseDriver<Connection>> | undefined =
@@ -84,6 +90,74 @@ class DiscordService {
         if (!channel.isText()) throw new GuildChannelNotTextChannelError(data.channelId);
     
         await channel.send(data.message);
+    }
+
+    public async getAllReactionCollectors() {
+
+    }
+
+    public async getReactionCollector(data: { id: number; }) {
+        
+    }
+
+    public async storeReactionCollector(data: {
+        guildId: number;
+        channelId: string;
+        messageText: string;
+        reactions: string[];
+    }) {
+        if (!this.em) this.em = database.getORM().em.fork();
+        const { guildId, channelId, messageText, reactions } = data;
+
+        const dbGuild = await this.em.findOne(GuildEntity, { id: guildId });
+        if (!dbGuild) throw new GuildNotFoundError();
+
+        const discordClient = discord.getClient();
+        const channel = discordClient.channels.cache.get(channelId);
+        if (!channel) throw new GuildChannelNotFoundError(data.channelId);
+        if (!channel.isText()) throw new GuildChannelNotTextChannelError(data.channelId);
+
+        const messageSent = await channel.send(messageText);
+        for (const reaction of reactions) {
+            messageSent.react(reaction);
+        }
+
+        this.em.persist([
+            new CommandFlowEntity(
+                dbGuild,
+                messageSent.id,
+                OnType.REACTION_ADD,
+                BuildingBlockType.SEND_MESSAGE,
+                JSON.stringify({
+                    toType: SendMessageTo.CHANNEL,
+                    to: channelId,
+                    messageFormat: "{{pickFirstName guildMember.nickname }} reacted a 🇧🇪!"
+                }),
+                0,
+                CheckType.REACTION_EMOJI,
+                "🇧🇪",
+            ),
+            new CommandFlowEntity(
+                dbGuild,
+                messageSent.id,
+                OnType.REACTION_ADD,
+                BuildingBlockType.SEND_MESSAGE,
+                JSON.stringify({
+                    toType: SendMessageTo.CHANNEL,
+                    to: channelId,
+                    messageFormat: "{{pickFirstName guildMember.nickname }} reacted a 🇳🇱!"
+                }),
+                1,
+                CheckType.REACTION_EMOJI,
+                "🇳🇱",
+            )
+        ]);
+
+        await this.em.flush();
+    }
+
+    public async deleteReactionCollector(data: { id: number; }) {
+        
     }
 }
 

@@ -78,11 +78,6 @@ const handle = async (
                 `Handling command flow part ${commandFlow.order} of flow for message ${commandFlow.messageId}.`
             );
 
-            commandFlow.onType === OnType.REACTION_ADD ? console.log("OnType: ADD") : null;
-            commandFlow.onType === OnType.REACTION_REMOVE ? console.log("OnType: REMOVE") : null;
-
-            console.log(commandFlow.options);
-
             // Check if the flow should be executed.
             if (commandFlow.checkType) {
                 if (commandFlow.checkType === CheckType.NONE) {
