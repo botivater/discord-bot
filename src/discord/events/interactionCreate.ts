@@ -16,7 +16,6 @@ import { CommandListEntity } from "@/database/entities/CommandListEntity";
 
 // Commands
 import ping from "../commands/ping";
-import cat from "../commands/cat";
 import toneindicator from "../commands/toneindicator";
 import dev from "../commands/dev";
 import findafriend from "../commands/findafriend";
@@ -56,7 +55,6 @@ const registerCommands = async (client: Client) => {
     restCommandArray = [];
 
     registerCommand(ping);
-    registerCommand(cat);
     registerCommand(findafriend);
     registerCommand(toneindicator);
     registerCommand(dev);
