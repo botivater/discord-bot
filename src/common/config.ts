@@ -1,4 +1,3 @@
-import { Configuration } from "@mikro-orm/core";
 import { execSync } from "child_process";
 
 export enum BotMode {
@@ -17,6 +16,12 @@ export default class Config {
             throw new Error("Incorrect MODE");
 
         return process.env.BOT_MODE;
+    }
+
+    public static commandsEnabled(): boolean {
+        if (!process.env.BOT_COMMANDS_ENABLED) return false;
+
+        return Boolean(parseInt(process.env.BOT_COMMANDS_ENABLED === "true" ? "1" : process.env.BOT_COMMANDS_ENABLED));
     }
 
     public static getBotToken(): string {

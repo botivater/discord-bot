@@ -7,9 +7,13 @@ import { syncAllUsersInAllGuilds } from "@/discord/sync";
 import { Client } from "discord.js";
 
 const handle = async (client: Client) => {
-    // This is a workaround to specify that "this" is an instance of Discord.
-    // TODO: Re-enable this (disabled to developer faster)
-    await interactionCreate.registerCommands(client);
+    if (
+        Config.getBotMode() !== BotMode.DEVELOPMENT ||
+        (Config.getBotMode() === BotMode.DEVELOPMENT &&
+            Config.commandsEnabled())
+    ) {
+        await interactionCreate.registerCommands(client);
+    }
 
     const channel = client.channels.cache.get(Config.getSystemChannelId());
 

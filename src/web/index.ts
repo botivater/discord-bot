@@ -16,7 +16,7 @@ import { auth } from "express-oauth2-jwt-bearer";
 
 // Routers
 import { miraRouter } from "./routers/mira";
-import { discordRouter } from "./routers/discord";
+import { discordRouter } from "./routers/discord.router";
 import { commandRouter } from "./routers/command.router";
 import { discordBotRouter } from "./routers/discordBot.router";
 

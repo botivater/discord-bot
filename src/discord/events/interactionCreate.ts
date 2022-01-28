@@ -22,9 +22,6 @@ import dev from "../commands/dev";
 import findafriend from "../commands/findafriend";
 import statistics from "../commands/statistics";
 import setBirthday from "../commands/set-birthday";
-import { CommandInvocationEntity } from "@/database/entities/CommandInvocationEntity";
-import { GuildEntity } from "@/database/entities/GuildEntity";
-import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
 import logUsage from "../helpers/logUsage";
 
 export type CommandMap = {
@@ -68,7 +65,8 @@ const registerCommands = async (client: Client) => {
 
     // Register database commands
     const orm = database.getORM();
-    const commandListEntities = await orm.em.find(CommandListEntity, {});
+    const commandListRepository = orm.em.fork().getRepository(CommandListEntity);
+    const commandListEntities = await commandListRepository.find({});
     for (const commandListEntity of commandListEntities) {
         let command = {
             command: new SlashCommandBuilder()
