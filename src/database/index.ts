@@ -3,7 +3,7 @@ import mikroOrmConfig from "@/common/mikro-orm.config";
 import { logger } from "@/logger";
 
 class Database {
-    protected orm: MikroORM<IDatabaseDriver<Connection>> | undefined = undefined;
+    public orm: MikroORM<IDatabaseDriver<Connection>> | undefined = undefined;
 
     public async setup() {
         logger.info("Database is starting up...");

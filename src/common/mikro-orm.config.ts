@@ -8,6 +8,7 @@ import {
     Configuration,
     Connection,
     IDatabaseDriver,
+    MemoryCacheAdapter,
     Options,
 } from "@mikro-orm/core";
 import { TsMorphMetadataProvider } from '@mikro-orm/reflection';

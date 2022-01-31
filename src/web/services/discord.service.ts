@@ -20,9 +20,6 @@ import {
 } from "@/database/entities/CommandFlowGroupEntity";
 
 class DiscordService {
-    protected em: EntityManager<IDatabaseDriver<Connection>> | undefined =
-        undefined;
-
     public async getAllGuilds(): Promise<FriendshipBubble.DiscordBot.Guild[]> {
         const client = discord.getClient();
         const data: FriendshipBubble.DiscordBot.Guild[] = [];
@@ -96,16 +93,16 @@ class DiscordService {
     }
 
     public async getAllReactionCollectors() {
-        if (!this.em) this.em = database.getORM().em.fork();
-        return this.em.find(CommandFlowGroupEntity, {});
+        const em = database.getORM().em.fork();
+        return em.find(CommandFlowGroupEntity, {}, ['commandFlows']);
     }
 
     public async getReactionCollector(data: { id: number }) {
-        if (!this.em) this.em = database.getORM().em.fork();
+        const em = database.getORM().em.fork();
 
         const { id } = data;
 
-        const dbCommandFlowGroup = await this.em.findOne(CommandFlowGroupEntity, {
+        const dbCommandFlowGroup = await em.findOne(CommandFlowGroupEntity, {
             id,
         });
         if (!dbCommandFlowGroup) throw new Error("Not found error");
@@ -130,7 +127,7 @@ class DiscordService {
         //     checkValue?: any;
         // }[];
     }) {
-        if (!this.em) this.em = database.getORM().em.fork();
+        const em = database.getORM().em.fork();
         const {
             guildId,
             name,
@@ -141,7 +138,7 @@ class DiscordService {
             reactions,
         } = data;
 
-        const dbGuild = await this.em.findOne(GuildEntity, { id: guildId });
+        const dbGuild = await em.findOne(GuildEntity, { id: guildId });
         if (!dbGuild) throw new GuildNotFoundError();
 
         const discordClient = discord.getClient();
@@ -156,7 +153,7 @@ class DiscordService {
         }
 
         // Create a new command flow group
-        this.em.persist(
+        em.persist(
             new CommandFlowGroupEntity(
                 dbGuild,
                 name,
@@ -213,15 +210,15 @@ class DiscordService {
         //     )
         // ]);
 
-        await this.em.flush();
+        await em.flush();
     }
 
     public async deleteReactionCollector(data: { id: number }) {
-        if (!this.em) this.em = database.getORM().em.fork();
+        const em = database.getORM().em.fork();
 
         const { id } = data;
 
-        const dbCommandFlowGroup = await this.em.findOne(
+        const dbCommandFlowGroup = await em.findOne(
             CommandFlowGroupEntity,
             {
                 id,
@@ -229,11 +226,11 @@ class DiscordService {
         );
         if (!dbCommandFlowGroup) throw new Error("Not found error");
 
-        this.em.remove(dbCommandFlowGroup.commandFlows);
-        await this.em.flush();
+        em.remove(dbCommandFlowGroup.commandFlows);
+        await em.flush();
 
-        this.em.remove(dbCommandFlowGroup);
-        await this.em.flush();
+        em.remove(dbCommandFlowGroup);
+        await em.flush();
 
         return null;
     }

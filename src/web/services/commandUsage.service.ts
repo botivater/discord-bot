@@ -10,13 +10,10 @@ type CommandUsageStatistic = {
 type CommandUsageStatistics = CommandUsageStatistic[];
 
 class CommandUsageService {
-    protected em: EntityManager | undefined =
-        undefined;
-
     public async findAll(): Promise<CommandUsageStatistics> {
-        if (!this.em) this.em = <EntityManager> database.getORM().em;
+        const em = <EntityManager> database.getORM().em.fork();
 
-        const queryBuilder = this.em.createQueryBuilder(CommandInvocationEntity);
+        const queryBuilder = em.createQueryBuilder(CommandInvocationEntity);
         queryBuilder.select(['commandName', 'count(*) as invocations']).groupBy(['commandName']);
 
         return queryBuilder.execute();

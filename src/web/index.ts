@@ -48,9 +48,11 @@ class Web {
         this.app.use(bodyParser.urlencoded({ extended: true }));
         this.app.use(bodyParser.json());
 
-        this.app.use((req: Request, res: Response, next: NextFunction) =>
-            RequestContext.create(database.getORM().em, next)
-        );
+        this.app.use((req: Request, res: Response, next: NextFunction) => {
+            if (database.orm) {
+                RequestContext.create(database.orm.em, next);
+            }
+        });
 
         // Routers
         this.setupRoutes();

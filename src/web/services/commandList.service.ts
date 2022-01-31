@@ -5,19 +5,16 @@ import GuildNotFoundError from "@/errors/GuildNotFoundError";
 import { Connection, EntityManager, IDatabaseDriver } from "@mikro-orm/core";
 
 class CommandListService {
-    protected em: EntityManager<IDatabaseDriver<Connection>> | undefined =
-        undefined;
-
     public async findAllListCommands() {
-        if (!this.em) this.em = database.getORM().em;
-        return this.em.find(CommandListEntity, {});
+        const em = database.getORM().em.fork();
+        return em.find(CommandListEntity, {});
     }
 
     public async findListCommand(data: { id: number }) {
-        if (!this.em) this.em = database.getORM().em;
+        const em = database.getORM().em.fork();
         const { id } = data;
 
-        const dbCommandList = await this.em.findOne(CommandListEntity, {
+        const dbCommandList = await em.findOne(CommandListEntity, {
             id,
         });
         if (!dbCommandList) throw new Error("Not found error");
@@ -31,7 +28,7 @@ class CommandListService {
         options: string[];
         guildId: number;
     }) {
-        if (!this.em) this.em = database.getORM().em;
+        const em = database.getORM().em.fork();
         const { name, description, options, guildId } = data;
 
         const commandListEntity = new CommandListEntity(
@@ -39,14 +36,14 @@ class CommandListService {
             description,
             options
         );
-        this.em.persist(commandListEntity);
+        em.persist(commandListEntity);
 
-        const dbGuild = await this.em.findOne(GuildEntity, { id: guildId });
+        const dbGuild = await em.findOne(GuildEntity, { id: guildId });
         if (!dbGuild) throw new GuildNotFoundError();
 
         dbGuild.guildCommandLists.add(commandListEntity);
 
-        await this.em.flush();
+        await em.flush();
 
         return commandListEntity;
     }
@@ -57,11 +54,11 @@ class CommandListService {
         },
         data: { name: string; description: string; options: string[] }
     ) {
-        if (!this.em) this.em = database.getORM().em;
+        const em = database.getORM().em.fork();
         const { id } = find;
         const { name, description, options } = data;
 
-        const dbCommandList = await this.em.findOne(CommandListEntity, {
+        const dbCommandList = await em.findOne(CommandListEntity, {
             id,
         });
         if (!dbCommandList) throw new Error("Not found error");
@@ -70,16 +67,16 @@ class CommandListService {
         dbCommandList.description = description;
         dbCommandList.options = options;
 
-        await this.em.flush();
+        await em.flush();
 
         return dbCommandList;
     }
 
     public async deleteListCommand(data: { id: number }) {
-        if (!this.em) this.em = database.getORM().em;
+        const em = database.getORM().em.fork();
         const { id } = data;
 
-        const dbCommandList = await this.em.findOne(CommandListEntity, {
+        const dbCommandList = await em.findOne(CommandListEntity, {
             id,
         });
         if (!dbCommandList) throw new Error("Not found error");
@@ -89,9 +86,9 @@ class CommandListService {
             dbGuild.guildCommandLists.remove(dbCommandList);
         }
 
-        this.em.remove(dbCommandList);
+        em.remove(dbCommandList);
 
-        await this.em.flush();
+        await em.flush();
 
         return null;
     }
@@ -100,21 +97,21 @@ class CommandListService {
         commandListId: number;
         guildId: number;
     }) {
-        if (!this.em) this.em = database.getORM().em;
+        const em = database.getORM().em.fork();
 
         const { commandListId, guildId } = data;
 
-        const dbCommandList = await this.em.findOne(CommandListEntity, {
+        const dbCommandList = await em.findOne(CommandListEntity, {
             id: commandListId,
         });
         if (!dbCommandList) throw new Error("Not found error");
 
-        const dbGuild = await this.em.findOne(GuildEntity, { id: guildId });
+        const dbGuild = await em.findOne(GuildEntity, { id: guildId });
         if (!dbGuild) throw new GuildNotFoundError();
 
         dbGuild.guildCommandLists.add(dbCommandList);
 
-        this.em.flush();
+        em.flush();
     }
 }
 
