@@ -6,16 +6,22 @@ import {
     PartialUser,
     User,
 } from "discord.js";
-import { BuildingBlockType } from "./buildingBlocks/BuildingBlockType";
 import database from "@/database";
-import { CommandFlowEntity } from "@/database/entities/CommandFlowEntity";
-import { OnType } from "./buildingBlocks/OnType";
-import { CheckType } from "./buildingBlocks/CheckType";
+import {
+    BuildingBlockType,
+    CheckType,
+    CommandFlowEntity,
+    OnType,
+} from "@/database/entities/CommandFlowEntity";
 
 // Building blocks
 import sendMessage, { SendMessageTo } from "./buildingBlocks/sendMessage";
 import addRole from "./buildingBlocks/addRole";
 import removeRole from "./buildingBlocks/removeRole";
+import {
+    CommandFlowGroupEntity,
+    CommandFlowGroupType,
+} from "@/database/entities/CommandFlowGroupEntity";
 
 const handle = async (
     reaction: MessageReaction | PartialMessageReaction,
@@ -45,9 +51,9 @@ const handle = async (
         if (!guildMember) return;
 
         // Get the command flow from the database.
-        const orm = database.getORM();
-        const commandFlowsRepository = orm.em.fork().getRepository(CommandFlowEntity);
-        const commandFlows = await commandFlowsRepository.find(
+        const em = database.getORM().em.fork();
+        const commandFlowGroup = await em.findOne(
+            CommandFlowGroupEntity,
             {
                 $and: [
                     {
@@ -59,32 +65,40 @@ const handle = async (
                         messageId: reaction.message.id,
                     },
                     {
-                        onType
-                    }
+                        type: CommandFlowGroupType.REACTION,
+                    },
+                    {
+                        commandFlows: {
+                            onType,
+                        },
+                    },
                 ],
             },
             {
                 orderBy: {
-                    order: "asc",
+                    commandFlows: {
+                        order: "asc",
+                    },
                 },
+                populate: ['commandFlows']
             }
         );
-
-        if (commandFlows.length === 0) return;
+        if (!commandFlowGroup) return;
+        if (commandFlowGroup.commandFlows.length === 0) return;
 
         // Handle the list of actions.
-        for (const commandFlow of commandFlows) {
+        for (const commandFlow of commandFlowGroup.commandFlows) {
             logger.verbose(
-                `Handling command flow part ${commandFlow.order} of flow for message ${commandFlow.messageId}.`
+                `Handling command flow part ${commandFlow.order} of flow for message ${commandFlowGroup.messageId}.`
             );
 
             // Check if the flow should be executed.
-            if (commandFlow.checkType) {
-                if (commandFlow.checkType === CheckType.NONE) {
-                    // Do nothing.
-                }
-
-                if (commandFlow.checkType === CheckType.REACTION_EMOJI && commandFlow.checkValue !== reaction.emoji.name) continue;
+            if (commandFlow.checkType !== CheckType.NONE) {
+                if (
+                    commandFlow.checkType === CheckType.REACTION_EMOJI &&
+                    commandFlow.checkValue !== reaction.emoji.name
+                )
+                    continue;
             }
 
             // Do nothing.

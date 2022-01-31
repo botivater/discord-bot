@@ -111,18 +111,27 @@ class DiscordController {
         next: NextFunction
     ) {
         try {
-            const { guildId, channelId, messageText, reactions, commandFlows } =
-                req.body;
+            const {
+                guildId,
+                name,
+                description,
+                type,
+                channelId,
+                messageText,
+                reactions,
+            } = req.body;
 
             return res.json(
                 APIResponse.fromData(
                     StatusCode.OK,
                     await DiscordService.storeReactionCollector({
                         guildId,
+                        name,
+                        description,
+                        type,
                         channelId,
                         messageText,
                         reactions,
-                        commandFlows,
                     })
                 )
             );

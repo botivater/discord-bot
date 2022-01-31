@@ -8,6 +8,7 @@ import {
     Unique,
 } from "@mikro-orm/core";
 import { CommandFlowEntity } from "./CommandFlowEntity";
+import { CommandFlowGroupEntity } from "./CommandFlowGroupEntity";
 import { CommandInvocationEntity } from "./CommandInvocationEntity";
 import { CommandListEntity } from "./CommandListEntity";
 import { GuildMemberEntity } from "./GuildMemberEntity";
@@ -30,8 +31,8 @@ export class GuildEntity extends BaseEntity {
     @OneToMany(() => CommandInvocationEntity, commandInvocation => commandInvocation.guild)
     commandInvocations = new Collection<CommandInvocationEntity>(this);
 
-    @OneToMany(() => CommandFlowEntity, commandFlow => commandFlow.guild)
-    commandFlows = new Collection<CommandFlowEntity>(this);
+    @OneToMany(() => CommandFlowGroupEntity, commandFlowGroup => commandFlowGroup.guild)
+    commandFlowGroups = new Collection<CommandFlowGroupEntity>(this);
 
     constructor(uid: string, name?: string) {
         super();

@@ -9,6 +9,7 @@ import {
     Property,
     Unique,
 } from "@mikro-orm/core";
+import { CommandFlowGroupEntity } from "./CommandFlowGroupEntity";
 import { GuildEntity } from "./GuildEntity";
 import { GuildMemberEntity } from "./GuildMemberEntity";
 
@@ -19,20 +20,17 @@ import { GuildMemberEntity } from "./GuildMemberEntity";
  */
 @Entity({ tableName: "command_flow" })
 export class CommandFlowEntity extends BaseEntity {
-    @ManyToOne()
-    guild!: GuildEntity;
+    @ManyToOne(() => CommandFlowGroupEntity)
+    commandFlowGroup!: CommandFlowGroupEntity;
 
-    @Property()
-    messageId!: string;
+    @Enum()
+    onType!: OnType;
 
-    @Property()
-    onType!: number;
+    @Enum()
+    buildingBlockType!: BuildingBlockType;
 
-    @Property()
-    buildingBlockType!: number;
-
-    @Property()
-    checkType?: number;
+    @Enum()
+    checkType?: CheckType;
 
     @Property()
     checkValue?: string;
@@ -44,18 +42,16 @@ export class CommandFlowEntity extends BaseEntity {
     order!: number;
 
     constructor(
-        guild: GuildEntity,
-        messageId: string,
-        onType: number,
-        buildingBlockType: number,
+        commandFlowGroup: CommandFlowGroupEntity,
+        onType: OnType,
+        buildingBlockType: BuildingBlockType,
         options: string,
         order: number,
-        checkType?: number,
-        checkValue?: string,
+        checkType?: CheckType,
+        checkValue?: string
     ) {
         super();
-        this.guild = guild;
-        this.messageId = messageId;
+        this.commandFlowGroup = commandFlowGroup;
         this.onType = onType;
         this.buildingBlockType = buildingBlockType;
         this.options = options;
@@ -64,4 +60,22 @@ export class CommandFlowEntity extends BaseEntity {
         this.checkType = checkType;
         this.checkValue = checkValue;
     }
+}
+
+export enum BuildingBlockType {
+    NONE = 0,
+    SEND_MESSAGE = 1,
+    ADD_ROLE = 2,
+    REMOVE_ROLE = 3,
+}
+
+export enum CheckType {
+    NONE,
+    REACTION_EMOJI,
+}
+
+export enum OnType {
+    NONE,
+    REACTION_ADD,
+    REACTION_REMOVE,
 }
