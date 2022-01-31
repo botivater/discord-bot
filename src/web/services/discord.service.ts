@@ -12,7 +12,6 @@ import { GuildEntity } from "@/database/entities/GuildEntity";
 import { OnType } from "@/discord/events/buildingBlocks/OnType";
 import { BuildingBlockType } from "@/discord/events/buildingBlocks/BuildingBlockType";
 import { CheckType } from "@/discord/events/buildingBlocks/CheckType";
-import { SendMessageTo } from "@/discord/events/buildingBlocks/sendMessage";
 
 class DiscordService {
     protected em: EntityManager<IDatabaseDriver<Connection>> | undefined =
@@ -93,11 +92,21 @@ class DiscordService {
     }
 
     public async getAllReactionCollectors() {
-
+        if (!this.em) this.em = database.getORM().em.fork();
+        return this.em.find(CommandFlowEntity, {});
     }
 
     public async getReactionCollector(data: { id: number; }) {
-        
+        if (!this.em) this.em = database.getORM().em.fork();
+
+        const { id } = data;
+
+        const dbCommandFlow = await this.em.findOne(CommandFlowEntity, {
+            id,
+        });
+        if (!dbCommandFlow) throw new Error("Not found error");
+
+        return dbCommandFlow;
     }
 
     public async storeReactionCollector(data: {
@@ -178,7 +187,20 @@ class DiscordService {
     }
 
     public async deleteReactionCollector(data: { id: number; }) {
-        
+        if (!this.em) this.em = database.getORM().em.fork();
+
+        const { id } = data;
+
+        const dbCommandFlow = await this.em.findOne(CommandFlowEntity, {
+            id,
+        });
+        if (!dbCommandFlow) throw new Error("Not found error");
+
+        this.em.remove(dbCommandFlow);
+
+        await this.em.flush();
+
+        return null;
     }
 }
 
