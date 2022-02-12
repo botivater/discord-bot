@@ -24,6 +24,12 @@ export default class Config {
         return Boolean(parseInt(process.env.BOT_COMMANDS_ENABLED === "true" ? "1" : process.env.BOT_COMMANDS_ENABLED));
     }
 
+    public static getRandomPauseMiddlewareEnabled(): boolean {
+        if (!process.env.API_RANDOM_PAUSE_MIDDLEWARE) return false;
+
+        return Boolean(parseInt(process.env.API_RANDOM_PAUSE_MIDDLEWARE === "true" ? "1" : process.env.API_RANDOM_PAUSE_MIDDLEWARE));
+    }
+
     public static getBotToken(): string {
         if (!process.env.BOT_TOKEN) throw new Error("Missing BOT_TOKEN");
         return process.env.BOT_TOKEN;

@@ -40,7 +40,7 @@ class Web {
 
         this.app.use(poweredBy);
 
-        if (Config.getBotMode() === BotMode.DEVELOPMENT) {
+        if (Config.getBotMode() === BotMode.DEVELOPMENT && Config.getRandomPauseMiddlewareEnabled()) {
             this.app.use(randomPause);
         }
 
