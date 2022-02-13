@@ -46,8 +46,16 @@ export class CommandFlowGroupEntity extends BaseEntity {
     @Property()
     messageText!: string;
 
-    @Property()
-    reactions!: string[];
+    @Property({ fieldName: 'reactions' })
+    _reactions!: string;
+
+    get reactions (): string[] {
+        return JSON.parse(this._reactions);
+    }
+
+    set reactions (value: string[]) {
+        this._reactions = JSON.stringify(value);
+    }
 
     constructor(
         guild: GuildEntity,

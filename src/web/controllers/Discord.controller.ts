@@ -128,7 +128,7 @@ class DiscordController {
                         guildId,
                         name,
                         description,
-                        type,
+                        type: Number(type),
                         channelId,
                         messageText,
                         reactions,

@@ -111,7 +111,7 @@ class DiscordService {
     }
 
     public async storeReactionCollector(data: {
-        guildId: number;
+        guildId: string;
         name: string;
         description: string;
         type: CommandFlowGroupType;
@@ -138,7 +138,7 @@ class DiscordService {
             reactions,
         } = data;
 
-        const dbGuild = await em.findOne(GuildEntity, { id: guildId });
+        const dbGuild = await em.findOne(GuildEntity, { uid: guildId });
         if (!dbGuild) throw new GuildNotFoundError();
 
         const discordClient = discord.getClient();
