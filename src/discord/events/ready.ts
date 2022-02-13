@@ -18,11 +18,7 @@ const handle = async (client: Client) => {
     const channel = client.channels.cache.get(Config.getSystemChannelId());
 
     if (channel && channel.isText()) {
-        if (Config.getBotMode() === BotMode.DEVELOPMENT) {
-            channel.send(
-                `Woef! Revision: ${inlineCode(Config.getRevisionId())}`
-            );
-        } else {
+        if (Config.getBotMode() !== BotMode.DEVELOPMENT) {
             channel.send(
                 `Miauw! Revision: ${inlineCode(Config.getRevisionId())}`
             );
