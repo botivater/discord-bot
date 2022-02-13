@@ -68,6 +68,7 @@ class Web {
             this.server.listen(Config.getAPIPort(), "0.0.0.0", resolve);
         });
         logger.info("Web server is ready.");
+        logger.info(`REST API is available on http://localhost:${Config.getAPIPort()}`);
     }
 
     protected setupRoutes() {
