@@ -5,28 +5,31 @@ import database from "@/database";
 import { GuildEntity } from "@/database/entities/GuildEntity";
 import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
 
-export const syncAllUsersInAllGuilds = async function (client: Client) {
+export const syncAllUsersInAllGuilds = async (client: Client) => {
     for (const guild of client.guilds.cache.values()) {
-        const orm = database.getORM();
-        let dbGuild = await orm.em.findOne(GuildEntity, { uid: guild.id });
+        const em = database.getORM().em.fork();
+        const guildEntityRepository = em.getRepository(GuildEntity);
+        let dbGuild = await guildEntityRepository.findOne({ uid: guild.id });
         if (!dbGuild) {
             dbGuild = new GuildEntity(guild.id, guild.name);
-            orm.em.persist(dbGuild);
-            await orm.em.flush();
+            em.persist(dbGuild);
+            await em.flush();
         }
 
-        syncAllUsersInGuild(client, guild);
+        await syncAllUsersInGuild(client, guild);
     }
 };
 
-export const syncAllUsersInGuild = async function (
+export const syncAllUsersInGuild = async (
     client: Client,
     guild: Guild
-) {
+) => {
     const channel = client.channels.cache.get(Config.getSystemChannelId());
 
-    const orm = database.getORM();
-    let dbGuild = await orm.em.findOneOrFail(GuildEntity, { uid: guild.id });
+    const em = database.getORM().em.fork();
+    const guildEntityRepository = em.getRepository(GuildEntity);
+    const guildMemberEntityRepository = em.getRepository(GuildMemberEntity);
+    let dbGuild = await guildEntityRepository.findOneOrFail({ uid: guild.id });
 
     for (const guildMember of guild.members.cache.values()) {
         if (guildMember.user.bot === true) continue;
@@ -34,7 +37,7 @@ export const syncAllUsersInGuild = async function (
         const username =
             guildMember.nickname || guildMember.user.username || "";
 
-        let dbGuildMember = await orm.em.findOne(GuildMemberEntity, {
+        let dbGuildMember = await guildMemberEntityRepository.findOne({
             $and: [ { uid: guildMember.id }, { guild: dbGuild.id } ]
         });
 
@@ -44,8 +47,8 @@ export const syncAllUsersInGuild = async function (
                 dbGuild,
                 username
             );
-            orm.em.persist(dbGuildMember);
-            await orm.em.flush();
+            em.persist(dbGuildMember);
+            await em.flush();
         }
 
         if (dbGuildMember.name !== username) {
@@ -70,7 +73,7 @@ export const syncAllUsersInGuild = async function (
             }
 
             dbGuildMember.name = username;
-            await orm.em.flush();
+            await em.flush();
         }
     }
 };
