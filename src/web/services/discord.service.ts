@@ -218,8 +218,9 @@ class DiscordService {
 
         await channel.messages.fetch();
         const message = channel.messages.cache.get(dbCommandFlowGroup.messageId);
-        if (!message) throw new Error("Message not found");
-        await message.delete();
+        if (message) {
+            await message.delete();
+        }
 
         for (const commandFlow of dbCommandFlowGroup.commandFlows) {
             em.remove(commandFlow);
