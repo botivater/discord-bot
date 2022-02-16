@@ -71,10 +71,12 @@ export default class APIResponse<T> implements APIResponseDto<T> {
                 });
 
             case error instanceof Error:
-                return new APIResponse({
-                    statusCode: StatusCode.INTERNAL_SERVER_ERROR,
-                    error,
-                });
+                if (error instanceof Error) {
+                    return new APIResponse({
+                        statusCode: StatusCode.INTERNAL_SERVER_ERROR,
+                        error: error.message,
+                    });
+                }
 
             case error instanceof String:
                 return new APIResponse({

@@ -7,5 +7,6 @@ declare module FriendshipBubble {
         type Guild = DiscordJS.Guild;
         type GuildChannel = DiscordJS.GuildChannel;
         type GuildMember = DiscordJS.GuildMember;
+        type Role = DiscordJS.Role;
     }
 }

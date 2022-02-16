@@ -3,7 +3,7 @@ import GuildChannelNotFoundError from "@/errors/GuildChannelNotFoundError";
 import GuildChannelNotTextChannelError from "@/errors/GuildChannelNotTextChannelError";
 import GuildNotFoundError from "@/errors/GuildNotFoundError";
 import MissingParameterError from "@/errors/MissingParameterError";
-import { CategoryChannel, GuildChannel, ThreadChannel } from "discord.js";
+import { CategoryChannel, GuildChannel, Message, ThreadChannel } from "discord.js";
 import { FriendshipBubble } from "typings/FriendshipBubble";
 import { Connection, EntityManager, IDatabaseDriver } from "@mikro-orm/core";
 import database from "@/database";
@@ -79,6 +79,22 @@ class DiscordService {
         return guildMembers;
     }
 
+    public async getGuildRoles(data: {
+        id: FriendshipBubble.DiscordBot.Snowflake;
+    }): Promise<FriendshipBubble.DiscordBot.Role[]> {
+        const client = discord.getClient();
+        const guildRoles: FriendshipBubble.DiscordBot.Role[] = [];
+
+        const guild = client.guilds.cache.get(data.id);
+        if (!guild) throw new GuildNotFoundError(data.id);
+
+        for (const role of guild.roles.cache.values()) {
+            guildRoles.push(role);
+        }
+
+        return guildRoles;
+    }
+
     public async sendMessage(data: { channelId: string; message: string }) {
         if (!data.channelId) throw new MissingParameterError("channelId");
         if (!data.message) throw new MissingParameterError("message");
@@ -94,7 +110,7 @@ class DiscordService {
 
     public async getAllReactionCollectors() {
         const em = database.getORM().em.fork();
-        return em.find(CommandFlowGroupEntity, {}, ['commandFlows']);
+        return em.find(CommandFlowGroupEntity, {}, ["commandFlows"]);
     }
 
     public async getReactionCollector(data: { id: number }) {
@@ -104,7 +120,7 @@ class DiscordService {
 
         const dbCommandFlowGroup = await em.findOne(CommandFlowGroupEntity, {
             id,
-        });
+        }, ["commandFlows"]);
         if (!dbCommandFlowGroup) throw new Error("Not found error");
 
         return dbCommandFlowGroup;
@@ -118,14 +134,14 @@ class DiscordService {
         channelId: string;
         messageText: string;
         reactions: string[];
-        // commandFlows: {
-        //     onType: OnType;
-        //     buildingBlockType: BuildingBlockType;
-        //     options: any;
-        //     order: number;
-        //     checkType?: CheckType;
-        //     checkValue?: any;
-        // }[];
+        commandFlows: {
+            onType: OnType;
+            buildingBlockType: BuildingBlockType;
+            options: any;
+            order: number;
+            checkType?: CheckType;
+            checkValue?: any;
+        }[];
     }) {
         const em = database.getORM().em.fork();
         const {
@@ -136,6 +152,7 @@ class DiscordService {
             channelId,
             messageText,
             reactions,
+            commandFlows,
         } = data;
 
         const dbGuild = await em.findOne(GuildEntity, { uid: guildId });
@@ -152,63 +169,33 @@ class DiscordService {
             messageSent.react(reaction);
         }
 
-        // Create a new command flow group
-        em.persist(
-            new CommandFlowGroupEntity(
-                dbGuild,
-                name,
-                description,
-                type,
-                messageSent.id,
-                channelId,
-                messageText,
-                reactions
-            )
+        const commandFlowGroup = new CommandFlowGroupEntity(
+            dbGuild,
+            name,
+            description,
+            type,
+            messageSent.id,
+            channelId,
+            messageText,
+            reactions
         );
 
-        // for (const commandFlow of commandFlows) {
-        //     this.em.persist(new CommandFlowEntity(
-        //         dbGuild,
-        //         messageSent.id,
-        //         commandFlow.onType,
-        //         commandFlow.buildingBlockType,
-        //         JSON.stringify(commandFlow.options),
-        //         commandFlow.order,
-        //         commandFlow.checkType,
-        //         commandFlow.checkValue
-        //     ));
-        // }
+        // Create a new command flow group
+        em.persist(commandFlowGroup);
 
-        // this.em.persist([
-        //     new CommandFlowEntity(
-        //         dbGuild,
-        //         messageSent.id,
-        //         OnType.REACTION_ADD,
-        //         BuildingBlockType.SEND_MESSAGE,
-        //         JSON.stringify({
-        //             toType: SendMessageTo.CHANNEL,
-        //             to: channelId,
-        //             messageFormat: "{{pickFirstName guildMember.nickname }} reacted a 🇧🇪!"
-        //         }),
-        //         0,
-        //         CheckType.REACTION_EMOJI,
-        //         "🇧🇪",
-        //     ),
-        //     new CommandFlowEntity(
-        //         dbGuild,
-        //         messageSent.id,
-        //         OnType.REACTION_ADD,
-        //         BuildingBlockType.SEND_MESSAGE,
-        //         JSON.stringify({
-        //             toType: SendMessageTo.CHANNEL,
-        //             to: channelId,
-        //             messageFormat: "{{pickFirstName guildMember.nickname }} reacted a 🇳🇱!"
-        //         }),
-        //         1,
-        //         CheckType.REACTION_EMOJI,
-        //         "🇳🇱",
-        //     )
-        // ]);
+        for (const commandFlow of commandFlows) {
+            em.persist(
+                new CommandFlowEntity(
+                    commandFlowGroup,
+                    commandFlow.onType,
+                    commandFlow.buildingBlockType,
+                    JSON.stringify(commandFlow.options),
+                    commandFlow.order,
+                    commandFlow.checkType,
+                    commandFlow.checkValue
+                )
+            );
+        }
 
         await em.flush();
     }
@@ -218,17 +205,27 @@ class DiscordService {
 
         const { id } = data;
 
-        const dbCommandFlowGroup = await em.findOne(
-            CommandFlowGroupEntity,
-            {
-                id,
-            }
-        );
+        const dbCommandFlowGroup = await em.findOne(CommandFlowGroupEntity, {
+            id,
+        }, ["commandFlows"]);
         if (!dbCommandFlowGroup) throw new Error("Not found error");
 
-        em.remove(dbCommandFlowGroup.commandFlows);
-        await em.flush();
+        const discordClient = discord.getClient();
+        const channel = discordClient.channels.cache.get(dbCommandFlowGroup.channelId);
+        if (!channel) throw new GuildChannelNotFoundError(dbCommandFlowGroup.channelId);
+        if (!channel.isText())
+            throw new GuildChannelNotTextChannelError(dbCommandFlowGroup.channelId);
 
+        await channel.messages.fetch();
+        const message = channel.messages.cache.get(dbCommandFlowGroup.messageId);
+        if (!message) throw new Error("Message not found");
+        await message.delete();
+
+        for (const commandFlow of dbCommandFlowGroup.commandFlows) {
+            em.remove(commandFlow);
+        }
+
+        await em.flush();
         em.remove(dbCommandFlowGroup);
         await em.flush();
 

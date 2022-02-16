@@ -67,6 +67,21 @@ class DiscordController {
         }
     }
 
+    public async getGuildRoles(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) {
+        try {
+            const { id } = req.params;
+            const data = await DiscordService.getGuildRoles({ id });
+
+            return res.json(APIResponse.fromData(StatusCode.OK, data));
+        } catch (e) {
+            next(e);
+        }
+    }
+
     public async getAllReactionCollectors(
         req: Request,
         res: Response,
@@ -119,6 +134,7 @@ class DiscordController {
                 channelId,
                 messageText,
                 reactions,
+                commandFlows
             } = req.body;
 
             return res.json(
@@ -132,6 +148,7 @@ class DiscordController {
                         channelId,
                         messageText,
                         reactions,
+                        commandFlows,
                     })
                 )
             );
@@ -157,6 +174,7 @@ class DiscordController {
                 )
             );
         } catch (e) {
+            console.log(e);
             next(e);
         }
     }
