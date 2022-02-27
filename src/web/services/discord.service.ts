@@ -3,7 +3,12 @@ import GuildChannelNotFoundError from "@/errors/GuildChannelNotFoundError";
 import GuildChannelNotTextChannelError from "@/errors/GuildChannelNotTextChannelError";
 import GuildNotFoundError from "@/errors/GuildNotFoundError";
 import MissingParameterError from "@/errors/MissingParameterError";
-import { CategoryChannel, GuildChannel, Message, ThreadChannel } from "discord.js";
+import {
+    CategoryChannel,
+    GuildChannel,
+    Message,
+    ThreadChannel,
+} from "discord.js";
 import { FriendshipBubble } from "typings/FriendshipBubble";
 import { Connection, EntityManager, IDatabaseDriver } from "@mikro-orm/core";
 import database from "@/database";
@@ -110,7 +115,13 @@ class DiscordService {
 
     public async getAllReactionCollectors() {
         const em = database.getORM().em.fork();
-        return em.find(CommandFlowGroupEntity, {}, ["commandFlows"]);
+        return em.find(
+            CommandFlowGroupEntity,
+            {},
+            {
+                populate: ["commandFlows"],
+            }
+        );
     }
 
     public async getReactionCollector(data: { id: number }) {
@@ -118,9 +129,15 @@ class DiscordService {
 
         const { id } = data;
 
-        const dbCommandFlowGroup = await em.findOne(CommandFlowGroupEntity, {
-            id,
-        }, ["commandFlows"]);
+        const dbCommandFlowGroup = await em.findOne(
+            CommandFlowGroupEntity,
+            {
+                id,
+            },
+            {
+                populate: ["commandFlows"],
+            }
+        );
         if (!dbCommandFlowGroup) throw new Error("Not found error");
 
         return dbCommandFlowGroup;
@@ -205,19 +222,32 @@ class DiscordService {
 
         const { id } = data;
 
-        const dbCommandFlowGroup = await em.findOne(CommandFlowGroupEntity, {
-            id,
-        }, ["commandFlows"]);
+        const dbCommandFlowGroup = await em.findOne(
+            CommandFlowGroupEntity,
+            {
+                id,
+            },
+            {
+                populate: ["commandFlows"],
+            }
+        );
         if (!dbCommandFlowGroup) throw new Error("Not found error");
 
         const discordClient = discord.getClient();
-        const channel = discordClient.channels.cache.get(dbCommandFlowGroup.channelId);
-        if (!channel) throw new GuildChannelNotFoundError(dbCommandFlowGroup.channelId);
+        const channel = discordClient.channels.cache.get(
+            dbCommandFlowGroup.channelId
+        );
+        if (!channel)
+            throw new GuildChannelNotFoundError(dbCommandFlowGroup.channelId);
         if (!channel.isText())
-            throw new GuildChannelNotTextChannelError(dbCommandFlowGroup.channelId);
+            throw new GuildChannelNotTextChannelError(
+                dbCommandFlowGroup.channelId
+            );
 
         await channel.messages.fetch();
-        const message = channel.messages.cache.get(dbCommandFlowGroup.messageId);
+        const message = channel.messages.cache.get(
+            dbCommandFlowGroup.messageId
+        );
         if (message) {
             await message.delete();
         }

@@ -43,10 +43,10 @@ export class CommandFlowGroupEntity extends BaseEntity {
     @Property()
     channelId!: string;
 
-    @Property()
+    @Property({ columnType: 'text' })
     messageText!: string;
 
-    @Property({ fieldName: 'reactions' })
+    @Property({ fieldName: 'reactions', columnType: 'text' })
     _reactions!: string;
 
     get reactions (): string[] {
