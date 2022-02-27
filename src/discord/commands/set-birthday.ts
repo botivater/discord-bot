@@ -1,5 +1,9 @@
+import database from "@/database";
+import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
 import { SlashCommandBuilder } from "@discordjs/builders";
+import { CronJob } from "cron";
 import { GuildMember, Interaction } from "discord.js";
+import discord from "..";
 import { checkRole } from "../../common";
 import Role from "../../common/role";
 import logUsage from "../helpers/logUsage";
@@ -22,15 +26,16 @@ export default {
     async handle(interaction: Interaction) {
         if (!interaction.isCommand()) return;
 
-        await interaction.deferReply();
+        await interaction.deferReply({ ephemeral: true });
 
-        if (checkRole(<GuildMember>interaction.member, [Role.DEVELOPER])) {
+        try {
+            if (!checkRole(<GuildMember>interaction.member, [Role.DEVELOPER])) {
+                throw new Error("Dit commando mag jij niet uitvoeren.");
+            }
+
             const birthday = interaction.options.getString("verjaardag");
             if (!birthday) {
-                await interaction.editReply(
-                    "Oeps, je hebt geen verjaardag opgegeven."
-                );
-                return;
+                throw new Error("Je hebt geen verjaardag opgegeven.");
             }
 
             const parsedBirthday = new Date(birthday);
@@ -40,28 +45,54 @@ export default {
                     isFinite(parsedBirthday.getTime())
                 )
             ) {
-                await interaction.editReply(
-                    "Oeps, je hebt een ongeldige verjaardag opgegeven."
-                );
-                return;
+                throw new Error("Je hebt een ongeldige verjaardag opgegeven.");
             }
 
-            // TODO: Save date to database
+            const em = database.getORM().em.fork();
+            const dbGuildMember = await em.findOne(GuildMemberEntity, {
+                $and: [
+                    {
+                        guild: {
+                            uid: interaction.guildId,
+                        },
+                    },
+                    {
+                        uid: interaction.member.user.id,
+                    },
+                ],
+            });
+            if (!dbGuildMember) {
+                throw new Error(
+                    "Ik kan jou niet terugvinden, contacteer een developer."
+                );
+            }
 
-            await interaction.editReply(
-                `Jouw verjaardag is op ${parsedBirthday.toLocaleDateString(
+            dbGuildMember.birthday = parsedBirthday;
+            em.persist(dbGuildMember);
+            await em.flush();
+
+            await logUsage.interaction(interaction);
+
+            await interaction.editReply({
+                content: `Ik heb jouw verjaardag opgeslagen. Jouw verjaardag is op ${parsedBirthday.toLocaleDateString(
                     "nl-NL",
                     {
                         year: "numeric",
                         month: "long",
                         day: "numeric",
                     }
-                )}!`
-            );
-
-            await logUsage.interaction(interaction);
-        } else {
-            await interaction.editReply("Dit commando mag jij niet uitvoeren.");
+                )}!`,
+            });
+        } catch (e) {
+            if (e instanceof Error) {
+                await interaction.editReply({
+                    content: `Er is een fout opgetreden: ${e.message}`,
+                });
+            } else {
+                await interaction.editReply({
+                    content: `Er is een fout opgetreden: ${e}`,
+                });
+            }
         }
     },
 };

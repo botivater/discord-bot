@@ -60,7 +60,7 @@ const registerCommands = async (client: Client) => {
     registerCommand(toneindicator);
     registerCommand(dev);
     registerCommand(statistics);
-    // registerCommand(setBirthday);
+    registerCommand(setBirthday);
     // registerCommand(recreateFlows);
 
     // Register database commands

@@ -217,6 +217,15 @@
           "primary": false,
           "nullable": false,
           "mappedType": "integer"
+        },
+        "birthday": {
+          "name": "birthday",
+          "type": "date",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "date"
         }
       },
       "name": "guild_member",

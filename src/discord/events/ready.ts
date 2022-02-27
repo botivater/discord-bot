@@ -5,6 +5,8 @@ import interactionCreate from "@/discord/events/interactionCreate";
 import { inlineCode } from "@discordjs/builders";
 import { syncAllUsersInAllGuilds } from "@/discord/sync";
 import { Client } from "discord.js";
+import { CronJob } from "cron";
+import birthday from "../cron/birthday";
 
 const handle = async (client: Client) => {
     if (
@@ -39,11 +41,15 @@ const handle = async (client: Client) => {
     syncAllUsersInAllGuilds(client);
 
     // Background sync for user name changes etc.
-    setInterval(() => {
+    const syncCronJob = new CronJob('0 * * * * *', () => {
         const discordClient = discord.getClient();
 
         syncAllUsersInAllGuilds(discordClient);
-    }, 60000);
+    }, null, true, 'Europe/Brussels');
+    syncCronJob.start();
+
+    const birthdayCronJob = new CronJob('0 0 12 * * *', birthday.handle, null, true, 'Europe/Brussels');
+    birthdayCronJob.start();
 
     logger.info("Discord bot is ready.");
 };

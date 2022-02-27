@@ -1,6 +1,7 @@
 import { BaseEntity } from "@/database/entities/BaseEntity";
 import {
     Collection,
+    DateType,
     Entity,
     ManyToMany,
     ManyToOne,
@@ -12,7 +13,7 @@ import { CommandInvocationEntity } from "./CommandInvocationEntity";
 import { GuildEntity } from "./GuildEntity";
 
 @Entity({ tableName: "guild_member" })
-@Unique({ properties: ['uid', 'guild'] })
+@Unique({ properties: ["uid", "guild"] })
 export class GuildMemberEntity extends BaseEntity {
     // Should not be unique since a member can belong to 2 guilds, whilst having the same uid.
     @Property({ length: 64 })
@@ -24,13 +25,20 @@ export class GuildMemberEntity extends BaseEntity {
     @ManyToOne(() => GuildEntity)
     guild!: GuildEntity;
 
-    @OneToMany(() => CommandInvocationEntity, commandInvocation => commandInvocation.guildMember)
+    @OneToMany(
+        () => CommandInvocationEntity,
+        (commandInvocation) => commandInvocation.guildMember
+    )
     commandInvocations = new Collection<CommandInvocationEntity>(this);
 
-    constructor(uid: string, guild: GuildEntity, name?: string) {
+    @Property({ type: DateType, nullable: true })
+    birthday?: Date;
+
+    constructor(uid: string, guild: GuildEntity, name?: string, birthday?: Date) {
         super();
         this.uid = uid;
         this.guild = guild;
         this.name = name;
+        this.birthday = birthday;
     }
 }
