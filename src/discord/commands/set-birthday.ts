@@ -19,7 +19,7 @@ export default {
             option
                 .setName("verjaardag")
                 .setDescription(
-                    "Jouw verjaardag geschreven als jaar/maand/dag bv. 2001/07/21."
+                    "Jouw verjaardag geschreven als jaar-maand-dag bv. 2001-07-21. Een / gebruiken werkt NIET."
                 )
                 .setRequired(true)
         ),
@@ -33,6 +33,8 @@ export default {
             if (!birthday) {
                 throw new Error("Je hebt geen verjaardag opgegeven.");
             }
+
+
 
             const parsedBirthday = new Date(birthday);
             if (
