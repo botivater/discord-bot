@@ -29,10 +29,6 @@ export default {
         await interaction.deferReply({ ephemeral: true });
 
         try {
-            if (!checkRole(<GuildMember>interaction.member, [Role.DEVELOPER])) {
-                throw new Error("Dit commando mag jij niet uitvoeren.");
-            }
-
             const birthday = interaction.options.getString("verjaardag");
             if (!birthday) {
                 throw new Error("Je hebt geen verjaardag opgegeven.");
