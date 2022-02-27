@@ -1,6 +1,6 @@
 import { Connection, IDatabaseDriver, MikroORM } from "@mikro-orm/core";
 import mikroOrmConfig from "@/common/mikro-orm.config";
-import { logger } from "@/logger";
+import logger from "@/logger";
 
 class Database {
     public orm: MikroORM<IDatabaseDriver<Connection>> | undefined = undefined;

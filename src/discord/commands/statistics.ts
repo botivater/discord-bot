@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { GuildMember, Interaction } from "discord.js";
-import { logger } from "../../logger";
+import logger from "../../logger";
 import { checkRole } from "../../common";
 import logUsage from "../helpers/logUsage";
 import Role from "@/common/role";

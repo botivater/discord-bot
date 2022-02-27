@@ -1,6 +1,6 @@
 import discord from "@/discord";
 import Config, { BotMode } from "@/common/config";
-import { logger } from "@/logger";
+import logger from "@/logger";
 import interactionCreate from "@/discord/events/interactionCreate";
 import { inlineCode } from "@discordjs/builders";
 import { syncAllUsersInAllGuilds } from "@/discord/sync";

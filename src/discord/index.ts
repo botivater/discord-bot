@@ -1,5 +1,5 @@
 import { Client, Intents } from "discord.js";
-import { logger } from "../logger";
+import logger from "../logger";
 
 // Events
 import interactionCreate from "./events/interactionCreate";

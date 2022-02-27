@@ -52,12 +52,12 @@
         },
         "options": {
           "name": "options",
-          "type": "text",
+          "type": "json",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "mappedType": "text"
+          "mappedType": "json"
         }
       },
       "name": "command_list",

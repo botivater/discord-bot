@@ -1,5 +1,5 @@
 import discord from "@/discord";
-import { logger } from "@/logger";
+import logger from "@/logger";
 import {
     MessageReaction,
     PartialMessageReaction,
@@ -50,6 +50,8 @@ const handle = async (
         const guildMember = guild.members.cache.get(user.id);
         if (!guildMember) return;
 
+        logger.verbose(`Searching database for flows with parameters: \r\nmessageId: ${reaction.message.id}\r\nonType: ${onType}`);
+
         // Get the command flow from the database.
         const em = database.getORM().em.fork();
         const commandFlowGroup = await em.findOne(
@@ -66,11 +68,6 @@ const handle = async (
                     },
                     {
                         type: CommandFlowGroupType.REACTION,
-                    },
-                    {
-                        commandFlows: {
-                            onType,
-                        },
                     },
                 ],
             },
@@ -92,6 +89,8 @@ const handle = async (
                 `Handling command flow part ${commandFlow.order} of flow for message ${commandFlowGroup.messageId}.`
             );
 
+            if (commandFlow.onType !== onType) continue;
+
             // Check if the flow should be executed.
             if (commandFlow.checkType !== CheckType.NONE) {
                 if (
@@ -100,6 +99,10 @@ const handle = async (
                 )
                     continue;
             }
+
+            logger.verbose(
+                `Executing command flow part ${commandFlow.order} of flow for message ${commandFlowGroup.messageId}.`
+            );
 
             // Do nothing.
             if (commandFlow.buildingBlockType === BuildingBlockType.NONE) {

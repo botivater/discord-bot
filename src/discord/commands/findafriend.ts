@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { Interaction } from "discord.js";
-import { logger } from "../../logger";
+import logger from "../../logger";
 import constants from "../../../constants.json";
 import logUsage from "../helpers/logUsage";
 

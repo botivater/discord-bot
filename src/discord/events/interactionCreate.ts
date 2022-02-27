@@ -9,7 +9,7 @@ import {
     Interaction,
 } from "discord.js";
 import Config, { BotMode } from "@/common/config";
-import { logger } from "@/logger";
+import logger from "@/logger";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import database from "@/database";
 import { CommandListEntity } from "@/database/entities/CommandListEntity";
@@ -22,6 +22,7 @@ import findafriend from "../commands/findafriend";
 import statistics from "../commands/statistics";
 import setBirthday from "../commands/set-birthday";
 import logUsage from "../helpers/logUsage";
+import recreateFlows from "../commands/recreate-flows";
 
 export type CommandMap = {
     [index: string]: (interaction: Interaction) => Promise<void>;
@@ -60,10 +61,13 @@ const registerCommands = async (client: Client) => {
     registerCommand(dev);
     registerCommand(statistics);
     // registerCommand(setBirthday);
+    // registerCommand(recreateFlows);
 
     // Register database commands
     const orm = database.getORM();
-    const commandListRepository = orm.em.fork().getRepository(CommandListEntity);
+    const commandListRepository = orm.em
+        .fork()
+        .getRepository(CommandListEntity);
     const commandListEntities = await commandListRepository.find({});
     for (const commandListEntity of commandListEntities) {
         let command = {
@@ -74,9 +78,9 @@ const registerCommands = async (client: Client) => {
             async handle(interaction: Interaction) {
                 if (!interaction.isCommand()) return;
 
-                try {
-                    await interaction.deferReply();
+                await interaction.deferReply();
 
+                try {
                     const randomText =
                         commandListEntity.options[
                             Math.floor(
@@ -84,12 +88,12 @@ const registerCommands = async (client: Client) => {
                             )
                         ];
 
-                    await interaction.editReply({ content: randomText });
-
                     await logUsage.interaction(interaction);
+
+                    await interaction.editReply(randomText);
                 } catch (e) {
                     logger.error(e);
-                    await interaction.reply(
+                    await interaction.editReply(
                         "Miauw! Er is een fout opgetreden!"
                     );
                 }

@@ -11,7 +11,7 @@ export class CommandListEntity extends BaseEntity {
     @Property()
     description!: string;
 
-    @Property({ columnType: 'text' })
+    @Property({ columnType: 'json' })
     options!: string[];
 
     @ManyToMany(() => GuildEntity, guildEntity => guildEntity.guildCommandLists)

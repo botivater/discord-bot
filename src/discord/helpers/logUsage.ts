@@ -3,25 +3,53 @@ import { CommandInvocationEntity } from "@/database/entities/CommandInvocationEn
 import { GuildEntity } from "@/database/entities/GuildEntity";
 import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
 import { Interaction } from "discord.js";
+import logger from "@/logger";
 
 class LogUsage {
     public async interaction(interaction: Interaction) {
-        if (!interaction.isCommand()) return;
+        if (!interaction.isCommand()) {
+            logger.error(`Interaction is not a command!`);
+            return;
+        };
 
-        const orm = database.getORM();
-        const dbGuild = await orm.em.findOne(GuildEntity, {
+        const em = database.getORM().em.fork();
+
+        if (!interaction.guild) {
+            logger.error(`Interaction does not contain guild!`);
+            return;
+        }
+
+        const dbGuild = await em.findOne(GuildEntity, {
             uid: interaction.guild?.id,
         });
-        const dbGuildMember = await orm.em.findOne(GuildMemberEntity, {
+
+        if (!dbGuild) {
+            logger.error(
+                `Could not find guild with id: ${interaction.guild?.id}`
+            );
+            return;
+        }
+
+        const dbGuildMember = await em.findOne(GuildMemberEntity, {
             $and: [{ uid: interaction.member.user.id }, { guild: dbGuild }],
         });
+
+        if (!dbGuildMember) {
+            logger.error(
+                `Could not find guild member with id: ${interaction.member.user.id}`
+            );
+            return;
+        }
+
         const commandInvocation = new CommandInvocationEntity(
             interaction.commandName,
             dbGuild || undefined,
             dbGuildMember || undefined
         );
-        orm.em.persist(commandInvocation);
-        await orm.em.flush();
+
+        em.persist(commandInvocation);
+
+        await em.flush();
     }
 }
 

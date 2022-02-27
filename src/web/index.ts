@@ -1,6 +1,6 @@
 import http from "http";
 import express, { NextFunction, Request, Response } from "express";
-import { logger } from "@/logger";
+import logger from "@/logger";
 import Config, { BotMode } from "@/common/config";
 import database from "@/database";
 import { RequestContext } from "@mikro-orm/core";
