@@ -306,6 +306,152 @@
           "length": 0,
           "mappedType": "datetime"
         },
+        "guild_member_id": {
+          "name": "guild_member_id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "channel_id": {
+          "name": "channel_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "string"
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "text"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "anonymous": {
+          "name": "anonymous",
+          "type": "tinyint(1)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "boolean"
+        },
+        "resolved": {
+          "name": "resolved",
+          "type": "tinyint(1)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "boolean"
+        }
+      },
+      "name": "report",
+      "indexes": [
+        {
+          "columnNames": [
+            "guild_member_id"
+          ],
+          "composite": false,
+          "keyName": "report_guild_member_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "user_id"
+          ],
+          "composite": false,
+          "keyName": "report_user_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "PRIMARY",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "report_guild_member_id_foreign": {
+          "constraintName": "report_guild_member_id_foreign",
+          "columnNames": [
+            "guild_member_id"
+          ],
+          "localTableName": "report",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "guild_member",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "report_user_id_foreign": {
+          "constraintName": "report_user_id_foreign",
+          "columnNames": [
+            "user_id"
+          ],
+          "localTableName": "report",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "guild_member",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 0,
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 0,
+          "mappedType": "datetime"
+        },
         "guild_id": {
           "name": "guild_id",
           "type": "int",

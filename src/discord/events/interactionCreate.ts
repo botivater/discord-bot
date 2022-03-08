@@ -13,6 +13,7 @@ import logger from "@/logger";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import database from "@/database";
 import { CommandListEntity } from "@/database/entities/CommandListEntity";
+import logUsage from "../helpers/logUsage";
 
 // Commands
 import ping from "../commands/ping";
@@ -21,8 +22,8 @@ import dev from "../commands/dev";
 import findafriend from "../commands/findafriend";
 import statistics from "../commands/statistics";
 import setBirthday from "../commands/set-birthday";
-import logUsage from "../helpers/logUsage";
 import recreateFlows from "../commands/recreate-flows";
+import report from "../commands/report";
 
 export type CommandMap = {
     [index: string]: (interaction: Interaction) => Promise<void>;
@@ -62,6 +63,7 @@ const registerCommands = async (client: Client) => {
     registerCommand(statistics);
     registerCommand(setBirthday);
     // registerCommand(recreateFlows);
+    registerCommand(report);
 
     // Register database commands
     const orm = database.getORM();

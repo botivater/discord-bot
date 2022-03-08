@@ -11,6 +11,7 @@ import {
 } from "@mikro-orm/core";
 import { CommandInvocationEntity } from "./CommandInvocationEntity";
 import { GuildEntity } from "./GuildEntity";
+import { ReportEntity } from "./ReportEntity";
 
 @Entity({ tableName: "guild_member" })
 @Unique({ properties: ["uid", "guild"] })
@@ -30,6 +31,12 @@ export class GuildMemberEntity extends BaseEntity {
         (commandInvocation) => commandInvocation.guildMember
     )
     commandInvocations = new Collection<CommandInvocationEntity>(this);
+
+    @OneToMany(
+        () => ReportEntity,
+        (report) => report.guildMember
+    )
+    reports = new Collection<ReportEntity>(this);
 
     @Property({ type: DateType, nullable: true })
     birthday?: Date;
