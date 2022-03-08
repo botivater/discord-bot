@@ -24,6 +24,7 @@ import statistics from "../commands/statistics";
 import setBirthday from "../commands/set-birthday";
 import recreateFlows from "../commands/recreate-flows";
 import report from "../commands/report";
+import help from "../commands/help";
 
 export type CommandMap = {
     [index: string]: (interaction: Interaction) => Promise<void>;
@@ -64,6 +65,7 @@ const registerCommands = async (client: Client) => {
     registerCommand(setBirthday);
     // registerCommand(recreateFlows);
     registerCommand(report);
+    registerCommand(help);
 
     // Register database commands
     const orm = database.getORM();
