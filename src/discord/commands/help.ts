@@ -15,7 +15,7 @@ export default {
     command: <SlashCommandBuilder>new SlashCommandBuilder()
         .setName("help")
         .setDescription(
-            "Meld ongewenst gedrag of iemand die zich niet aan de regels houdt."
+            "Krijg hulp en info over het gebruiken van een bepaald commando."
         )
         .setDefaultPermission(false)
         .addStringOption((option) =>
