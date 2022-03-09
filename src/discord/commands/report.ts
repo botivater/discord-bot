@@ -5,6 +5,7 @@ import { ReportEntity } from "@/database/entities/ReportEntity";
 import GuildChannelNotFoundError from "@/errors/GuildChannelNotFoundError";
 import {
     channelMention,
+    roleMention,
     SlashCommandBuilder,
     userMention,
 } from "@discordjs/builders";
@@ -118,7 +119,8 @@ export default {
                 );
             }
 
-            let message = `**Er is een nieuwe report binnen gekomen.**`;
+            let message = `**Er is een nieuwe report binnen gekomen!**`;
+            message += `\n${roleMention("803363614673076305")}`;
             message += `\nKanaal: ${channelMention(interaction.channelId)}`;
 
             if (anonymous === false) {
