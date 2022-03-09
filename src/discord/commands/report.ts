@@ -138,7 +138,7 @@ export default {
             await systemChannel.send({
                 content: message,
                 allowedMentions: {
-                    parse: [],
+                    users: [],
                 },
             });
 
