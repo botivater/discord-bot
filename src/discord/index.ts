@@ -3,6 +3,7 @@ import logger from "../logger";
 
 // Events
 import interactionCreate from "./events/interactionCreate";
+import messageCreate from "./events/messageCreate";
 import messageReactionAdd from "./events/messageReactionAdd";
 import messageReactionRemove from "./events/messageReactionRemove";
 import ready from "./events/ready";
@@ -48,11 +49,13 @@ class Discord {
             messageReactionRemove.handle.bind(this)
         );
 
+        this.client.on("messageCreate", messageCreate.handle.bind(this));
+
         this.client.login(process.env.BOT_TOKEN);
     }
 
     public getClient(): Client {
-        if (!this.client) throw new Error('Client is undefined.');
+        if (!this.client) throw new Error("Client is undefined.");
         return this.client;
     }
 }

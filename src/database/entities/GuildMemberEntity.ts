@@ -44,6 +44,9 @@ export class GuildMemberEntity extends BaseEntity {
     @Property({ nullable: true })
     lastInteraction?: Date;
 
+    @Property({ default: true })
+    active = true;
+
     constructor(uid: string, guild: GuildEntity, name?: string, birthday?: Date, lastInteraction?: Date) {
         super();
         this.uid = uid;

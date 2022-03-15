@@ -236,6 +236,16 @@
           "nullable": true,
           "length": 0,
           "mappedType": "datetime"
+        },
+        "active": {
+          "name": "active",
+          "type": "tinyint(1)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "true",
+          "mappedType": "boolean"
         }
       },
       "name": "guild_member",
