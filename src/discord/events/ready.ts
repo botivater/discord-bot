@@ -42,17 +42,35 @@ const handle = async (client: Client) => {
     syncAllUsersInAllGuilds(client);
 
     // Background sync for user name changes etc.
-    const syncCronJob = new CronJob('0 * * * * *', () => {
-        const discordClient = discord.getClient();
+    const syncCronJob = new CronJob(
+        "0 * * * * *",
+        () => {
+            const discordClient = discord.getClient();
 
-        syncAllUsersInAllGuilds(discordClient);
-    }, null, true, 'Europe/Brussels');
+            syncAllUsersInAllGuilds(discordClient);
+        },
+        null,
+        true,
+        "Europe/Brussels"
+    );
     syncCronJob.start();
 
-    const birthdayCronJob = new CronJob('0 0 12 * * *', birthday.handle, null, true, 'Europe/Brussels');
+    const birthdayCronJob = new CronJob(
+        "0 0 12 * * *",
+        birthday.handle,
+        null,
+        true,
+        "Europe/Brussels"
+    );
     birthdayCronJob.start();
 
-    const inactiveUsersCronJob = new CronJob('0 0 * * * *', inactiveUsers.handle, null, true, 'Europe/Brussels');
+    const inactiveUsersCronJob = new CronJob(
+        "0 */5 * * * *",
+        inactiveUsers.handle,
+        null,
+        true,
+        "Europe/Brussels"
+    );
     inactiveUsersCronJob.start();
 
     logger.info("Discord bot is ready.");

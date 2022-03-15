@@ -22,6 +22,7 @@ import {
     CommandFlowGroupEntity,
     CommandFlowGroupType,
 } from "@/database/entities/CommandFlowGroupEntity";
+import activityHelper from "../helpers/activityHelper";
 
 const handle = async (
     reaction: MessageReaction | PartialMessageReaction,
@@ -42,6 +43,20 @@ const handle = async (
         // Check if the reaction was in a guild.
         if (!reaction.message.guildId) return;
 
+        try {
+            await activityHelper.registerActivity({
+                guildUid: reaction.message.guildId,
+                guildMemberUid: user.id,
+                timestamp: new Date(),
+            });
+        } catch (e) {
+            if (e instanceof Error) {
+                logger.error(e);
+            } else {
+                logger.error(e);
+            }
+        }
+
         // Get the guild this reaction was sent in.
         const guild = client.guilds.cache.get(reaction.message.guildId);
         if (!guild) return;
@@ -50,7 +65,9 @@ const handle = async (
         const guildMember = guild.members.cache.get(user.id);
         if (!guildMember) return;
 
-        logger.verbose(`Searching database for flows with parameters: \r\nmessageId: ${reaction.message.id}\r\nonType: ${onType}`);
+        logger.verbose(
+            `Searching database for flows with parameters: \r\nmessageId: ${reaction.message.id}\r\nonType: ${onType}`
+        );
 
         // Get the command flow from the database.
         const em = database.getORM().em.fork();
@@ -77,7 +94,7 @@ const handle = async (
                         order: "asc",
                     },
                 },
-                populate: ['commandFlows']
+                populate: ["commandFlows"],
             }
         );
         if (!commandFlowGroup) return;

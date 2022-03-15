@@ -4,6 +4,7 @@ import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
 import logger from "@/logger";
 import { bold, italic, userMention } from "@discordjs/builders";
 import discord from "..";
+import activityHelper from "../helpers/activityHelper";
 
 // Timeout in seconds.
 // 60 => 60 seconds
@@ -11,7 +12,7 @@ import discord from "..";
 // 60 * 60 * 24 => 24 hours
 // 60 * 60 * 24 * 7 => 7 days
 // 60 * 60 * 24 * 182 => 182 days (aprox. 6 months)
-const timeoutSeconds = 60 * 60 * 24 * 182;
+const timeoutSeconds = 60 * 60 * 24 * 90;
 
 export default {
     handle: async () => {
@@ -75,8 +76,8 @@ export default {
                     month: "long",
                     day: "numeric",
                 }
-            )}`;
-            message += `${italic('Dit onderdeel staat nog in testmodus, er is dus niemand een rol toegewezen.')}`
+            )}\r\n`;
+            message += `Ik heb deze persoon de Non-Actief rol toegewezen.`;
 
             guildChannel.send({
                 content: message,
@@ -87,6 +88,11 @@ export default {
 
             dbGuildMember.active = false;
             em.persist(dbGuildMember);
+
+            await activityHelper.addInactiveRole({
+                guildUid: dbGuildMember.guild.uid,
+                guildMemberUid: dbGuildMember.uid,
+            });
         }
 
         await em.flush();

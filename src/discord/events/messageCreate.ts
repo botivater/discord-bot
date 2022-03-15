@@ -1,6 +1,6 @@
-import database from "@/database";
-import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
+import logger from "@/logger";
 import { Message, PartialMessage } from "discord.js";
+import activityHelper from "../helpers/activityHelper";
 
 const handle = async (message: Message | PartialMessage) => {
     if (message.partial) await message.fetch();
@@ -11,36 +11,21 @@ const handle = async (message: Message | PartialMessage) => {
         return;
     }
 
-    const em = database.getORM().em.fork();
-    const dbGuildMember = await em.findOne(
-        GuildMemberEntity,
-        {
-            $and: [
-                {
-                    uid: author.id,
-                },
-                {
-                    guild: {
-                        uid: guildId,
-                    },
-                },
-            ],
-        },
-        { populate: ["guild"] }
-    );
+    if (author.bot) return;
 
-    // TODO: Add user to database of known members when it is not found
-    if (!dbGuildMember) {
-        return;
+    try {
+        await activityHelper.registerActivity({
+            guildUid: guildId,
+            guildMemberUid: author.id,
+            timestamp: new Date(createdTimestamp),
+        });
+    } catch (e) {
+        if (e instanceof Error) {
+            logger.error(e);
+        } else {
+            logger.error(e);
+        }
     }
-
-    dbGuildMember.lastInteraction = new Date(createdTimestamp);
-    
-    // TODO: Reactivate user by removing role
-    dbGuildMember.active = true;
-
-    em.persist(dbGuildMember);
-    await em.flush();
 };
 
 export default {

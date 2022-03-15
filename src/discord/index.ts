@@ -7,6 +7,7 @@ import messageCreate from "./events/messageCreate";
 import messageReactionAdd from "./events/messageReactionAdd";
 import messageReactionRemove from "./events/messageReactionRemove";
 import ready from "./events/ready";
+import voiceStateUpdate from "./events/voiceStateUpdate";
 
 class Discord {
     protected client: Client | null = null;
@@ -28,6 +29,7 @@ class Discord {
                 Intents.FLAGS.DIRECT_MESSAGES,
                 Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
                 Intents.FLAGS.DIRECT_MESSAGE_TYPING,
+                Intents.FLAGS.GUILD_VOICE_STATES,
             ],
             partials: ["MESSAGE", "CHANNEL", "REACTION"],
         });
@@ -50,6 +52,7 @@ class Discord {
         );
 
         this.client.on("messageCreate", messageCreate.handle.bind(this));
+        this.client.on("voiceStateUpdate", voiceStateUpdate.handle.bind(this));
 
         this.client.login(process.env.BOT_TOKEN);
     }
