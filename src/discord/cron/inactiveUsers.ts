@@ -77,7 +77,7 @@ export default {
                     day: "numeric",
                 }
             )}\r\n`;
-            message += `Ik heb deze persoon de Non-Actief rol toegewezen.`;
+            message += `Ik heb deze persoon de rol 'Non-Actief' toegewezen. *LET OP! Gelieve zelf te checken of deze persoon de privérollen nog heeft, indien ja, verwijder deze. In de toekomst zal Mira dit zelf kunnen.*`;
 
             guildChannel.send({
                 content: message,
