@@ -226,6 +226,16 @@
           "primary": false,
           "nullable": true,
           "mappedType": "date"
+        },
+        "last_interaction": {
+          "name": "last_interaction",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 0,
+          "mappedType": "datetime"
         }
       },
       "name": "guild_member",

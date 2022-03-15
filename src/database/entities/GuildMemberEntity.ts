@@ -41,11 +41,15 @@ export class GuildMemberEntity extends BaseEntity {
     @Property({ type: DateType, nullable: true })
     birthday?: Date;
 
-    constructor(uid: string, guild: GuildEntity, name?: string, birthday?: Date) {
+    @Property({ nullable: true })
+    lastInteraction?: Date;
+
+    constructor(uid: string, guild: GuildEntity, name?: string, birthday?: Date, lastInteraction?: Date) {
         super();
         this.uid = uid;
         this.guild = guild;
         this.name = name;
         this.birthday = birthday;
+        this.lastInteraction = lastInteraction;
     }
 }
