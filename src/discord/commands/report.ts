@@ -138,7 +138,6 @@ export default {
             await systemChannel.send({
                 content: message,
                 allowedMentions: {
-                    parse: ["roles"],
                     roles: ["803363614673076305"],
                 },
             });
