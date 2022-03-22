@@ -10,3 +10,4 @@ Meet `Mira de kat`, the official Friendship Bubble Discord bot!
 4. Compile the software using `yarn tsc`
 5. Create a .env file
 6. Run it using pm2 or using `node ./dist/src/index.js`
+7. Contribute!
