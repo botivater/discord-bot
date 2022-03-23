@@ -10,7 +10,9 @@
         "dev": "nodemon",
         "build": "ttsc",
         "docker:build": "docker build . -t registry.jonasclaes.be/friendshipbubble/discord-bot:latest && docker tag registry.jonasclaes.be/friendshipbubble/discord-bot:latest registry.jonasclaes.be/friendshipbubble/discord-bot:$(git rev-parse --short HEAD)",
-        "docker:push": "docker push registry.jonasclaes.be/friendshipbubble/discord-bot:latest && docker push registry.jonasclaes.be/friendshipbubble/discord-bot:$(git rev-parse --short HEAD)"
+        "docker:push": "docker push registry.jonasclaes.be/friendshipbubble/discord-bot:latest && docker push registry.jonasclaes.be/friendshipbubble/discord-bot:$(git rev-parse --short HEAD)",
+        "migration:create": "mikro-orm migration:create",
+        "migration:up": "mikro-orm migration:up"
     },
     "dependencies": {
         "@discordjs/builders": "^0.9.0",
