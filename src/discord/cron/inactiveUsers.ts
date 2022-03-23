@@ -68,7 +68,7 @@ export default {
             );
 
             let message = `${bold("Ik heb iemand op non-actief gezet.")}\r\n`;
-            message += `Gebruiker: ${userMention(dbGuildMember.uid)}\r\n`;
+            message += `Gebruiker: ${userMention(dbGuildMember.uid)} (${dbGuildMember.identifier})\r\n`;
             message += `Laatste interactie: ${dbGuildMember.lastInteraction.toLocaleDateString(
                 "nl-NL",
                 {
