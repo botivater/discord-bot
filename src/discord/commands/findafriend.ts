@@ -12,6 +12,8 @@ export default {
     async handle(interaction: Interaction) {
         if (!interaction.isCommand()) return;
 
+        await interaction.deferReply();
+
         try {
             const randomNumber = Math.floor(
                 Math.random() * constants.findafriend.amount
@@ -23,7 +25,7 @@ export default {
                     )
                 ];
 
-            await interaction.reply({
+            await interaction.editReply({
                 content: randomText,
                 files: [
                     `https://static.friendshipbubble.nl/mira/pets/${randomNumber}.jpg`,
@@ -33,7 +35,7 @@ export default {
             await logUsage.interaction(interaction);
         } catch (e) {
             logger.error(e);
-            await interaction.reply("Miauw! Er is een fout opgetreden!");
+            await interaction.editReply("Miauw! Er is een fout opgetreden!");
         }
     },
 };
