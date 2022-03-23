@@ -209,6 +209,15 @@
           "nullable": true,
           "mappedType": "string"
         },
+        "identifier": {
+          "name": "identifier",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "string"
+        },
         "guild_id": {
           "name": "guild_id",
           "type": "int",

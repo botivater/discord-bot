@@ -23,6 +23,9 @@ export class GuildMemberEntity extends BaseEntity {
     @Property()
     name?: string;
 
+    @Property()
+    identifier?: string;
+
     @ManyToOne(() => GuildEntity)
     guild!: GuildEntity;
 
@@ -47,11 +50,12 @@ export class GuildMemberEntity extends BaseEntity {
     @Property({ default: true })
     active = true;
 
-    constructor(uid: string, guild: GuildEntity, name?: string, birthday?: Date, lastInteraction?: Date) {
+    constructor(uid: string, guild: GuildEntity, name?: string, identifier?: string, birthday?: Date, lastInteraction?: Date) {
         super();
         this.uid = uid;
         this.guild = guild;
         this.name = name;
+        this.identifier = identifier;
         this.birthday = birthday;
         this.lastInteraction = lastInteraction;
     }

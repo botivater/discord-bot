@@ -37,6 +37,8 @@ export const syncAllUsersInGuild = async (
         const username =
             guildMember.nickname || guildMember.user.username || "";
 
+        const identifier = guildMember.user.tag;
+
         let dbGuildMember = await guildMemberEntityRepository.findOne({
             $and: [ { uid: guildMember.id }, { guild: dbGuild.id } ]
         });
@@ -45,7 +47,8 @@ export const syncAllUsersInGuild = async (
             dbGuildMember = new GuildMemberEntity(
                 guildMember.id,
                 dbGuild,
-                username
+                username,
+                identifier
             );
             em.persist(dbGuildMember);
             await em.flush();
@@ -73,7 +76,17 @@ export const syncAllUsersInGuild = async (
             }
 
             dbGuildMember.name = username;
-            await em.flush();
+            em.persist(dbGuildMember);
+        }
+
+        // Set the name and identifier if the user doesn't have an identifier set.
+        // Added after migration to identifier to automatically fill up database.
+        if (!dbGuildMember.identifier) {
+            dbGuildMember.name = username;
+            dbGuildMember.identifier = identifier;
+            em.persist(dbGuildMember);
         }
     }
+
+    await em.flush();
 };
