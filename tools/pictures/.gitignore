@@ -2,3 +2,4 @@
 */
 !process-pictures.py
 !.gitignore
+venv
