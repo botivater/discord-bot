@@ -6,7 +6,7 @@ export default {
     command: new SlashCommandBuilder()
         .setName("toneindicator")
         .setDescription("Laat Mira de lijst met tone indicators tonen!")
-        .setDefaultPermission(false),
+        .setDefaultPermission(true),
     async handle(interaction: Interaction) {
         if (!interaction.isCommand()) return;
 

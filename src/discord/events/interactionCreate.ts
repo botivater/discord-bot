@@ -138,45 +138,46 @@ const registerCommands = async (client: Client) => {
 
     logger.debug("Added commands to guilds.");
 
-    logger.verbose("Adding command permissions...");
+    // TODO: Fix this!
+    // logger.verbose("Adding command permissions...");
 
-    if (!client.application?.owner) await client.application?.fetch();
+    // if (!client.application?.owner) await client.application?.fetch();
 
-    const permissions: ApplicationCommandPermissionData[] = [
-        {
-            id: "487283576325275648",
-            type: "USER",
-            permission: true,
-        },
-    ];
+    // const permissions: ApplicationCommandPermissionData[] = [
+    //     {
+    //         id: "487283576325275648",
+    //         type: "USER",
+    //         permission: true,
+    //     },
+    // ];
 
-    if (Config.getBotMode() === BotMode.PRODUCTION) {
-        permissions.push({
-            id: "904060845955379260",
-            type: "ROLE",
-            permission: true,
-        });
-    }
+    // if (Config.getBotMode() === BotMode.PRODUCTION) {
+    //     permissions.push({
+    //         id: "904060845955379260",
+    //         type: "ROLE",
+    //         permission: true,
+    //     });
+    // }
 
-    for (const guild of client.guilds.cache.values()) {
-        logger.verbose("Adding command permissions to guild: " + guild.name);
+    // for (const guild of client.guilds.cache.values()) {
+    //     logger.verbose("Adding command permissions to guild: " + guild.name);
 
-        const fullPermissions: GuildApplicationCommandPermissionData[] = [];
-        const commands = await guild.commands.fetch();
+    //     const fullPermissions: GuildApplicationCommandPermissionData[] = [];
+    //     const commands = await guild.commands.fetch();
 
-        for (const command of commands.values()) {
-            logger.verbose("Adding permission to command: " + command.name);
+    //     for (const command of commands.values()) {
+    //         logger.verbose("Adding permission to command: " + command.name);
 
-            fullPermissions.push({
-                id: command.id,
-                permissions,
-            });
-        }
+    //         fullPermissions.push({
+    //             id: command.id,
+    //             permissions,
+    //         });
+    //     }
 
-        await guild.commands.permissions.set({ fullPermissions });
-    }
+    //     await guild.commands.permissions.set({ fullPermissions });
+    // }
 
-    logger.debug("Added command permissions.");
+    // logger.debug("Added command permissions.");
 };
 
 export default {

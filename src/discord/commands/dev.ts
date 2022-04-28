@@ -6,7 +6,7 @@ export default {
     command: new SlashCommandBuilder()
         .setName("dev")
         .setDescription("Informatie over de ontwikkelaar van Mira!")
-        .setDefaultPermission(false),
+        .setDefaultPermission(true),
     async handle(interaction: Interaction) {
         if (!interaction.isCommand()) return;
 

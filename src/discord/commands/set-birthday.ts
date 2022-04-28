@@ -14,7 +14,7 @@ export default {
         .setDescription(
             "Geef je verjaardag door aan Mira voor een leuke melding op je verjaardag!"
         )
-        .setDefaultPermission(false)
+        .setDefaultPermission(true)
         .addStringOption((option) =>
             option
                 .setName("verjaardag")

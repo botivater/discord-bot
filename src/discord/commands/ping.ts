@@ -7,7 +7,7 @@ export default {
     command: new SlashCommandBuilder()
         .setName("ping")
         .setDescription("Laat Mira 'Pong!' zeggen!")
-        .setDefaultPermission(false),
+        .setDefaultPermission(true),
     async handle(interaction: Interaction) {
         if (!interaction.isCommand()) return;
 

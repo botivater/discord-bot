@@ -17,7 +17,7 @@ export default {
         .setDescription(
             "Krijg hulp en info over het gebruiken van een bepaald commando."
         )
-        .setDefaultPermission(false)
+        .setDefaultPermission(true)
         .addStringOption((option) =>
             option
                 .setName("commando")

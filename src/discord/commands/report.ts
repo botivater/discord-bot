@@ -19,7 +19,7 @@ export default {
         .setDescription(
             "Meld ongewenst gedrag of iemand die zich niet aan de regels houdt."
         )
-        .setDefaultPermission(false)
+        .setDefaultPermission(true)
         .addStringOption((option) =>
             option
                 .setName("omschrijving")

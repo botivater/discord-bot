@@ -8,7 +8,7 @@ export default {
     command: new SlashCommandBuilder()
         .setName("vindeenvriendje")
         .setDescription("Laat Mira een vriendje tonen!")
-        .setDefaultPermission(false),
+        .setDefaultPermission(true),
     async handle(interaction: Interaction) {
         if (!interaction.isCommand()) return;
 
