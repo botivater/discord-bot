@@ -55,7 +55,7 @@ export default {
                         },
                     },
                     {
-                        uid: interaction.member.user.id,
+                        uid: interaction.member?.user.id,
                     },
                 ],
             });

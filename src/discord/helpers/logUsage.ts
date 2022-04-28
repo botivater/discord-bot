@@ -31,12 +31,12 @@ class LogUsage {
         }
 
         const dbGuildMember = await em.findOne(GuildMemberEntity, {
-            $and: [{ uid: interaction.member.user.id }, { guild: dbGuild }],
+            $and: [{ uid: interaction.member?.user.id }, { guild: dbGuild }],
         });
 
         if (!dbGuildMember) {
             logger.error(
-                `Could not find guild member with id: ${interaction.member.user.id}`
+                `Could not find guild member with id: ${interaction.member?.user.id}`
             );
             return;
         }

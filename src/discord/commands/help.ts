@@ -23,13 +23,13 @@ export default {
                 .setName("commando")
                 .setDescription("Het commando waar je hulp bij nodig hebt.")
                 .setRequired(true)
-                .addChoices([
-                    ["/report", HelpCommandEnum.REPORT],
-                    [
-                        "/verjaardag-instellen",
-                        HelpCommandEnum.VERJAARDAG_INSTELLEN,
-                    ],
-                ])
+                .addChoices(
+                    { name: "/report", value: HelpCommandEnum.REPORT },
+                    {
+                        name: "/verjaardag-instellen",
+                        value: HelpCommandEnum.VERJAARDAG_INSTELLEN,
+                    }
+                )
         ),
     async handle(interaction: Interaction) {
         if (!interaction.isCommand()) return;

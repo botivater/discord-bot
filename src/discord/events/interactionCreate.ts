@@ -49,7 +49,7 @@ const handle = async (interaction: Interaction<CacheType>) => {
 };
 
 const registerCommand = (command: CommandSignature) => {
-    restCommandArray.push(command.command.toJSON());
+    restCommandArray.push(<RESTPostAPIApplicationCommandsJSONBody> command.command.toJSON());
     commandMap[command.command.name] = command.handle;
 };
 

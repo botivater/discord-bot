@@ -3,7 +3,7 @@ import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
 import logger from "@/logger";
 import discord from "..";
 import Handlebars from "handlebars";
-import { memberNicknameMention } from "@discordjs/builders";
+import { userMention } from "@discordjs/builders";
 
 export default {
     handle: async () => {
@@ -61,7 +61,7 @@ export default {
 
             guildChannel.send({
                 content: stringTemplate({
-                    person: memberNicknameMention(guildMember.id),
+                    person: userMention(guildMember.id),
                 }),
             });
         }
