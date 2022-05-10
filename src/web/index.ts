@@ -1,7 +1,7 @@
 import http from "http";
 import express, { NextFunction, Request, Response } from "express";
 import logger from "@/logger";
-import Config, { BotMode } from "@/common/config";
+import Config from "@/common/config";
 import database from "@/database";
 import { RequestContext } from "@mikro-orm/core";
 
@@ -9,7 +9,6 @@ import { RequestContext } from "@mikro-orm/core";
 import bodyParser from "body-parser";
 import cors from "cors";
 import { poweredBy } from "./middleware/poweredBy";
-import { randomPause } from "./middleware/randomPause";
 import { errorHandler } from "./middleware/errorHandler";
 import { routingErrorHandler } from "./middleware/routingErrorHandler";
 import { auth } from "express-oauth2-jwt-bearer";
@@ -39,10 +38,6 @@ class Web {
         });
 
         this.app.use(poweredBy);
-
-        if (Config.getBotMode() === BotMode.DEVELOPMENT && Config.getRandomPauseMiddlewareEnabled()) {
-            this.app.use(randomPause);
-        }
 
         this.app.use(cors());
         this.app.use(bodyParser.urlencoded({ extended: true }));

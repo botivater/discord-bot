@@ -42,9 +42,14 @@ export default {
             return;
         }
 
-        const guildChannel = guild.channels.cache.get(
-            Config.getSystemChannelId()
-        );
+        await guild.channels.fetch()
+        let guildChannel = guild.channels.cache.find(channel => channel.name == "systeem");
+        if (!guildChannel) {
+            guildChannel = await guild.channels.create("systeem", {
+                type: "GUILD_TEXT"
+            });
+        }
+
         if (!guildChannel) {
             logger.verbose(
                 "Guild channel not found in inactive users cron job"

@@ -54,6 +54,10 @@ export default {
             const user = interaction.options.getUser("gebruiker");
             const anonymous = interaction.options.getBoolean("anoniem");
 
+            if (!interaction.guild) {
+                throw new Error("Guild not found in interaction!");
+            }
+
             const em = database.getORM().em.fork();
 
             const dbGuildMemberSender = await em.findOne(GuildMemberEntity, {
@@ -110,13 +114,17 @@ export default {
             await logUsage.interaction(interaction);
 
             const discordClient = discord.getClient();
-            const systemChannel = discordClient.channels.cache.get(
-                Config.getSystemChannelId()
-            );
+
+            await interaction.guild.channels.fetch()
+            let systemChannel = interaction.guild.channels.cache.find(channel => channel.name == "systeem");
+            if (!systemChannel) {
+                systemChannel = await interaction.guild.channels.create("systeem", {
+                    type: "GUILD_TEXT"
+                });
+            }
+
             if (!systemChannel || !systemChannel.isText()) {
-                throw new GuildChannelNotFoundError(
-                    Config.getSystemChannelId()
-                );
+                throw new GuildChannelNotFoundError("Guild #systeem channel not found!");
             }
 
             let message = `**Er is een nieuwe report binnen gekomen!**`;

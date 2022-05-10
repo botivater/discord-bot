@@ -1,5 +1,5 @@
 import discord from "@/discord";
-import Config, { BotMode } from "@/common/config";
+import Config from "@/common/config";
 import logger from "@/logger";
 import interactionCreate from "@/discord/events/interactionCreate";
 import { inlineCode } from "@discordjs/builders";
@@ -10,33 +10,7 @@ import birthday from "../cron/birthday";
 import inactiveUsers from "../cron/inactiveUsers";
 
 const handle = async (client: Client) => {
-    if (
-        Config.getBotMode() !== BotMode.DEVELOPMENT ||
-        (Config.getBotMode() === BotMode.DEVELOPMENT &&
-            Config.commandsEnabled())
-    ) {
-        await interactionCreate.registerCommands(client);
-    }
-
-    const channel = client.channels.cache.get(Config.getSystemChannelId());
-
-    if (channel && channel.isText()) {
-        if (Config.getBotMode() !== BotMode.DEVELOPMENT) {
-            channel.send(
-                `Miauw! Revision: ${inlineCode(Config.getRevisionId())}`
-            );
-        }
-    }
-
-    if (Config.getBotMode() === BotMode.DEVELOPMENT) {
-        client.user?.setPresence({
-            activities: [{ name: "met Jonas", type: "PLAYING" }],
-        });
-    } else {
-        client.user?.setPresence({
-            activities: [{ name: "Lauri", type: "LISTENING" }],
-        });
-    }
+    await interactionCreate.registerCommands(client);
 
     // Do a first sync on startup.
     syncAllUsersInAllGuilds(client);

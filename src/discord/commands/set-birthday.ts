@@ -4,8 +4,6 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { CronJob } from "cron";
 import { GuildMember, Interaction } from "discord.js";
 import discord from "..";
-import { checkRole } from "../../common";
-import Role from "../../common/role";
 import logUsage from "../helpers/logUsage";
 
 export default {

@@ -1,6 +1,5 @@
 import { Client, Guild } from "discord.js";
 import PronounChecker from "../../common/pronounChecker";
-import Config from "../../common/config";
 import database from "@/database";
 import { GuildEntity } from "@/database/entities/GuildEntity";
 import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
@@ -24,7 +23,13 @@ export const syncAllUsersInGuild = async (
     client: Client,
     guild: Guild
 ) => {
-    const channel = client.channels.cache.get(Config.getSystemChannelId());
+    await guild.channels.fetch()
+    let channel = guild.channels.cache.find(channel => channel.name == "systeem");
+    if (!channel) {
+        channel = await guild.channels.create("systeem", {
+            type: "GUILD_TEXT"
+        });
+    }
 
     const em = database.getORM().em.fork();
     const guildEntityRepository = em.getRepository(GuildEntity);
@@ -40,7 +45,7 @@ export const syncAllUsersInGuild = async (
         const identifier = guildMember.user.tag;
 
         let dbGuildMember = await guildMemberEntityRepository.findOne({
-            $and: [ { uid: guildMember.id }, { guild: dbGuild.id } ]
+            $and: [{ uid: guildMember.id }, { guild: dbGuild.id }]
         });
 
         if (!dbGuildMember) {
@@ -62,13 +67,10 @@ export const syncAllUsersInGuild = async (
                     PronounChecker.checkString(guildMember.user.username || "");
 
                 channel.send({
-                    content: `Iemand heeft zijn naam veranderd.\nGebruiker: <@${
-                        guildMember.user.id
-                    }>\nOude naam: ${
-                        dbGuildMember.name
-                    }\nNieuwe naam: ${username}\nPronouns: ${
-                        validPronouns ? "In orde" : "Ongeldig!"
-                    }`,
+                    content: `Iemand heeft zijn naam veranderd.\nGebruiker: <@${guildMember.user.id
+                        }>\nOude naam: ${dbGuildMember.name
+                        }\nNieuwe naam: ${username}\nPronouns: ${validPronouns ? "In orde" : "Ongeldig!"
+                        }`,
                     allowedMentions: {
                         parse: [],
                     },

@@ -8,7 +8,7 @@ import {
     GuildApplicationCommandPermissionData,
     Interaction,
 } from "discord.js";
-import Config, { BotMode } from "@/common/config";
+import Config from "@/common/config";
 import logger from "@/logger";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import database from "@/database";
@@ -20,7 +20,6 @@ import ping from "../commands/ping";
 import toneindicator from "../commands/toneindicator";
 import dev from "../commands/dev";
 import findafriend from "../commands/findafriend";
-import statistics from "../commands/statistics";
 import setBirthday from "../commands/set-birthday";
 import recreateFlows from "../commands/recreate-flows";
 import report from "../commands/report";
@@ -61,7 +60,6 @@ const registerCommands = async (client: Client) => {
     registerCommand(findafriend);
     registerCommand(toneindicator);
     registerCommand(dev);
-    registerCommand(statistics);
     registerCommand(setBirthday);
     // registerCommand(recreateFlows);
     registerCommand(report);
@@ -119,11 +117,6 @@ const registerCommands = async (client: Client) => {
 
     // Register commands to guilds.
     for (const guild of client.guilds.cache.values()) {
-        if (
-            Config.getBotMode() === BotMode.DEVELOPMENT &&
-            process.env.DEV_GUILD_ID !== guild.id
-        )
-            continue;
         logger.verbose("Adding commands to guild: " + guild.name);
         await rest.put(
             Routes.applicationGuildCommands(
