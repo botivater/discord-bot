@@ -18,6 +18,8 @@ import { miraRouter } from "./routers/mira";
 import { discordRouter } from "./routers/discord.router";
 import { commandRouter } from "./routers/command.router";
 import { discordBotRouter } from "./routers/discordBot.router";
+import { reportRouter } from "./routers/report.router";
+import { guildMemberRouter } from "./routers/guildMember.router";
 
 class Web {
     protected app: express.Express | undefined = undefined;
@@ -76,6 +78,8 @@ class Web {
         this.app.use("/api/mira", this.authMiddleware, miraRouter);
         this.app.use("/api/command", this.authMiddleware, commandRouter);
         this.app.use("/api/discord-bot", this.authMiddleware, discordBotRouter);
+        this.app.use("/api/report", this.authMiddleware, reportRouter);
+        this.app.use("/api/guildMember", this.authMiddleware, guildMemberRouter);
     }
 }
 
