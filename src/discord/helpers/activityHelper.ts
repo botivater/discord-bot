@@ -21,11 +21,11 @@ class ActivityHelper {
             {
                 $and: [
                     {
-                        uid: guildMemberUid,
+                        snowflake: guildMemberUid,
                     },
                     {
                         guild: {
-                            uid: guildUid,
+                            snowflake: guildUid,
                         },
                     },
                 ],

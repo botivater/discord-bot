@@ -64,11 +64,11 @@ export default {
                 $and: [
                     {
                         guild: {
-                            uid: interaction.guildId,
+                            snowflake: interaction.guildId,
                         },
                     },
                     {
-                        uid: interaction.user.id,
+                        snowflake: interaction.user.id,
                     },
                 ],
             });
@@ -85,11 +85,11 @@ export default {
                     $and: [
                         {
                             guild: {
-                                uid: interaction.guildId,
+                                snowflake: interaction.guildId,
                             },
                         },
                         {
-                            uid: user.id,
+                            snowflake: user.id,
                         },
                     ],
                 });

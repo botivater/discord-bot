@@ -1,5 +1,6 @@
 import { BaseEntity } from "@/database/entities/BaseEntity";
 import {
+    Cascade,
     Collection,
     DateType,
     Entity,
@@ -14,11 +15,11 @@ import { GuildEntity } from "./GuildEntity";
 import { ReportEntity } from "./ReportEntity";
 
 @Entity({ tableName: "guild_member" })
-@Unique({ properties: ["uid", "guild"] })
+@Unique({ properties: ["snowflake", "guild"] })
 export class GuildMemberEntity extends BaseEntity {
     // Should not be unique since a member can belong to 2 guilds, whilst having the same uid.
     @Property({ length: 64 })
-    uid!: string;
+    snowflake!: string;
 
     @Property()
     name?: string;
@@ -26,7 +27,7 @@ export class GuildMemberEntity extends BaseEntity {
     @Property()
     identifier?: string;
 
-    @ManyToOne(() => GuildEntity)
+    @ManyToOne(() => GuildEntity, { cascade: [Cascade.ALL] })
     guild!: GuildEntity;
 
     @OneToMany(
@@ -50,9 +51,9 @@ export class GuildMemberEntity extends BaseEntity {
     @Property({ default: true })
     active = true;
 
-    constructor(uid: string, guild: GuildEntity, name?: string, identifier?: string, birthday?: Date, lastInteraction?: Date) {
+    constructor(snowflake: string, guild: GuildEntity, name?: string, identifier?: string, birthday?: Date, lastInteraction?: Date) {
         super();
-        this.uid = uid;
+        this.snowflake = snowflake;
         this.guild = guild;
         this.name = name;
         this.identifier = identifier;

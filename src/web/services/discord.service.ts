@@ -172,7 +172,7 @@ class DiscordService {
             commandFlows,
         } = data;
 
-        const dbGuild = await em.findOne(GuildEntity, { uid: guildId });
+        const dbGuild = await em.findOne(GuildEntity, { snowflake: guildId });
         if (!dbGuild) throw new GuildNotFoundError();
 
         const discordClient = discord.getClient();

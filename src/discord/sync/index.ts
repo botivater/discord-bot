@@ -8,7 +8,7 @@ export const syncAllUsersInAllGuilds = async (client: Client) => {
     for (const guild of client.guilds.cache.values()) {
         const em = database.getORM().em.fork();
         const guildEntityRepository = em.getRepository(GuildEntity);
-        let dbGuild = await guildEntityRepository.findOne({ uid: guild.id });
+        let dbGuild = await guildEntityRepository.findOne({ snowflake: guild.id });
         if (!dbGuild) {
             dbGuild = new GuildEntity(guild.id, guild.name);
             em.persist(dbGuild);
@@ -34,7 +34,7 @@ export const syncAllUsersInGuild = async (
     const em = database.getORM().em.fork();
     const guildEntityRepository = em.getRepository(GuildEntity);
     const guildMemberEntityRepository = em.getRepository(GuildMemberEntity);
-    let dbGuild = await guildEntityRepository.findOneOrFail({ uid: guild.id });
+    let dbGuild = await guildEntityRepository.findOneOrFail({ snowflake: guild.id });
 
     for (const guildMember of guild.members.cache.values()) {
         if (guildMember.user.bot === true) continue;
@@ -45,7 +45,7 @@ export const syncAllUsersInGuild = async (
         const identifier = guildMember.user.tag;
 
         let dbGuildMember = await guildMemberEntityRepository.findOne({
-            $and: [{ uid: guildMember.id }, { guild: dbGuild.id }]
+            $and: [{ snowflake: guildMember.id }, { guild: dbGuild.id }]
         });
 
         if (!dbGuildMember) {
