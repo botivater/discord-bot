@@ -1,5 +1,5 @@
 import { Router } from "express";
-import MiraController from "../controllers/Mira.controller";
+import MiraController from "../../controllers/Mira.controller";
 
 export const miraRouter = Router();
 

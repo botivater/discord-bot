@@ -1,5 +1,5 @@
 import { Router } from "express";
-import GuildMemberController from "../controllers/GuildMember.controller";
+import GuildMemberController from "../../controllers/GuildMember.controller";
 
 export const guildMemberRouter = Router();
 

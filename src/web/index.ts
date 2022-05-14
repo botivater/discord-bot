@@ -14,12 +14,8 @@ import { routingErrorHandler } from "./middleware/routingErrorHandler";
 import { auth } from "express-oauth2-jwt-bearer";
 
 // Routers
-import { miraRouter } from "./routers/mira";
-import { discordRouter } from "./routers/discord.router";
-import { commandRouter } from "./routers/command.router";
-import { discordBotRouter } from "./routers/discordBot.router";
-import { reportRouter } from "./routers/report.router";
-import { guildMemberRouter } from "./routers/guildMember.router";
+import { v1Router } from "./routers/v1.router";
+
 
 class Web {
     protected app: express.Express | undefined = undefined;
@@ -74,12 +70,7 @@ class Web {
             throw new Error("Auth middleware is undefined.");
 
         // Routers
-        this.app.use("/api/discord", this.authMiddleware, discordRouter);
-        this.app.use("/api/mira", this.authMiddleware, miraRouter);
-        this.app.use("/api/command", this.authMiddleware, commandRouter);
-        this.app.use("/api/discord-bot", this.authMiddleware, discordBotRouter);
-        this.app.use("/api/report", this.authMiddleware, reportRouter);
-        this.app.use("/api/guildMember", this.authMiddleware, guildMemberRouter);
+        this.app.use("/api/v1", this.authMiddleware, v1Router);
     }
 }
 

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import DiscordController from "../controllers/Discord.controller";
+import DiscordController from "../../controllers/Discord.controller";
 
 export const discordRouter = Router();
 
