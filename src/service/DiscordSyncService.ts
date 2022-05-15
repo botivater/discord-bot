@@ -3,29 +3,20 @@ import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
 import logger from "@/logger";
 import GuildEntityRepository from "@/repository/GuildEntityRepository";
 import GuildMemberEntityRepository from "@/repository/GuildMemberEntityRepository";
-import { t } from "@mikro-orm/core";
-import { CronJob } from "cron";
 import Discord from "discord.js";
 
 export class DiscordSyncService {
     private discordClient: Discord.Client;
-    private syncCronJob: CronJob;
 
     /**
      * @param discordClient Inject an instance of Discord.JS.
      */
     constructor(discordClient: Discord.Client) {
         this.discordClient = discordClient;
-
-        this.handleCronJob();
-
-        // Setup background sync cron job.
-        this.syncCronJob = new CronJob("0 * * * * *", this.handleCronJob.bind(this), null, true, "Europe/Brussels");
     }
 
-    private async handleCronJob() {
+    public async handle() {
         // Do a bi-directional compare of the guilds and guild members.
-        logger.info("Discord Sync started.");
 
         // Fetch all Discord guilds to the cache
         await this.discordClient.guilds.fetch();
@@ -52,8 +43,6 @@ export class DiscordSyncService {
         const addableGuildMembers = await this.compareDiscordGuildMembersToDatabaseGuildMembers();
         logger.debug(`Addable guild members: ${removeableGuildMembers.map(v => `${v.name} (${v.id})`)}`);
         await GuildMemberEntityRepository.getRepository().persistAndFlush(addableGuildMembers);
-
-        logger.info("Discord Sync ended.");
     }
 
     private async compareDatabaseGuildsToDiscordGuilds(): Promise<GuildEntity[]> {

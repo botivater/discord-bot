@@ -2,7 +2,8 @@ require("dotenv").config();
 import discord from "@/discord";
 import web from "@/web";
 import database from '@/database';
-import { DiscordSyncService } from "./service/DiscordSyncService";
+import { DiscordPronounCron } from "./cron/DiscordPronounCron";
+import { DiscordSyncCron } from "./cron/DiscordSyncCron";
 
 class DiscordBot {
     constructor() {
@@ -20,7 +21,8 @@ class DiscordBot {
     private async onDiscordReadyHandler() {
         const discordClient = discord.getClient();
 
-        new DiscordSyncService(discordClient);
+        new DiscordSyncCron(discordClient);
+        new DiscordPronounCron(discordClient);
     }
 }
 
