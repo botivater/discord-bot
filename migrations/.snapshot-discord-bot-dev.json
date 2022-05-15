@@ -224,7 +224,7 @@
           "unsigned": true,
           "autoincrement": false,
           "primary": false,
-          "nullable": true,
+          "nullable": false,
           "mappedType": "integer"
         },
         "birthday": {
@@ -300,7 +300,6 @@
             "id"
           ],
           "referencedTableName": "guild",
-          "deleteRule": "cascade",
           "updateRule": "cascade"
         }
       }

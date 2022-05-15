@@ -27,7 +27,7 @@ export class GuildMemberEntity extends BaseEntity {
     @Property()
     identifier?: string;
 
-    @ManyToOne(() => GuildEntity, { cascade: [Cascade.ALL] })
+    @ManyToOne(() => GuildEntity)
     guild!: GuildEntity;
 
     @OneToMany(
