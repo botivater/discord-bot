@@ -9,6 +9,7 @@ import { IMessageChannel } from "./IMessageChannel";
 export class DiscordPronounService {
     private discordClient: Discord.Client;
     private messageChannel: IMessageChannel;
+    private guildMemberEntityRepository;
 
     /**
      * @param discordClient Inject an instance of Discord.JS.
@@ -17,10 +18,10 @@ export class DiscordPronounService {
     constructor(discordClient: Discord.Client, messageChannel: IMessageChannel) {
         this.discordClient = discordClient;
         this.messageChannel = messageChannel;
+        this.guildMemberEntityRepository = GuildMemberEntityRepository.getRepository();
     }
 
     public async handle(databaseGuild: GuildEntity): Promise<void> {
-        const guildMemberEntityRepository = GuildMemberEntityRepository.getRepository();
         for (const databaseGuildMember of databaseGuild.guildMembers) {
             await this.discordClient.guilds.fetch(databaseGuild.snowflake);
 
@@ -49,13 +50,13 @@ export class DiscordPronounService {
                     this.messageChannel.send(message);
 
                     databaseGuildMember.name = nickname;
-                    guildMemberEntityRepository.persist(databaseGuildMember);
+                    this.guildMemberEntityRepository.persist(databaseGuildMember);
                 } catch (e) {
                     logger.error(e);
                 }
             }
         }
 
-        await guildMemberEntityRepository.flush();
+        await this.guildMemberEntityRepository.flush();
     }
 }

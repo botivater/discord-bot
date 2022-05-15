@@ -11,6 +11,7 @@ import Discord from "discord.js";
 export class DiscordSyncCron {
     private discordClient: Discord.Client;
     private discordSyncService: DiscordSyncService;
+    private guildEntityRepository;
     private cronJob: CronJob;
 
     /**
@@ -19,6 +20,7 @@ export class DiscordSyncCron {
     constructor(discordClient: Discord.Client) {
         this.discordClient = discordClient;
         this.discordSyncService = new DiscordSyncService(this.discordClient);
+        this.guildEntityRepository = GuildEntityRepository.getRepository();
 
         this.handleCronJob();
 
@@ -32,7 +34,7 @@ export class DiscordSyncCron {
 
         await this.discordSyncService.handle();
 
-        const databaseGuilds = await GuildEntityRepository.getRepository().findAll({ populate: ['guildMembers'] });
+        const databaseGuilds = await this.guildEntityRepository.findAll({ populate: ['guildMembers'] });
         await Promise.all(databaseGuilds.map(databaseGuild => this.handlePronounService(databaseGuild)));
 
         logger.info("Discord Sync ended.");
