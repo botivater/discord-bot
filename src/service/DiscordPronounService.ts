@@ -50,13 +50,13 @@ export class DiscordPronounService {
                 message += `Pronouns zijn ${bold(hasValidPronouns ? 'in orde.' : 'niet in orde!')}`;
 
                 try {
-                    this.messageChannel.send(message);
-
-                    databaseGuildMember.name = nickname;
-                    this.guildMemberEntityRepository.persist(databaseGuildMember);
+                    await this.messageChannel.send(message);
                 } catch (e) {
                     logger.error(e);
                 }
+
+                databaseGuildMember.name = nickname;
+                this.guildMemberEntityRepository.persist(databaseGuildMember);
             }
         }
 
