@@ -1,7 +1,7 @@
 require("dotenv").config();
-import discord from "@/discord";
-import web from "@/web";
-import database from '@/database';
+import discord from "./discord";
+import web from "./web";
+import database from './database';
 import { DiscordSyncCron } from "./cron/DiscordSyncCron";
 
 class DiscordBot {

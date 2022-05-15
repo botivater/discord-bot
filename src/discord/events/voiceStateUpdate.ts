@@ -1,4 +1,4 @@
-import logger from "@/logger";
+import logger from "../../logger";
 import { VoiceState } from "discord.js";
 import activityHelper from "../helpers/activityHelper";
 

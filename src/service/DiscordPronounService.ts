@@ -1,7 +1,7 @@
-import PronounChecker from "@/common/pronounChecker";
-import { GuildEntity } from "@/database/entities/GuildEntity";
-import logger from "@/logger";
-import GuildMemberEntityRepository from "@/repository/GuildMemberEntityRepository";
+import PronounChecker from "../common/pronounChecker";
+import { GuildEntity } from "../database/entities/GuildEntity";
+import logger from "../logger";
+import GuildMemberEntityRepository from "../repository/GuildMemberEntityRepository";
 import { bold, userMention } from "@discordjs/builders";
 import Discord from "discord.js";
 import { IMessageChannel } from "./IMessageChannel";

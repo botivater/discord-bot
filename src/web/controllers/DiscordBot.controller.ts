@@ -1,4 +1,4 @@
-import NotImplementedError from "@/errors/NotImplementedError";
+import NotImplementedError from "../../errors/NotImplementedError";
 import { NextFunction, Request, Response } from "express";
 import { StatusCode } from "../enum/StatusCode";
 import APIResponse from "../responses/APIResponse";

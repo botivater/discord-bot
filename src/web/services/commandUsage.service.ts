@@ -1,5 +1,5 @@
-import database from "@/database";
-import { CommandInvocationEntity } from "@/database/entities/CommandInvocationEntity";
+import database from "../../database";
+import { CommandInvocationEntity } from "../../database/entities/CommandInvocationEntity";
 import { EntityManager } from "@mikro-orm/mysql";
 
 type CommandUsageStatistic = {

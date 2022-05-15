@@ -1,4 +1,4 @@
-import { BaseEntity } from "@/database/entities/BaseEntity";
+import { BaseEntity } from "./BaseEntity";
 import { Collection, Entity, Enum, ManyToMany, ManyToOne, OneToMany, Property, Unique } from "@mikro-orm/core";
 import { GuildEntity } from "./GuildEntity";
 

@@ -1,8 +1,8 @@
 import http from "http";
 import express, { NextFunction, Request, Response } from "express";
-import logger from "@/logger";
-import Config from "@/common/config";
-import database from "@/database";
+import logger from "../logger";
+import Config from "../common/config";
+import database from "../database";
 import { RequestContext } from "@mikro-orm/core";
 
 // Middleware

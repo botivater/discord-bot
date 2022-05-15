@@ -1,8 +1,8 @@
-import discord from "@/discord";
-import GuildChannelNotFoundError from "@/errors/GuildChannelNotFoundError";
-import GuildChannelNotTextChannelError from "@/errors/GuildChannelNotTextChannelError";
-import GuildNotFoundError from "@/errors/GuildNotFoundError";
-import MissingParameterError from "@/errors/MissingParameterError";
+import discord from "../../discord";
+import GuildChannelNotFoundError from "../../errors/GuildChannelNotFoundError";
+import GuildChannelNotTextChannelError from "../../errors/GuildChannelNotTextChannelError";
+import GuildNotFoundError from "../../errors/GuildNotFoundError";
+import MissingParameterError from "../../errors/MissingParameterError";
 import {
     CategoryChannel,
     GuildChannel,
@@ -11,18 +11,18 @@ import {
 } from "discord.js";
 import { FriendshipBubble } from "typings/FriendshipBubble";
 import { Connection, EntityManager, IDatabaseDriver } from "@mikro-orm/core";
-import database from "@/database";
+import database from "../../database";
 import {
     BuildingBlockType,
     CheckType,
     CommandFlowEntity,
     OnType,
-} from "@/database/entities/CommandFlowEntity";
-import { GuildEntity } from "@/database/entities/GuildEntity";
+} from "../../database/entities/CommandFlowEntity";
+import { GuildEntity } from "../../database/entities/GuildEntity";
 import {
     CommandFlowGroupEntity,
     CommandFlowGroupType,
-} from "@/database/entities/CommandFlowGroupEntity";
+} from "../../database/entities/CommandFlowGroupEntity";
 
 class DiscordService {
     public async getAllGuilds(): Promise<FriendshipBubble.DiscordBot.Guild[]> {

@@ -1,5 +1,5 @@
-import database from "@/database";
-import { GuildEntity } from "@/database/entities/GuildEntity";
+import database from "../database";
+import { GuildEntity } from "../database/entities/GuildEntity";
 
 class GuildEntityRepository {
     public getRepository() {

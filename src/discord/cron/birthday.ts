@@ -1,6 +1,6 @@
-import database from "@/database";
-import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
-import logger from "@/logger";
+import database from "../../database";
+import { GuildMemberEntity } from "../../database/entities/GuildMemberEntity";
+import logger from "../../logger";
 import discord from "..";
 import Handlebars from "handlebars";
 import { userMention } from "@discordjs/builders";

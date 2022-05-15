@@ -7,11 +7,11 @@ import {
     GuildApplicationCommandPermissionData,
     Interaction,
 } from "discord.js";
-import Config from "@/common/config";
-import logger from "@/logger";
+import Config from "../../common/config";
+import logger from "../../logger";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import database from "@/database";
-import { CommandListEntity } from "@/database/entities/CommandListEntity";
+import database from "../../database";
+import { CommandListEntity } from "../../database/entities/CommandListEntity";
 import logUsage from "../helpers/logUsage";
 
 // Commands

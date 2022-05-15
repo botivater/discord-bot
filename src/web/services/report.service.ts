@@ -1,5 +1,5 @@
-import database from "@/database";
-import { ReportEntity } from "@/database/entities/ReportEntity";
+import database from "../../database";
+import { ReportEntity } from "../../database/entities/ReportEntity";
 import { EntityRepository } from "@mikro-orm/mysql";
 
 class ReportService {

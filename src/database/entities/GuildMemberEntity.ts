@@ -1,4 +1,4 @@
-import { BaseEntity } from "@/database/entities/BaseEntity";
+import { BaseEntity } from "./BaseEntity";
 import {
     Cascade,
     Collection,

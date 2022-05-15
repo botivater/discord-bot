@@ -1,4 +1,4 @@
-import discord from "@/discord";
+import discord from "../../../discord";
 
 export type RemoveRoleConfiguration = {
     guildId: string;

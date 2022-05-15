@@ -1,7 +1,7 @@
-import database from "@/database";
-import { CommandFlowGroupEntity } from "@/database/entities/CommandFlowGroupEntity";
-import GuildChannelNotFoundError from "@/errors/GuildChannelNotFoundError";
-import GuildChannelNotTextChannelError from "@/errors/GuildChannelNotTextChannelError";
+import database from "../../database";
+import { CommandFlowGroupEntity } from "../../database/entities/CommandFlowGroupEntity";
+import GuildChannelNotFoundError from "../../errors/GuildChannelNotFoundError";
+import GuildChannelNotTextChannelError from "../../errors/GuildChannelNotTextChannelError";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { Interaction } from "discord.js";
 import discord from "..";

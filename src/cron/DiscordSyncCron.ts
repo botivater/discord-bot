@@ -1,10 +1,10 @@
-import { GuildEntity } from "@/database/entities/GuildEntity";
-import logger from "@/logger";
-import GuildEntityRepository from "@/repository/GuildEntityRepository";
-import { DiscordPronounService } from "@/service/DiscordPronounService";
-import { DiscordSyncService } from "@/service/DiscordSyncService";
-import { DiscordSystemMessageChannel } from "@/service/DiscordSystemMessageChannel";
-import { IMessageChannel } from "@/service/IMessageChannel";
+import { GuildEntity } from "../database/entities/GuildEntity";
+import logger from "../logger";
+import GuildEntityRepository from "../repository/GuildEntityRepository";
+import { DiscordPronounService } from "../service/DiscordPronounService";
+import { DiscordSyncService } from "../service/DiscordSyncService";
+import { DiscordSystemMessageChannel } from "../service/DiscordSystemMessageChannel";
+import { IMessageChannel } from "../service/IMessageChannel";
 import { CronJob } from "cron";
 import Discord from "discord.js";
 

@@ -1,9 +1,9 @@
-import database from "@/database";
-import { CommandInvocationEntity } from "@/database/entities/CommandInvocationEntity";
-import { GuildEntity } from "@/database/entities/GuildEntity";
-import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
+import database from "../../database";
+import { CommandInvocationEntity } from "../../database/entities/CommandInvocationEntity";
+import { GuildEntity } from "../../database/entities/GuildEntity";
+import { GuildMemberEntity } from "../../database/entities/GuildMemberEntity";
 import { Interaction } from "discord.js";
-import logger from "@/logger";
+import logger from "../../logger";
 
 class LogUsage {
     public async interaction(interaction: Interaction) {

@@ -1,4 +1,4 @@
-import discord from "@/discord";
+import discord from "../../../discord";
 import Handlebars from "handlebars";
 
 export enum SendMessageTo {

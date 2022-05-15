@@ -1,7 +1,7 @@
-import Config from "@/common/config";
-import database from "@/database";
-import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
-import logger from "@/logger";
+import Config from "../../common/config";
+import database from "../../database";
+import { GuildMemberEntity } from "../../database/entities/GuildMemberEntity";
+import logger from "../../logger";
 import { bold, italic, userMention } from "@discordjs/builders";
 import discord from "..";
 import activityHelper from "../helpers/activityHelper";

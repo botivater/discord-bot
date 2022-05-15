@@ -1,7 +1,7 @@
-import database from "@/database";
-import { CommandListEntity } from "@/database/entities/CommandListEntity";
-import { GuildEntity } from "@/database/entities/GuildEntity";
-import GuildNotFoundError from "@/errors/GuildNotFoundError";
+import database from "../../database";
+import { CommandListEntity } from "../../database/entities/CommandListEntity";
+import { GuildEntity } from "../../database/entities/GuildEntity";
+import GuildNotFoundError from "../../errors/GuildNotFoundError";
 import { Connection, EntityManager, IDatabaseDriver } from "@mikro-orm/core";
 
 class CommandListService {

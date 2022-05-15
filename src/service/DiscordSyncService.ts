@@ -1,9 +1,9 @@
-import { GuildEntity } from "@/database/entities/GuildEntity";
-import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
-import { DiscordGuildNotFoundError } from "@/error/DiscordGuildNotFoundError";
-import logger from "@/logger";
-import GuildEntityRepository from "@/repository/GuildEntityRepository";
-import GuildMemberEntityRepository from "@/repository/GuildMemberEntityRepository";
+import { GuildEntity } from "../database/entities/GuildEntity";
+import { GuildMemberEntity } from "../database/entities/GuildMemberEntity";
+import { DiscordGuildNotFoundError } from "../error/DiscordGuildNotFoundError";
+import logger from "../logger";
+import GuildEntityRepository from "../repository/GuildEntityRepository";
+import GuildMemberEntityRepository from "../repository/GuildMemberEntityRepository";
 import Discord from "discord.js";
 
 export class DiscordSyncService {

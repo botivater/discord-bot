@@ -1,5 +1,5 @@
-import database from "@/database";
-import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
+import database from "../../database";
+import { GuildMemberEntity } from "../../database/entities/GuildMemberEntity";
 import { EntityRepository } from "@mikro-orm/mysql";
 
 class GuildMemberService {

@@ -1,5 +1,5 @@
-import logger from "@/logger";
-import interactionCreate from "@/discord/events/interactionCreate";
+import logger from "../../logger";
+import interactionCreate from "../../discord/events/interactionCreate";
 import { Client } from "discord.js";
 import { CronJob } from "cron";
 import birthday from "../cron/birthday";

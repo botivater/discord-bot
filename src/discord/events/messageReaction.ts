@@ -1,18 +1,18 @@
-import discord from "@/discord";
-import logger from "@/logger";
+import discord from "../../discord";
+import logger from "../../logger";
 import {
     MessageReaction,
     PartialMessageReaction,
     PartialUser,
     User,
 } from "discord.js";
-import database from "@/database";
+import database from "../../database";
 import {
     BuildingBlockType,
     CheckType,
     CommandFlowEntity,
     OnType,
-} from "@/database/entities/CommandFlowEntity";
+} from "../../database/entities/CommandFlowEntity";
 
 // Building blocks
 import sendMessage, { SendMessageTo } from "./buildingBlocks/sendMessage";
@@ -21,7 +21,7 @@ import removeRole from "./buildingBlocks/removeRole";
 import {
     CommandFlowGroupEntity,
     CommandFlowGroupType,
-} from "@/database/entities/CommandFlowGroupEntity";
+} from "../../database/entities/CommandFlowGroupEntity";
 import activityHelper from "../helpers/activityHelper";
 
 const handle = async (

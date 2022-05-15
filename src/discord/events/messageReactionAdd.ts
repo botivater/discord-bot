@@ -1,4 +1,4 @@
-import { OnType } from "@/database/entities/CommandFlowEntity";
+import { OnType } from "../../database/entities/CommandFlowEntity";
 import {
     MessageReaction,
     PartialMessageReaction,

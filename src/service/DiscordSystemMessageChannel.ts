@@ -1,8 +1,8 @@
 import { IMessageChannel } from "./IMessageChannel";
 import Discord from "discord.js";
-import { GuildEntity } from "@/database/entities/GuildEntity";
-import { DiscordGuildNotFoundError } from "@/error/DiscordGuildNotFoundError";
-import { DiscordGuildChannelNotTextError } from "@/error/DiscordGuildChannelNotTextError";
+import { GuildEntity } from "../database/entities/GuildEntity";
+import { DiscordGuildNotFoundError } from "../error/DiscordGuildNotFoundError";
+import { DiscordGuildChannelNotTextError } from "../error/DiscordGuildChannelNotTextError";
 
 export class DiscordSystemMessageChannel implements IMessageChannel {
     private discordClient: Discord.Client;

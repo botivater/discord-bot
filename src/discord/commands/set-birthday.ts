@@ -1,5 +1,5 @@
-import database from "@/database";
-import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
+import database from "../../database";
+import { GuildMemberEntity } from "../../database/entities/GuildMemberEntity";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CronJob } from "cron";
 import { GuildMember, Interaction } from "discord.js";

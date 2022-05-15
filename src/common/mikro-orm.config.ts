@@ -1,10 +1,10 @@
-import { CommandFlowEntity } from "@/database/entities/CommandFlowEntity";
-import { CommandFlowGroupEntity } from "@/database/entities/CommandFlowGroupEntity";
-import { CommandInvocationEntity } from "@/database/entities/CommandInvocationEntity";
-import { CommandListEntity } from "@/database/entities/CommandListEntity";
-import { GuildEntity } from "@/database/entities/GuildEntity";
-import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
-import { ReportEntity } from "@/database/entities/ReportEntity";
+import { CommandFlowEntity } from "../database/entities/CommandFlowEntity";
+import { CommandFlowGroupEntity } from "../database/entities/CommandFlowGroupEntity";
+import { CommandInvocationEntity } from "../database/entities/CommandInvocationEntity";
+import { CommandListEntity } from "../database/entities/CommandListEntity";
+import { GuildEntity } from "../database/entities/GuildEntity";
+import { GuildMemberEntity } from "../database/entities/GuildMemberEntity";
+import { ReportEntity } from "../database/entities/ReportEntity";
 import {
     Configuration,
     Connection,

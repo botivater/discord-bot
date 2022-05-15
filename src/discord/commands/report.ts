@@ -1,8 +1,8 @@
-import Config from "@/common/config";
-import database from "@/database";
-import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
-import { ReportEntity } from "@/database/entities/ReportEntity";
-import GuildChannelNotFoundError from "@/errors/GuildChannelNotFoundError";
+import Config from "../../common/config";
+import database from "../../database";
+import { GuildMemberEntity } from "../../database/entities/GuildMemberEntity";
+import { ReportEntity } from "../../database/entities/ReportEntity";
+import GuildChannelNotFoundError from "../../errors/GuildChannelNotFoundError";
 import {
     channelMention,
     roleMention,
