@@ -1,6 +1,5 @@
 import { REST } from "@discordjs/rest";
-import { Routes } from "discord-api-types/v9";
-import { RESTPostAPIApplicationCommandsJSONBody } from "discord.js/node_modules/discord-api-types";
+import { RESTPostAPIApplicationCommandsJSONBody, Routes } from "discord-api-types/v9";
 import {
     ApplicationCommandPermissionData,
     CacheType,

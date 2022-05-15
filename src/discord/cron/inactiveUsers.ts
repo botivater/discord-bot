@@ -69,11 +69,11 @@ export default {
             if (dbGuildMember.active === false) continue;
 
             logger.verbose(
-                `Setting user '${dbGuildMember.name}' with uid '${dbGuildMember.uid}' to inactive.`
+                `Setting user '${dbGuildMember.name}' with uid '${dbGuildMember.snowflake}' to inactive.`
             );
 
             let message = `${bold("Ik heb iemand op non-actief gezet.")}\r\n`;
-            message += `Gebruiker: ${userMention(dbGuildMember.uid)} (${dbGuildMember.identifier})\r\n`;
+            message += `Gebruiker: ${userMention(dbGuildMember.snowflake)} (${dbGuildMember.identifier})\r\n`;
             message += `Laatste interactie: ${dbGuildMember.lastInteraction.toLocaleDateString(
                 "nl-NL",
                 {
@@ -95,8 +95,8 @@ export default {
             em.persist(dbGuildMember);
 
             await activityHelper.addInactiveRole({
-                guildUid: dbGuildMember.guild.uid,
-                guildMemberUid: dbGuildMember.uid,
+                guildUid: dbGuildMember.guild.snowflake,
+                guildMemberUid: dbGuildMember.snowflake,
             });
         }
 

@@ -20,7 +20,7 @@ class LogUsage {
         }
 
         const dbGuild = await em.findOne(GuildEntity, {
-            uid: interaction.guild?.id,
+            snowflake: interaction.guild?.id,
         });
 
         if (!dbGuild) {
@@ -31,7 +31,7 @@ class LogUsage {
         }
 
         const dbGuildMember = await em.findOne(GuildMemberEntity, {
-            $and: [{ uid: interaction.member?.user.id }, { guild: dbGuild }],
+            $and: [{ snowflake: interaction.member?.user.id }, { guild: dbGuild }],
         });
 
         if (!dbGuildMember) {

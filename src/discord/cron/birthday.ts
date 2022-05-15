@@ -22,14 +22,14 @@ export default {
 
         for (const dbGuildMember of dbGuildMembers) {
             const guild = discordClient.guilds.cache.get(
-                dbGuildMember.guild.uid
+                dbGuildMember.guild.snowflake
             );
             if (!guild) {
                 logger.verbose("Guild not found in birthday cron job");
                 continue;
             }
 
-            const guildMember = guild.members.cache.get(dbGuildMember.uid);
+            const guildMember = guild.members.cache.get(dbGuildMember.snowflake);
             if (!guildMember) {
                 logger.verbose("Guild member not found in birthday cron job");
                 continue;

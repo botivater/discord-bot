@@ -77,7 +77,7 @@ const handle = async (
                 $and: [
                     {
                         guild: {
-                            uid: guild.id,
+                            snowflake: guild.id,
                         },
                     },
                     {

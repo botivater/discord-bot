@@ -49,11 +49,11 @@ export default {
                 $and: [
                     {
                         guild: {
-                            uid: interaction.guildId,
+                            snowflake: interaction.guildId,
                         },
                     },
                     {
-                        uid: interaction.member?.user.id,
+                        snowflake: interaction.member?.user.id,
                     },
                 ],
             });

@@ -1,5 +1,6 @@
 import { BaseEntity } from "@/database/entities/BaseEntity";
 import {
+    Cascade,
     Collection,
     Entity,
     ManyToMany,
@@ -17,7 +18,7 @@ import { GuildMemberEntity } from "./GuildMemberEntity";
 export class GuildEntity extends BaseEntity {
     @Property({ length: 64, nullable: false })
     @Unique()
-    uid!: string;
+    snowflake!: string;
 
     @Property()
     name?: string;
@@ -34,9 +35,9 @@ export class GuildEntity extends BaseEntity {
     @OneToMany(() => CommandFlowGroupEntity, commandFlowGroup => commandFlowGroup.guild)
     commandFlowGroups = new Collection<CommandFlowGroupEntity>(this);
 
-    constructor(uid: string, name?: string) {
+    constructor(snowflake: string, name?: string) {
         super();
-        this.uid = uid;
+        this.snowflake = snowflake;
         this.name = name;
     }
 }
