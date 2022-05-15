@@ -6,3 +6,8 @@ node_modules
 
 # Ignore .env
 .env
+
+# Ignore extra files
+tools/pictures/in
+tools/pictures/out
+tools/pictures/venv
