@@ -25,7 +25,7 @@ export class DiscordPronounService {
         const databaseGuildMembers = await this.guildMemberEntityRepository.find({
             guild: databaseGuild
         });
-        
+
         for await (const databaseGuildMember of databaseGuildMembers) {
             await this.discordClient.guilds.fetch(databaseGuild.snowflake);
 
@@ -41,7 +41,7 @@ export class DiscordPronounService {
 
             if (databaseGuildMember.name !== nickname) {
                 // Check if the username or the nickname contain valid pronouns.
-                const hasValidPronouns = PronounChecker.checkString(discordGuildMember.nickname || "") || PronounChecker.checkString(discordGuildMember.user.username || "");
+                const hasValidPronouns = PronounChecker.checkString(nickname);
 
                 let message = ``;
                 message += `Iemands naam is veranderd.\n`;
