@@ -1,5 +1,6 @@
 import { GuildEntity } from "@/database/entities/GuildEntity";
 import { GuildMemberEntity } from "@/database/entities/GuildMemberEntity";
+import { DiscordGuildNotFoundError } from "@/error/DiscordGuildNotFoundError";
 import logger from "@/logger";
 import GuildEntityRepository from "@/repository/GuildEntityRepository";
 import GuildMemberEntityRepository from "@/repository/GuildMemberEntityRepository";
@@ -77,11 +78,15 @@ export class DiscordSyncService {
         const databaseGuilds = await GuildEntityRepository.getRepository().findAll({ populate: ['guildMembers'] });
         for (const databaseGuild of databaseGuilds) {
             for (const databaseGuildMember of databaseGuild.guildMembers) {
-                const discordGuild = this.discordClient.guilds.cache.get(databaseGuild.snowflake);
-                if (!discordGuild) throw new Error("Discord guild not found!");
+                try {
+                    const discordGuild = this.discordClient.guilds.cache.get(databaseGuild.snowflake);
+                    if (!discordGuild) throw new DiscordGuildNotFoundError(databaseGuild.snowflake);
 
-                const found = discordGuild.members.cache.find(guildMember => guildMember.id === databaseGuildMember.snowflake);
-                if (!found) removeableGuildMembers.push(databaseGuildMember);
+                    const found = discordGuild.members.cache.find(guildMember => guildMember.id === databaseGuildMember.snowflake);
+                    if (!found) removeableGuildMembers.push(databaseGuildMember);
+                } catch (e) {
+                    logger.error(e);
+                }
             }
         }
 
@@ -92,21 +97,25 @@ export class DiscordSyncService {
         const addableGuildMembers: GuildMemberEntity[] = [];
 
         for await (const discordGuild of this.discordClient.guilds.cache.values()) {
-            const databaseGuild = await GuildEntityRepository.getRepository().findOne({
-                snowflake: discordGuild.id
-            });
-            if (!databaseGuild) throw new Error("Database guild not found!");
-
-            for await (const discordGuildMember of discordGuild.members.cache.values()) {
-                if (discordGuildMember.user.bot) continue;
-                const found = await GuildMemberEntityRepository.getRepository().findOne({
-                    snowflake: discordGuildMember.id
+            try {
+                const databaseGuild = await GuildEntityRepository.getRepository().findOne({
+                    snowflake: discordGuild.id
                 });
-    
-                if (!found) {
-                    const nickname = discordGuildMember.nickname || discordGuildMember.user.username || "";
-                    addableGuildMembers.push(new GuildMemberEntity(discordGuildMember.id, databaseGuild, nickname, discordGuildMember.user.tag));
+                if (!databaseGuild) throw new Error("Database guild not found!");
+
+                for await (const discordGuildMember of discordGuild.members.cache.values()) {
+                    if (discordGuildMember.user.bot) continue;
+                    const found = await GuildMemberEntityRepository.getRepository().findOne({
+                        snowflake: discordGuildMember.id
+                    });
+
+                    if (!found) {
+                        const nickname = discordGuildMember.nickname || discordGuildMember.user.username || "";
+                        addableGuildMembers.push(new GuildMemberEntity(discordGuildMember.id, databaseGuild, nickname, discordGuildMember.user.tag));
+                    }
                 }
+            } catch (e) {
+                logger.error(e);
             }
         }
 

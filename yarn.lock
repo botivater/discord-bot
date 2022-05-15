@@ -64,7 +64,7 @@
     node-fetch "^2.6.7"
     tslib "^2.3.1"
 
-"@mikro-orm/cli@^5.0.5":
+"@mikro-orm/cli@^5.1.3":
   version "5.1.3"
   resolved "https://registry.yarnpkg.com/@mikro-orm/cli/-/cli-5.1.3.tgz#ae76f3db4455058baba70e0baed1a7a41d7f0f3c"
   integrity sha512-GNAVg0hjdQrvkEvzIdec3LafocLHSZkojA+699LMoSgH9YrtOQnk/luBssdJSTJgHngb2twWlM6KCLjFSzIV5Q==
@@ -76,7 +76,7 @@
     yargonaut "1.1.4"
     yargs "15.4.1"
 
-"@mikro-orm/core@^5.0.5", "@mikro-orm/core@^5.1.3":
+"@mikro-orm/core@^5.1.3":
   version "5.1.3"
   resolved "https://registry.yarnpkg.com/@mikro-orm/core/-/core-5.1.3.tgz#3caaab21cc81f8d4002ce93bfb0a76e2b5525143"
   integrity sha512-N10ejP9EraJ5icnfjjR5v+8X5VE6fu31W5R3gi6Gd/FOsqUmUx2KEGTEA6j4f6PDstX1tKCyo9G+98LfNwmr4A==
@@ -97,7 +97,7 @@
     knex "2.0.0"
     sqlstring "2.3.3"
 
-"@mikro-orm/migrations@^5.0.5":
+"@mikro-orm/migrations@^5.1.3":
   version "5.1.3"
   resolved "https://registry.yarnpkg.com/@mikro-orm/migrations/-/migrations-5.1.3.tgz#0aebd49d04655fc9c6590bd0c2726b0d5c92ac57"
   integrity sha512-bhrh8nPm+2I9p1SfQ/ABJAl0FqWG8V+CuIdI2wMKS9lHWvU8QBrp3rz51JwwpLTaViq7nlkAjbFKVbJS/tXmyA==
@@ -107,7 +107,7 @@
     knex "2.0.0"
     umzug "3.1.1"
 
-"@mikro-orm/mysql@^5.0.5":
+"@mikro-orm/mysql@^5.1.3":
   version "5.1.3"
   resolved "https://registry.yarnpkg.com/@mikro-orm/mysql/-/mysql-5.1.3.tgz#c3255d6c660e715f307cd46cd529e002db47369b"
   integrity sha512-P6VIluQcNOdUxrcMNHG18FDYhSfsFfMzZ4rErA9FtjloPwtM1XVIJL3dBfjDzRLbpJXZftAphA7wY6vyRAC8Ag==
@@ -115,7 +115,7 @@
     "@mikro-orm/knex" "^5.1.3"
     mysql2 "2.3.3"
 
-"@mikro-orm/reflection@^5.0.5":
+"@mikro-orm/reflection@^5.1.3":
   version "5.1.3"
   resolved "https://registry.yarnpkg.com/@mikro-orm/reflection/-/reflection-5.1.3.tgz#c9a07f53a69eb6638b7ba559428935a0a8ee2214"
   integrity sha512-PlWMuEpY3Y7DmITENtG12kiOvkZUa3j6+J/YfA+WyRwZVyBSbWG5haHBcglbMzA0pe22IT/BX47eQd7IGXfosQ==

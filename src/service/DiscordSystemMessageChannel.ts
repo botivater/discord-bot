@@ -1,6 +1,8 @@
 import { IMessageChannel } from "./IMessageChannel";
 import Discord from "discord.js";
 import { GuildEntity } from "@/database/entities/GuildEntity";
+import { DiscordGuildNotFoundError } from "@/error/DiscordGuildNotFoundError";
+import { DiscordGuildChannelNotTextError } from "@/error/DiscordGuildChannelNotTextError";
 
 export class DiscordSystemMessageChannel implements IMessageChannel {
     private discordClient: Discord.Client;
@@ -15,11 +17,17 @@ export class DiscordSystemMessageChannel implements IMessageChannel {
         this.databaseGuild = databaseGuild;
     }
 
+    /**
+     * Send a message.
+     * @param message Message to send.
+     * @throws DiscordGuildNotFoundError
+     * @throws DiscordGuildChannelNotTextError
+     */
     async send(message: string): Promise<void> {
         await this.discordClient.guilds.fetch(this.databaseGuild.snowflake);
 
         const discordGuild = this.discordClient.guilds.cache.get(this.databaseGuild.snowflake);
-        if (!discordGuild) throw new Error("Discord guild not found!");
+        if (!discordGuild) throw new DiscordGuildNotFoundError(this.databaseGuild.snowflake);
 
         await discordGuild.channels.fetch();
         
@@ -30,7 +38,7 @@ export class DiscordSystemMessageChannel implements IMessageChannel {
             });
         }
 
-        if (!discordChannel.isText()) throw new Error("Discord guild channel is not text!");
+        if (!discordChannel.isText()) throw new DiscordGuildChannelNotTextError(discordChannel.id);
         await discordChannel.send({
             content: message,
             allowedMentions: {

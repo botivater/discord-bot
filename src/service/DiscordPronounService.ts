@@ -1,5 +1,6 @@
 import PronounChecker from "@/common/pronounChecker";
 import { GuildEntity } from "@/database/entities/GuildEntity";
+import logger from "@/logger";
 import GuildMemberEntityRepository from "@/repository/GuildMemberEntityRepository";
 import { bold, userMention } from "@discordjs/builders";
 import Discord from "discord.js";
@@ -44,9 +45,14 @@ export class DiscordPronounService {
                 message += `Nieuwe naam: ${nickname}.\n`;
                 message += `Pronouns zijn ${bold(hasValidPronouns ? 'in orde.' : 'niet in orde!')}`;
 
-                this.messageChannel.send(message);
-                databaseGuildMember.name = nickname;
-                guildMemberEntityRepository.persist(databaseGuildMember);
+                try {
+                    this.messageChannel.send(message);
+
+                    databaseGuildMember.name = nickname;
+                    guildMemberEntityRepository.persist(databaseGuildMember);
+                } catch (e) {
+                    logger.error(e);
+                }
             }
         }
 

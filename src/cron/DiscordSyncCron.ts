@@ -1,5 +1,10 @@
+import { GuildEntity } from "@/database/entities/GuildEntity";
 import logger from "@/logger";
+import GuildEntityRepository from "@/repository/GuildEntityRepository";
+import { DiscordPronounService } from "@/service/DiscordPronounService";
 import { DiscordSyncService } from "@/service/DiscordSyncService";
+import { DiscordSystemMessageChannel } from "@/service/DiscordSystemMessageChannel";
+import { IMessageChannel } from "@/service/IMessageChannel";
 import { CronJob } from "cron";
 import Discord from "discord.js";
 
@@ -27,6 +32,15 @@ export class DiscordSyncCron {
 
         await this.discordSyncService.handle();
 
+        const databaseGuilds = await GuildEntityRepository.getRepository().findAll({ populate: ['guildMembers'] });
+        await Promise.all(databaseGuilds.map(databaseGuild => this.handlePronounService(databaseGuild)));
+
         logger.info("Discord Sync ended.");
+    }
+
+    private async handlePronounService(databaseGuild: GuildEntity): Promise<void> {
+        const messageChannel: IMessageChannel = new DiscordSystemMessageChannel(this.discordClient, databaseGuild);
+        const discordPronounService = new DiscordPronounService(this.discordClient, messageChannel);
+        await discordPronounService.handle(databaseGuild);
     }
 }
