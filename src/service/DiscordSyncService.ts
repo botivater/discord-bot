@@ -29,12 +29,16 @@ export class DiscordSyncService {
         // Bot has been removed from a guild
         const removeableGuilds = await this.compareDatabaseGuildsToDiscordGuilds();
         logger.debug(`Removeable guilds: ${removeableGuilds.map(v => `${v.name} (${v.id})`)}`);
-        await this.guildEntityRepository.removeAndFlush(removeableGuilds);
+        this.guildEntityRepository.remove(removeableGuilds);
+
+        await this.guildEntityRepository.flush();
 
         // Bot has been added to a guild
         const addableGuilds = await this.compareDiscordGuildsToDatabaseGuilds();
         logger.debug(`Addable guilds: ${addableGuilds.map(v => `${v.name} (${v.id})`)}`);
-        await this.guildEntityRepository.persistAndFlush(addableGuilds);
+        this.guildEntityRepository.persist(addableGuilds);
+
+        await this.guildEntityRepository.flush();
 
         // Fetch all Discord guilds members to the cache
         await Promise.all(this.discordClient.guilds.cache.map(discordGuild => discordGuild.members.fetch()));
@@ -42,12 +46,16 @@ export class DiscordSyncService {
         // Guild member has left a guild
         const removeableGuildMembers = await this.compareDatabaseGuildMembersToDiscordGuildMembers();
         logger.debug(`Removeable guild members: ${removeableGuildMembers.map(v => `${v.name} (${v.id})`)}`);
-        await this.guildMemberEntityRepository.persistAndFlush(removeableGuildMembers);
+        this.guildMemberEntityRepository.remove(removeableGuildMembers);
+
+        await this.guildMemberEntityRepository.flush();
 
         // Guild member has joined a guild
         const addableGuildMembers = await this.compareDiscordGuildMembersToDatabaseGuildMembers();
         logger.debug(`Addable guild members: ${removeableGuildMembers.map(v => `${v.name} (${v.id})`)}`);
         await this.guildMemberEntityRepository.persistAndFlush(addableGuildMembers);
+
+        await this.guildMemberEntityRepository.flush();
     }
 
     private async compareDatabaseGuildsToDiscordGuilds(): Promise<GuildEntity[]> {
