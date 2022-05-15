@@ -57,8 +57,10 @@ export class DiscordPronounService {
                 }
 
                 databaseGuildMember.name = nickname;
-                await this.guildMemberEntityRepository.persistAndFlush(databaseGuildMember);
+                this.guildMemberEntityRepository.persist(databaseGuildMember);
             }
         }
+
+        await this.guildMemberEntityRepository.flush();
     }
 }
