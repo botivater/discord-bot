@@ -23,7 +23,7 @@ export class GuildEntity extends BaseEntity {
     @Property()
     name?: string;
 
-    @OneToMany(() => GuildMemberEntity, (guildMember) => guildMember.guild, { cascade: [Cascade.ALL] })
+    @OneToMany(() => GuildMemberEntity, (guildMember) => guildMember.guild)
     guildMembers = new Collection<GuildMemberEntity>(this);
 
     @ManyToMany()
