@@ -22,7 +22,10 @@ export class DiscordPronounService {
     }
 
     public async handle(databaseGuild: GuildEntity): Promise<void> {
-        for (const databaseGuildMember of databaseGuild.guildMembers) {
+        const databaseGuildMembers = await this.guildMemberEntityRepository.find({
+            guild: databaseGuild
+        });
+        for (const databaseGuildMember of databaseGuildMembers) {
             await this.discordClient.guilds.fetch(databaseGuild.snowflake);
 
             const discordGuild = this.discordClient.guilds.cache.get(databaseGuild.snowflake);

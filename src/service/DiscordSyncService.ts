@@ -46,7 +46,7 @@ export class DiscordSyncService {
 
         // Guild member has joined a guild
         const addableGuildMembers = await this.compareDiscordGuildMembersToDatabaseGuildMembers();
-        logger.debug(`Addable guild members: ${removeableGuildMembers.map(v => `${v.name} (${v.id})`)}`);
+        logger.debug(`Addable guild members: ${addableGuildMembers.map(v => `${v.name} (${v.id})`)}`);
         await this.guildMemberEntityRepository.persistAndFlush(addableGuildMembers);
     }
 
@@ -79,9 +79,12 @@ export class DiscordSyncService {
     private async compareDatabaseGuildMembersToDiscordGuildMembers(): Promise<GuildMemberEntity[]> {
         const removeableGuildMembers: GuildMemberEntity[] = [];
 
-        const databaseGuilds = await this.guildEntityRepository.findAll({ populate: ['guildMembers'] });
+        const databaseGuilds = await this.guildEntityRepository.findAll();
         for (const databaseGuild of databaseGuilds) {
-            for (const databaseGuildMember of databaseGuild.guildMembers) {
+            const databaseGuildMembers = await this.guildMemberEntityRepository.find({
+                guild: databaseGuild
+            });
+            for (const databaseGuildMember of databaseGuildMembers) {
                 try {
                     const discordGuild = this.discordClient.guilds.cache.get(databaseGuild.snowflake);
                     if (!discordGuild) throw new DiscordGuildNotFoundError(databaseGuild.snowflake);
