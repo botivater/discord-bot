@@ -26,14 +26,14 @@ export class DiscordPronounService {
             guild: databaseGuild
         });
 
-        for await (const databaseGuildMember of databaseGuildMembers) {
-            await this.discordClient.guilds.fetch(databaseGuild.snowflake);
+        await this.discordClient.guilds.fetch(databaseGuild.snowflake);
 
             const discordGuild = this.discordClient.guilds.cache.get(databaseGuild.snowflake);
             if (!discordGuild) throw new Error("Discord guild not found!");
 
             await discordGuild.members.fetch();
 
+        for await (const databaseGuildMember of databaseGuildMembers) {
             const discordGuildMember = discordGuild.members.cache.get(databaseGuildMember.snowflake);
             if (!discordGuildMember) throw new Error("Discord guild member not found!");
 
