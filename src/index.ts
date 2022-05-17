@@ -3,6 +3,7 @@ import discord from "./discord";
 import web from "./web";
 import database from './database';
 import { DiscordSyncCron } from "./cron/DiscordSyncCron";
+import { DiscordBirthdayCron } from "./cron/DiscordBirthdayCron";
 
 class DiscordBot {
     constructor() {
@@ -21,6 +22,7 @@ class DiscordBot {
         const discordClient = discord.getClient();
 
         new DiscordSyncCron(discordClient);
+        new DiscordBirthdayCron(discordClient);
     }
 }
 
