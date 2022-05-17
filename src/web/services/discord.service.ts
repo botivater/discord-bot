@@ -9,7 +9,7 @@ import {
     Message,
     ThreadChannel,
 } from "discord.js";
-import { FriendshipBubble } from "typings/FriendshipBubble";
+import { FriendshipBubble } from "../../typings/FriendshipBubble";
 import { Connection, EntityManager, IDatabaseDriver } from "@mikro-orm/core";
 import database from "../../database";
 import {

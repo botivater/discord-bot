@@ -2,13 +2,14 @@
     "name": "@friendshipbubble/discord-bot",
     "version": "0.0.1",
     "description": "The official Friendship Bubble Discord bot.",
-    "main": "./dist/index.js",
+    "main": "./dist/src/index.js",
     "repository": "https://github.com/friendshipbubble/discord-bot",
     "author": "Jonas Claes",
     "license": "GPL-3.0-or-later",
     "scripts": {
         "dev": "nodemon",
         "build": "rimraf ./dist && tsc",
+        "serve": "node ./dist/src/index.js",
         "test": "jest",
         "docker:build": "docker build . -t registry.jonasclaes.be/friendshipbubble/discord-bot:latest && docker tag registry.jonasclaes.be/friendshipbubble/discord-bot:latest registry.jonasclaes.be/friendshipbubble/discord-bot:$(git rev-parse --short HEAD)",
         "docker:push": "docker push registry.jonasclaes.be/friendshipbubble/discord-bot:latest && docker push registry.jonasclaes.be/friendshipbubble/discord-bot:$(git rev-parse --short HEAD)",
@@ -52,7 +53,6 @@
         "prettier": "^2.5.1",
         "ts-jest": "^28.0.2",
         "ts-node": "^10.4.0",
-        "tsconfig-paths": "^3.12.0",
         "typescript": "^4.6.4"
     },
     "mikro-orm": {
