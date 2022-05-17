@@ -1,15 +1,15 @@
-# Botivate Bot (API server)
-The Botivate Bot is used to control the Discord bot and present an API to the frontend. It runs purely on Node.js using Discord.js for Discord communication and MikroORM for database persistence.
+# Botivater Bot (API server)
+The Botivater Bot is used to control the Discord bot and present an API to the frontend. It runs purely on Node.js using Discord.js for Discord communication and MikroORM for database persistence.
 
 ## Table of contents
-- [Botivate Bot (API server)](#botivate-bot-api-server)
+- [Botivater Bot (API server)](#botivater-bot-api-server)
   - [Table of contents](#table-of-contents)
   - [Getting started](#getting-started)
   - [Database changes](#database-changes)
   - [Sponsors](#sponsors)
 
 ## Getting started
-To get started with the Botivate Bot, you should setup a couple of things.
+To get started with the Botivater Bot, you should setup a couple of things.
 - Clone this repository
 - Run `yarn` to install all the dependencies
 - Enter values into .env ([.env.example](.env.example) is an empty example file, copy it to .env)
