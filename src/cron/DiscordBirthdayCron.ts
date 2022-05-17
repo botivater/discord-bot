@@ -1,7 +1,7 @@
 import logger from "../logger";
 import { CronJob } from "cron";
 import Discord from "discord.js";
-import { DiscordBirthdayService } from "src/service/DiscordBirthdayService";
+import { DiscordBirthdayService } from "../service/DiscordBirthdayService";
 
 export class DiscordBirthdayCron {
     private discordClient: Discord.Client;
