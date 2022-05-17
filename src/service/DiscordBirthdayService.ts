@@ -1,16 +1,16 @@
 import logger from "../logger";
 import Discord from "discord.js";
 import { userMention } from "@discordjs/builders";
-import database from "src/database";
+import database from "../database";
 import { EntityManager } from "@mikro-orm/mysql";
-import { GuildMemberEntity } from "src/database/entities/GuildMemberEntity";
+import { GuildMemberEntity } from "../database/entities/GuildMemberEntity";
 import Handlebars from "handlebars";
 
 // Errors
 import { DiscordGuildNotFoundError } from "../error/DiscordGuildNotFoundError";
-import { DiscordGuildMemberNotFoundError } from "src/error/DiscordGuildMemberNotFoundError";
-import { DiscordGuildChannelNotFoundError } from "src/error/DiscordGuildChannelNotFoundError";
-import { DiscordGuildChannelNotTextError } from "src/error/DiscordGuildChannelNotTextError";
+import { DiscordGuildMemberNotFoundError } from "../error/DiscordGuildMemberNotFoundError";
+import { DiscordGuildChannelNotFoundError } from "../error/DiscordGuildChannelNotFoundError";
+import { DiscordGuildChannelNotTextError } from "../error/DiscordGuildChannelNotTextError";
 
 export class DiscordBirthdayService {
     private discordClient: Discord.Client;
