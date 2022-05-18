@@ -1,4 +1,4 @@
-import RouteNotFoundError from "../../errors/RouteNotFoundError";
+import RouteNotFoundError from "../error/RouteNotFoundError";
 import { NextFunction, Request, Response } from "express";
 
 export const routingErrorHandler = (

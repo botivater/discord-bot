@@ -38,7 +38,10 @@ export class DiscordSyncService {
         for await (const addableGuild of addableGuilds) {
             await this.prisma.guild.create({
                 data: {
-                    ...addableGuild
+                    ...addableGuild,
+                    config: {
+                        create: {}
+                    }
                 }
             });
         }

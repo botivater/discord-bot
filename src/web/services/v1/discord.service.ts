@@ -1,8 +1,8 @@
 import discord from "../../../discord";
-import GuildChannelNotFoundError from "../../../errors/GuildChannelNotFoundError";
-import GuildChannelNotTextChannelError from "../../../errors/GuildChannelNotTextChannelError";
-import GuildNotFoundError from "../../../errors/GuildNotFoundError";
-import MissingParameterError from "../../../errors/MissingParameterError";
+import GuildChannelNotFoundError from "../../error/GuildChannelNotFoundError";
+import GuildChannelNotTextChannelError from "../../error/GuildChannelNotTextChannelError";
+import GuildNotFoundError from "../../error/GuildNotFoundError";
+import MissingParameterError from "../../error/MissingParameterError";
 import {
     CategoryChannel,
     GuildChannel,

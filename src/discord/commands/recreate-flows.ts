@@ -1,5 +1,5 @@
-import GuildChannelNotFoundError from "../../errors/GuildChannelNotFoundError";
-import GuildChannelNotTextChannelError from "../../errors/GuildChannelNotTextChannelError";
+import GuildChannelNotFoundError from "../../web/error/GuildChannelNotFoundError";
+import GuildChannelNotTextChannelError from "../../web/error/GuildChannelNotTextChannelError";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { Interaction } from "discord.js";
 import discord from "..";

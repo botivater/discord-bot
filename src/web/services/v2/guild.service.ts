@@ -1,50 +1,42 @@
-import { Guild, PrismaClient } from "@prisma/client";
-import database from "../../../database";
-import GuildNotFoundError from "../../../errors/GuildNotFoundError";
+import { Guild, Prisma, PrismaClient } from "@prisma/client";
+import { NotFoundError } from "../../error/NotFoundError";
 import { IService } from "../IService";
 
-class GuildServiceV2 implements IService<Guild> {
+export class GuildNotFound extends NotFoundError {};
+export class GuildNotCreated extends Error {};
+
+export class GuildServiceV2 implements IService<Guild> {
     private prisma: PrismaClient;
 
     /**
-     *
+     * @param prisma Inject an instance of PrismaClient.
      */
-    constructor() {
-        this.prisma = database.getPrisma();
+     constructor(prisma: PrismaClient) {
+        this.prisma = prisma;
     }
 
     async findAll(): Promise<Guild[]> {
         return this.prisma.guild.findMany();
     }
 
-    async findOne(data: { id: number }): Promise<Guild> {
-        const guild = await this.prisma.guild.findFirst({
-            where: {
-                id: {
-                    equals: data.id
-                }
-            }
+    async findOne(where: Prisma.GuildWhereUniqueInput): Promise<Guild> {
+        const guild = await this.prisma.guild.findUnique({
+            where
         });
-        if (!guild) throw new GuildNotFoundError(String(data.id));
+        if (!guild) throw new GuildNotFound(String(where.id));
 
         return guild;
     }
 
-    async create(data: Guild): Promise<Guild> {
+    async create(data: Prisma.GuildCreateInput): Promise<Guild> {
         throw new Error("Method not implemented.");
     }
 
-    async update(where: Guild, data: Guild): Promise<Guild> {
+    async update(where: Prisma.GuildWhereUniqueInput, data: Prisma.GuildCreateInput): Promise<Guild> {
         throw new Error("Method not implemented.");
     }
 
-    async delete(data: Guild): Promise<Guild> {
+    async delete(where: Prisma.GuildWhereUniqueInput): Promise<void> {
         throw new Error("Method not implemented.");
-    }
-
-    public async getAllGuildMembers() {
-        return this.prisma.guildMember.findMany();
     }
 }
-
-export const guildServiceV2 = new GuildServiceV2();

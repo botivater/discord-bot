@@ -1,9 +1,9 @@
-import GuildChannelNotFoundError from "../../errors/GuildChannelNotFoundError";
-import GuildChannelNotTextChannelError from "../../errors/GuildChannelNotTextChannelError";
-import GuildNotFoundError from "../../errors/GuildNotFoundError";
-import MissingParameterError from "../../errors/MissingParameterError";
-import NotImplementedError from "../../errors/NotImplementedError";
-import RouteNotFoundError from "../../errors/RouteNotFoundError";
+import GuildChannelNotFoundError from "../error/GuildChannelNotFoundError";
+import GuildChannelNotTextChannelError from "../error/GuildChannelNotTextChannelError";
+import GuildNotFoundError from "../error/GuildNotFoundError";
+import MissingParameterError from "../error/MissingParameterError";
+import NotImplementedError from "../error/NotImplementedError";
+import RouteNotFoundError from "../error/RouteNotFoundError";
 import logger from "../../logger";
 import { UnauthorizedError } from "express-oauth2-jwt-bearer";
 import APIResponseDto from "../dto/APIResponse.dto";

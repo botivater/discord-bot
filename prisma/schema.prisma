@@ -17,8 +17,8 @@ model Guild {
   commandLists       CommandList[]
   commandInvocations CommandInvocation[]
   commandFlowGroups  CommandFlowGroup[]
-  configId           Int                 @db.UnsignedInt @unique
-  config             GuildConfig         @relation(fields: [configId], references: [id])
+  configId           Int?                 @db.UnsignedInt @unique
+  config             GuildConfig?         @relation(fields: [configId], references: [id])
 }
 
 model GuildConfig {

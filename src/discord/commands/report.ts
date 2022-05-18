@@ -1,4 +1,4 @@
-import GuildChannelNotFoundError from "../../errors/GuildChannelNotFoundError";
+import GuildChannelNotFoundError from "../../web/error/GuildChannelNotFoundError";
 import {
     channelMention,
     roleMention,

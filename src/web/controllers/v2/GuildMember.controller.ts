@@ -1,11 +1,22 @@
 import { GuildMember } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
+import database from "../../../database";
 import { StatusCode } from "../../enum/StatusCode";
 import APIResponse from "../../responses/APIResponse";
-import { guildMemberServiceV2 } from "../../services/v2/guildMember.service";
+import { IService } from "../../services/IService";
+import { GuildMemberServiceV2 } from "../../services/v2/guildMember.service";
 import { IRestController } from "../IRestController";
 
 class GuildMemberControllerV2 implements IRestController<GuildMember> {
+    private service: IService<GuildMember>;
+
+    /**
+     * @param service Inject a GuildMember service.
+     */
+    constructor(service: IService<GuildMember>) {
+        this.service = service;
+    }
+
     public async findAll(
         req: Request,
         res: Response,
@@ -15,7 +26,7 @@ class GuildMemberControllerV2 implements IRestController<GuildMember> {
             return res.json(
                 APIResponse.fromData(
                     StatusCode.OK,
-                    await guildMemberServiceV2.findAll()
+                    await this.service.findAll()
                 )
             )
         } catch (e) {
@@ -30,7 +41,7 @@ class GuildMemberControllerV2 implements IRestController<GuildMember> {
             return res.json(
                 APIResponse.fromData(
                     StatusCode.OK,
-                    await guildMemberServiceV2.findOne({
+                    await this.service.findOne({
                         id: Number(id)
                     })
                 )
@@ -71,4 +82,5 @@ class GuildMemberControllerV2 implements IRestController<GuildMember> {
     }
 }
 
-export const guildMemberControllerV2 = new GuildMemberControllerV2();
+const guildMemberServiceV2 = new GuildMemberServiceV2(database.getPrisma());
+export const guildMemberControllerV2 = new GuildMemberControllerV2(guildMemberServiceV2);

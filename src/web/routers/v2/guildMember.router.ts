@@ -3,8 +3,8 @@ import { guildMemberControllerV2 } from "../../controllers/v2/GuildMember.contro
 
 export const guildMemberRouter = Router();
 
-guildMemberRouter.get("/", guildMemberControllerV2.findAll);
-guildMemberRouter.get("/:id", guildMemberControllerV2.findOne);
-guildMemberRouter.post("/", guildMemberControllerV2.create);
-guildMemberRouter.put("/:id", guildMemberControllerV2.update);
-guildMemberRouter.delete("/:id", guildMemberControllerV2.delete);
+guildMemberRouter.get("/", guildMemberControllerV2.findAll.bind(guildMemberControllerV2));
+guildMemberRouter.get("/:id", guildMemberControllerV2.findOne.bind(guildMemberControllerV2));
+guildMemberRouter.post("/", guildMemberControllerV2.create.bind(guildMemberControllerV2));
+guildMemberRouter.put("/:id", guildMemberControllerV2.update.bind(guildMemberControllerV2));
+guildMemberRouter.delete("/:id", guildMemberControllerV2.delete.bind(guildMemberControllerV2));
