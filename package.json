@@ -1,9 +1,9 @@
 {
-    "name": "@friendshipbubble/discord-bot",
+    "name": "@botivater/discord-bot",
     "version": "0.0.1",
-    "description": "The official Friendship Bubble Discord bot.",
+    "description": "The Botivater Discord bot.",
     "main": "./dist/src/index.js",
-    "repository": "https://github.com/friendshipbubble/discord-bot",
+    "repository": "https://github.com/botivater/discord-bot",
     "author": "Jonas Claes",
     "license": "GPL-3.0-or-later",
     "scripts": {
@@ -11,10 +11,10 @@
         "build": "rimraf ./dist && prisma generate && tsc",
         "serve": "node ./dist/src/index.js",
         "test": "jest",
-        "docker:build": "docker build . -t registry.jonasclaes.be/friendshipbubble/discord-bot:latest && docker tag registry.jonasclaes.be/friendshipbubble/discord-bot:latest registry.jonasclaes.be/friendshipbubble/discord-bot:$(git rev-parse --short HEAD)",
-        "docker:push": "docker push registry.jonasclaes.be/friendshipbubble/discord-bot:latest && docker push registry.jonasclaes.be/friendshipbubble/discord-bot:$(git rev-parse --short HEAD)",
-        "podman:build": "podman build . -t registry.jonasclaes.be/friendshipbubble/discord-bot:latest && podman tag registry.jonasclaes.be/friendshipbubble/discord-bot:latest registry.jonasclaes.be/friendshipbubble/discord-bot:$(git rev-parse --short HEAD)",
-        "podman:push": "podman push registry.jonasclaes.be/friendshipbubble/discord-bot:latest && podman push registry.jonasclaes.be/friendshipbubble/discord-bot:$(git rev-parse --short HEAD)",
+        "docker:build": "docker build . -t registry.jonasclaes.be/botivater/discord-bot:latest && docker tag registry.jonasclaes.be/botivater/discord-bot:latest registry.jonasclaes.be/botivater/discord-bot:$(git rev-parse --short HEAD)",
+        "docker:push": "docker push registry.jonasclaes.be/botivater/discord-bot:latest && docker push registry.jonasclaes.be/botivater/discord-bot:$(git rev-parse --short HEAD)",
+        "podman:build": "podman build . -t registry.jonasclaes.be/botivater/discord-bot:latest && podman tag registry.jonasclaes.be/botivater/discord-bot:latest registry.jonasclaes.be/botivater/discord-bot:$(git rev-parse --short HEAD)",
+        "podman:push": "podman push registry.jonasclaes.be/botivater/discord-bot:latest && podman push registry.jonasclaes.be/botivater/discord-bot:$(git rev-parse --short HEAD)",
         "migrate:up": "prisma migrate deploy"
     },
     "dependencies": {
