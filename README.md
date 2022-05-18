@@ -1,5 +1,5 @@
 # Botivater Bot (API server)
-The Botivater Bot is used to control the Discord bot and present an API to the frontend. It runs purely on Node.js using Discord.js for Discord communication and MikroORM for database persistence.
+The Botivater Bot is used to control the Discord bot and present an API to the frontend. It runs purely on Node.js using Discord.js for Discord communication and Prisma for database persistence.
 
 ## Table of contents
 - [Botivater Bot (API server)](#botivater-bot-api-server)
@@ -22,7 +22,7 @@ If you're running this for the first time, don't forget to run `yarn migration:u
 When you've set everything up correctly, you can run `yarn dev` to start the development server.
 
 ## Database changes
-Everytime you change an entity in the [src/database/entities](src/database/entities) folder, you must run `yarn migration:create` to create a new migration and `yarn migration:up` to update the database to that migration.
+Everytime you change an entity in the [prisma/schema.prisma](prisma/schema.prisma) file, you must run `yarn prisma migrate dev --name <name of the change>` to create a new migration and update the Prisma client library.
 
 ## Sponsors
 | Sponsor name | Sponsor logo |
