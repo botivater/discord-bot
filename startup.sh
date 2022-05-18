@@ -2,7 +2,7 @@
 set -e
 
 # Run the migrations
-yarn mikro-orm migration:up
+yarn migration:up
 
 # Start the app
 node ./dist/src/index.js
