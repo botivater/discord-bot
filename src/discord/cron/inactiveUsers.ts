@@ -1,10 +1,8 @@
-import Config from "../../common/config";
-import database from "../../database";
-import { GuildMemberEntity } from "../../database/entities/GuildMemberEntity";
 import logger from "../../logger";
 import { bold, italic, userMention } from "@discordjs/builders";
 import discord from "..";
 import activityHelper from "../helpers/activityHelper";
+import database from "../../database";
 
 // Timeout in seconds.
 // 60 => 60 seconds
@@ -19,18 +17,18 @@ export default {
         const now = new Date().getTime();
         const comparisonDate = new Date(now - timeoutSeconds * 1000);
 
-        const em = database.getORM().em.fork();
+        const prisma = database.getPrisma();
 
-        const dbGuildMembers = await em.find(
-            GuildMemberEntity,
-            {
+        const dbGuildMembers = await prisma.guildMember.findMany({
+            where: {
                 lastInteraction: {
-                    $lte: comparisonDate,
-                },
+                    lte: comparisonDate
+                }
             },
-            { populate: ["guild"] }
-        );
-
+            include: {
+                guild: true
+            }
+        })
         if (dbGuildMembers.length === 0) return;
 
         const discordClient = discord.getClient();
@@ -74,7 +72,7 @@ export default {
 
             let message = `${bold("Ik heb iemand op non-actief gezet.")}\r\n`;
             message += `Gebruiker: ${userMention(dbGuildMember.snowflake)} (${dbGuildMember.identifier})\r\n`;
-            message += `Laatste interactie: ${dbGuildMember.lastInteraction.toLocaleDateString(
+            message += `Laatste interactie: ${dbGuildMember.lastInteraction?.toLocaleDateString(
                 "nl-NL",
                 {
                     year: "numeric",
@@ -91,15 +89,19 @@ export default {
                 },
             });
 
-            dbGuildMember.active = false;
-            em.persist(dbGuildMember);
+            await prisma.guildMember.update({
+                where: {
+                    id: dbGuildMember.id
+                },
+                data: {
+                    active: false
+                }
+            });
 
             await activityHelper.addInactiveRole({
                 guildUid: dbGuildMember.guild.snowflake,
                 guildMemberUid: dbGuildMember.snowflake,
             });
         }
-
-        await em.flush();
     },
 };

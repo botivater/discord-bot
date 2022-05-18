@@ -1,23 +1,18 @@
-import { GuildEntity } from "../database/entities/GuildEntity";
-import { GuildMemberEntity } from "../database/entities/GuildMemberEntity";
 import { DiscordGuildNotFoundError } from "../error/DiscordGuildNotFoundError";
 import logger from "../logger";
-import GuildEntityRepository from "../repository/GuildEntityRepository";
-import GuildMemberEntityRepository from "../repository/GuildMemberEntityRepository";
 import Discord from "discord.js";
+import { Guild, GuildMember, PrismaClient } from "@prisma/client";
 
 export class DiscordSyncService {
     private discordClient: Discord.Client;
-    private guildEntityRepository;
-    private guildMemberEntityRepository;
+    private prisma: PrismaClient;
 
     /**
      * @param discordClient Inject an instance of Discord.JS.
      */
-    constructor(discordClient: Discord.Client) {
+    constructor(discordClient: Discord.Client, prisma: PrismaClient) {
         this.discordClient = discordClient;
-        this.guildEntityRepository = GuildEntityRepository.getRepository();
-        this.guildMemberEntityRepository = GuildMemberEntityRepository.getRepository();
+        this.prisma = prisma;
     }
 
     public async handle() {
@@ -28,31 +23,62 @@ export class DiscordSyncService {
 
         // Bot has been removed from a guild
         const removeableGuilds = await this.compareDatabaseGuildsToDiscordGuilds();
-        logger.debug(`Removeable guilds: ${removeableGuilds.map(v => `${v.name} (${v.id})`)}`);
-        await this.guildEntityRepository.removeAndFlush(removeableGuilds);
+        logger.debug(`Removeable guilds: ${removeableGuilds.map(v => `${v.name} (${v.snowflake})`)}`);
+        for await (const removeableGuild of removeableGuilds) {
+            await this.prisma.guild.delete({
+                where: {
+                    id: removeableGuild.id
+                }
+            })
+        }
 
         // Bot has been added to a guild
         const addableGuilds = await this.compareDiscordGuildsToDatabaseGuilds();
-        logger.debug(`Addable guilds: ${addableGuilds.map(v => `${v.name} (${v.id})`)}`);
-        await this.guildEntityRepository.persistAndFlush(addableGuilds);
+        logger.debug(`Addable guilds: ${addableGuilds.map(v => `${v.name} (${v.snowflake})`)}`);
+        for await (const addableGuild of addableGuilds) {
+            await this.prisma.guild.create({
+                data: {
+                    ...addableGuild
+                }
+            });
+        }
 
         // Fetch all Discord guilds members to the cache
         await Promise.all(this.discordClient.guilds.cache.map(discordGuild => discordGuild.members.fetch()));
 
         // Guild member has left a guild
         const removeableGuildMembers = await this.compareDatabaseGuildMembersToDiscordGuildMembers();
-        logger.debug(`Removeable guild members: ${removeableGuildMembers.map(v => `${v.name} (${v.id})`)}`);
-        await this.guildMemberEntityRepository.removeAndFlush(removeableGuildMembers);
+        logger.debug(`Removeable guild members: ${removeableGuildMembers.map(v => `${v.name} (${v.snowflake})`)}`);
+        for await (const removeableGuildMember of removeableGuildMembers) {
+            await this.prisma.guildMember.delete({
+                where: {
+                    id: removeableGuildMember.id
+                }
+            });
+        }
 
         // Guild member has joined a guild
         const addableGuildMembers = await this.compareDiscordGuildMembersToDatabaseGuildMembers();
-        logger.debug(`Addable guild members: ${addableGuildMembers.map(v => `${v.name} (${v.id})`)}`);
-        await this.guildMemberEntityRepository.persistAndFlush(addableGuildMembers);
+        logger.debug(`Addable guild members: ${addableGuildMembers.map(v => `${v.name} (${v.snowflake})`)}`);
+        for await (const addableGuildMember of addableGuildMembers) {
+            await this.prisma.guildMember.create({
+                data: {
+                    snowflake: addableGuildMember.snowflake,
+                    guild: {
+                        connect: {
+                            snowflake: addableGuildMember.guildSnowflake
+                        }
+                    },
+                    name: addableGuildMember.name,
+                    identifier: addableGuildMember.identifier
+                }
+            });
+        }
     }
 
-    private async compareDatabaseGuildsToDiscordGuilds(): Promise<GuildEntity[]> {
-        const removeableGuilds: GuildEntity[] = [];
-        const databaseGuilds = await this.guildEntityRepository.findAll();
+    private async compareDatabaseGuildsToDiscordGuilds(): Promise<Guild[]> {
+        const removeableGuilds: Guild[] = [];
+        const databaseGuilds = await this.prisma.guild.findMany();
 
         for (const databaseGuild of databaseGuilds) {
             const found = this.discordClient.guilds.cache.find(guild => guild.id === databaseGuild.snowflake);
@@ -62,29 +88,35 @@ export class DiscordSyncService {
         return removeableGuilds;
     }
 
-    private async compareDiscordGuildsToDatabaseGuilds(): Promise<GuildEntity[]> {
-        const addableGuilds: GuildEntity[] = [];
+    private async compareDiscordGuildsToDatabaseGuilds(): Promise<{ snowflake: string; name: string; }[]> {
+        const addableGuilds: { snowflake: string; name: string; }[] = [];
 
         for await (const discordGuild of this.discordClient.guilds.cache.values()) {
-            const found = await this.guildEntityRepository.findOne({
-                snowflake: discordGuild.id
+            const found = await this.prisma.guild.findFirst({
+                where: {
+                    snowflake: discordGuild.id
+                }
             });
 
-            if (!found) addableGuilds.push(new GuildEntity(discordGuild.id, discordGuild.name));
+            if (!found) addableGuilds.push({
+                snowflake: discordGuild.id,
+                name: discordGuild.name
+            });
         }
 
         return addableGuilds;
     }
 
-    private async compareDatabaseGuildMembersToDiscordGuildMembers(): Promise<GuildMemberEntity[]> {
-        const removeableGuildMembers: GuildMemberEntity[] = [];
+    private async compareDatabaseGuildMembersToDiscordGuildMembers(): Promise<GuildMember[]> {
+        const removeableGuildMembers: GuildMember[] = [];
 
-        const databaseGuilds = await this.guildEntityRepository.findAll();
+        const databaseGuilds = await this.prisma.guild.findMany({
+            include: {
+                guildMembers: true
+            }
+        });
         for (const databaseGuild of databaseGuilds) {
-            const databaseGuildMembers = await this.guildMemberEntityRepository.find({
-                guild: databaseGuild
-            });
-            for (const databaseGuildMember of databaseGuildMembers) {
+            for (const databaseGuildMember of databaseGuild.guildMembers) {
                 try {
                     const discordGuild = this.discordClient.guilds.cache.get(databaseGuild.snowflake);
                     if (!discordGuild) throw new DiscordGuildNotFoundError(databaseGuild.snowflake);
@@ -100,25 +132,34 @@ export class DiscordSyncService {
         return removeableGuildMembers;
     }
 
-    private async compareDiscordGuildMembersToDatabaseGuildMembers(): Promise<GuildMemberEntity[]> {
-        const addableGuildMembers: GuildMemberEntity[] = [];
+    private async compareDiscordGuildMembersToDatabaseGuildMembers(): Promise<{ snowflake: string; guildSnowflake: string; name: string; identifier: string; }[]> {
+        const addableGuildMembers: { snowflake: string; guildSnowflake: string; name: string; identifier: string; }[] = [];
 
         for await (const discordGuild of this.discordClient.guilds.cache.values()) {
             try {
-                const databaseGuild = await this.guildEntityRepository.findOne({
-                    snowflake: discordGuild.id
+                const databaseGuild = await this.prisma.guild.findFirst({
+                    where: {
+                        snowflake: discordGuild.id
+                    }
                 });
                 if (!databaseGuild) throw new Error("Database guild not found!");
 
                 for await (const discordGuildMember of discordGuild.members.cache.values()) {
                     if (discordGuildMember.user.bot) continue;
-                    const found = await this.guildMemberEntityRepository.findOne({
-                        snowflake: discordGuildMember.id
+                    const found = await this.prisma.guildMember.findFirst({
+                        where: {
+                            snowflake: discordGuildMember.id
+                        }
                     });
 
                     if (!found) {
                         const nickname = discordGuildMember.nickname || discordGuildMember.user.username || "";
-                        addableGuildMembers.push(new GuildMemberEntity(discordGuildMember.id, databaseGuild, nickname, discordGuildMember.user.tag));
+                        addableGuildMembers.push({
+                            snowflake: discordGuildMember.id,
+                            guildSnowflake: databaseGuild.snowflake,
+                            name: nickname,
+                            identifier: discordGuildMember.user.tag
+                        });
                     }
                 }
             } catch (e) {

@@ -6,23 +6,17 @@ import {
     PartialUser,
     User,
 } from "discord.js";
-import database from "../../database";
-import {
-    BuildingBlockType,
-    CheckType,
-    CommandFlowEntity,
-    OnType,
-} from "../../database/entities/CommandFlowEntity";
+import { OnType } from "../../common/OnType";
+import { CommandFlowGroupType } from "../../common/CommandFlowGroupType";
+import { CheckType } from "../../common/CheckType";
+import { BuildingBlockType } from "../../common/BuildingBlockType";
 
 // Building blocks
 import sendMessage, { SendMessageTo } from "./buildingBlocks/sendMessage";
 import addRole from "./buildingBlocks/addRole";
 import removeRole from "./buildingBlocks/removeRole";
-import {
-    CommandFlowGroupEntity,
-    CommandFlowGroupType,
-} from "../../database/entities/CommandFlowGroupEntity";
 import activityHelper from "../helpers/activityHelper";
+import database from "../../database";
 
 const handle = async (
     reaction: MessageReaction | PartialMessageReaction,
@@ -70,38 +64,70 @@ const handle = async (
         );
 
         // Get the command flow from the database.
-        const em = database.getORM().em.fork();
-        const commandFlowGroup = await em.findOne(
-            CommandFlowGroupEntity,
-            {
-                $and: [
+        const prisma = database.getPrisma();
+        // const commandFlowGroup = await em.findOne(
+        //     CommandFlowGroupEntity,
+        //     {
+        //         $and: [
+        //             {
+        //                 guild: {
+        //                     snowflake: guild.id,
+        //                 },
+        //             },
+        //             {
+        //                 messageId: reaction.message.id,
+        //             },
+        //             {
+        //                 type: CommandFlowGroupType.REACTION,
+        //             },
+        //         ],
+        //     },
+        //     {
+        //         orderBy: {
+        //             commandFlows: {
+        //                 order: "asc",
+        //             },
+        //         },
+        //         populate: ["commandFlows"],
+        //     }
+        // );
+
+        const commandFlowGroup = await prisma.commandFlowGroup.findFirst({
+            where: {
+                AND: [
                     {
                         guild: {
-                            snowflake: guild.id,
-                        },
+                            snowflake: guild.id
+                        }
                     },
                     {
-                        messageId: reaction.message.id,
+                        messageId: reaction.message.id
                     },
                     {
-                        type: CommandFlowGroupType.REACTION,
-                    },
-                ],
+                        type: CommandFlowGroupType.REACTION
+                    }
+                ]
             },
-            {
-                orderBy: {
-                    commandFlows: {
-                        order: "asc",
-                    },
-                },
-                populate: ["commandFlows"],
+            include: {
+                commandFlows: true
             }
-        );
+        })
         if (!commandFlowGroup) return;
         if (commandFlowGroup.commandFlows.length === 0) return;
 
+        const commandFlows = await prisma.commandFlow.findMany({
+            where: {
+                commandFlowGroupId: {
+                    equals: commandFlowGroup.id
+                }
+            },
+            orderBy: {
+                order: "asc"
+            }
+        });
+
         // Handle the list of actions.
-        for (const commandFlow of commandFlowGroup.commandFlows) {
+        for (const commandFlow of commandFlows) {
             logger.verbose(
                 `Handling command flow part ${commandFlow.order} of flow for message ${commandFlowGroup.messageId}.`
             );
@@ -192,3 +218,7 @@ const handle = async (
 export default {
     handle,
 };
+function CommandFlowGroupEntity(CommandFlowGroupEntity: any, arg1: { $and: ({ guild: { snowflake: string; }; } | { messageId: string; } | { type: any; })[]; }, arg2: { orderBy: { commandFlows: { order: string; }; }; populate: string[]; }) {
+    throw new Error("Function not implemented.");
+}
+

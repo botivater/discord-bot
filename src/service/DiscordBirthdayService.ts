@@ -1,9 +1,7 @@
 import logger from "../logger";
 import Discord from "discord.js";
+import { GuildMember, PrismaClient } from "@prisma/client";
 import { userMention } from "@discordjs/builders";
-import database from "../database";
-import { EntityManager } from "@mikro-orm/mysql";
-import { GuildMemberEntity } from "../database/entities/GuildMemberEntity";
 import Handlebars from "handlebars";
 
 // Errors
@@ -14,27 +12,34 @@ import { DiscordGuildChannelNotTextError } from "../error/DiscordGuildChannelNot
 
 export class DiscordBirthdayService {
     private discordClient: Discord.Client;
-    private entityManager: EntityManager;
+    private prisma: PrismaClient;
 
     /**
      * @param discordClient Inject an instance of Discord.JS.
      */
-    constructor(discordClient: Discord.Client) {
+    constructor(discordClient: Discord.Client, prisma: PrismaClient) {
         this.discordClient = discordClient;
-        this.entityManager = <EntityManager> database.getORM().em.fork();
+        this.prisma = prisma;
     }
 
     public async handle() {
         await this.discordClient.guilds.fetch();
 
-        const queryBuilder = this.entityManager.createQueryBuilder(GuildMemberEntity);
-        const databaseGuildMembers = await queryBuilder.select("*").where("DATE_FORMAT(birthday,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d')").getResult();
-        await this.entityManager.populate(databaseGuildMembers, ['guild']);
+        const databaseGuildMembers = <GuildMember[]> await this.prisma.$queryRaw`SELECT * FROM GuildMember WHERE DATE_FORMAT(birthday, '%m-%d') = DATE_FORMAT(NOW(), '%m-%d')`;
 
         for await (const databaseGuildMember of databaseGuildMembers) {
             try {
-                const discordGuild = this.discordClient.guilds.cache.get(databaseGuildMember.guild.snowflake);
-                if (!discordGuild) throw new DiscordGuildNotFoundError(databaseGuildMember.guild.snowflake);
+                const databaseGuild = await this.prisma.guild.findFirst({
+                    where: {
+                        id: {
+                            equals: databaseGuildMember.id
+                        }
+                    }
+                });
+                if (!databaseGuild) throw new Error("Guild not found in database.");
+
+                const discordGuild = this.discordClient.guilds.cache.get(databaseGuild.snowflake);
+                if (!discordGuild) throw new DiscordGuildNotFoundError(databaseGuild.snowflake);
 
                 await discordGuild.members.fetch();
 

@@ -1,7 +1,3 @@
-import Config from "../../common/config";
-import database from "../../database";
-import { GuildMemberEntity } from "../../database/entities/GuildMemberEntity";
-import { ReportEntity } from "../../database/entities/ReportEntity";
 import GuildChannelNotFoundError from "../../errors/GuildChannelNotFoundError";
 import {
     channelMention,
@@ -10,8 +6,8 @@ import {
     userMention,
 } from "@discordjs/builders";
 import { Interaction } from "discord.js";
-import discord from "..";
 import logUsage from "../helpers/logUsage";
+import database from "../../database";
 
 export default {
     command: <SlashCommandBuilder>new SlashCommandBuilder()
@@ -58,20 +54,26 @@ export default {
                 throw new Error("Guild not found in interaction!");
             }
 
-            const em = database.getORM().em.fork();
+            const prisma = database.getPrisma();
 
-            const dbGuildMemberSender = await em.findOne(GuildMemberEntity, {
-                $and: [
-                    {
-                        guild: {
-                            snowflake: interaction.guildId,
+            const dbGuildMemberSender = await prisma.guildMember.findFirst({
+                where: {
+                    AND: [
+                        {
+                            guild: {
+                                snowflake: {
+                                    equals: interaction.guildId || ""
+                                }
+                            }
                         },
-                    },
-                    {
-                        snowflake: interaction.user.id,
-                    },
-                ],
-            });
+                        {
+                            snowflake: {
+                                equals: interaction.user.id
+                            }
+                        }
+                    ]
+                }
+            })
             if (!dbGuildMemberSender) {
                 throw new Error(
                     "Ik kan jou niet terugvinden, contacteer een developer."
@@ -81,18 +83,24 @@ export default {
             let dbGuildMemberReported = undefined;
 
             if (user) {
-                dbGuildMemberReported = await em.findOne(GuildMemberEntity, {
-                    $and: [
-                        {
-                            guild: {
-                                snowflake: interaction.guildId,
+                dbGuildMemberReported = await prisma.guildMember.findFirst({
+                    where: {
+                        AND: [
+                            {
+                                guild: {
+                                    snowflake: {
+                                        equals: interaction.guildId || ""
+                                    }
+                                }
                             },
-                        },
-                        {
-                            snowflake: user.id,
-                        },
-                    ],
-                });
+                            {
+                                snowflake: {
+                                    equals: user.id
+                                }
+                            }
+                        ]
+                    }
+                })
                 if (!dbGuildMemberReported) {
                     throw new Error(
                         "Ik kan de persoon die je wil rapporteren niet terugvinden, contacteer een developer."
@@ -100,20 +108,17 @@ export default {
                 }
             }
 
-            const report = new ReportEntity(
-                dbGuildMemberSender,
-                interaction.channelId,
-                description || undefined,
-                dbGuildMemberReported,
-                anonymous === null ? undefined : anonymous
-            );
-
-            em.persist(report);
-            await em.flush();
+            await prisma.report.create({
+                data: {
+                    guildMemberId: dbGuildMemberSender.id,
+                    channelId: interaction.channelId,
+                    description: description || undefined,
+                    reportedGuildMemberId: dbGuildMemberReported?.id,
+                    anonymous: anonymous === null ? undefined : anonymous
+                }
+            });
 
             await logUsage.interaction(interaction);
-
-            const discordClient = discord.getClient();
 
             await interaction.guild.channels.fetch()
             let systemChannel = interaction.guild.channels.cache.find(channel => channel.name == "systeem");

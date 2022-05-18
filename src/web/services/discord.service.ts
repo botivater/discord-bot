@@ -10,21 +10,23 @@ import {
     ThreadChannel,
 } from "discord.js";
 import { FriendshipBubble } from "../../typings/FriendshipBubble";
-import { Connection, EntityManager, IDatabaseDriver } from "@mikro-orm/core";
+import { PrismaClient } from "@prisma/client";
+import { CommandFlowGroupType } from "../../common/CommandFlowGroupType";
+import { BuildingBlockType } from "../../common/BuildingBlockType";
+import { OnType } from "../../common/OnType";
+import { CheckType } from "../../common/CheckType";
 import database from "../../database";
-import {
-    BuildingBlockType,
-    CheckType,
-    CommandFlowEntity,
-    OnType,
-} from "../../database/entities/CommandFlowEntity";
-import { GuildEntity } from "../../database/entities/GuildEntity";
-import {
-    CommandFlowGroupEntity,
-    CommandFlowGroupType,
-} from "../../database/entities/CommandFlowGroupEntity";
 
 class DiscordService {
+    private prisma: PrismaClient;
+
+    /**
+     *
+     */
+    constructor() {
+        this.prisma = database.getPrisma();
+    }
+
     public async getAllGuilds(): Promise<FriendshipBubble.DiscordBot.Guild[]> {
         const client = discord.getClient();
         const data: FriendshipBubble.DiscordBot.Guild[] = [];
@@ -114,30 +116,26 @@ class DiscordService {
     }
 
     public async getAllReactionCollectors() {
-        const em = database.getORM().em.fork();
-        return em.find(
-            CommandFlowGroupEntity,
-            {},
-            {
-                populate: ["commandFlows"],
+        return this.prisma.commandFlowGroup.findMany({
+            include: {
+                commandFlows: true
             }
-        );
+        });
     }
 
     public async getReactionCollector(data: { id: number }) {
-        const em = database.getORM().em.fork();
-
         const { id } = data;
 
-        const dbCommandFlowGroup = await em.findOne(
-            CommandFlowGroupEntity,
-            {
-                id,
+        const dbCommandFlowGroup = await this.prisma.commandFlowGroup.findFirst({
+            where: {
+                id: {
+                    equals: id
+                }
             },
-            {
-                populate: ["commandFlows"],
+            include: {
+                commandFlows: true
             }
-        );
+        })
         if (!dbCommandFlowGroup) throw new Error("Not found error");
 
         return dbCommandFlowGroup;
@@ -160,7 +158,6 @@ class DiscordService {
             checkValue?: any;
         }[];
     }) {
-        const em = database.getORM().em.fork();
         const {
             guildId,
             name,
@@ -172,7 +169,11 @@ class DiscordService {
             commandFlows,
         } = data;
 
-        const dbGuild = await em.findOne(GuildEntity, { snowflake: guildId });
+        const dbGuild = await this.prisma.guild.findFirst({
+            where: {
+                snowflake: guildId
+            }
+        });
         if (!dbGuild) throw new GuildNotFoundError();
 
         const discordClient = discord.getClient();
@@ -186,51 +187,51 @@ class DiscordService {
             messageSent.react(reaction);
         }
 
-        const commandFlowGroup = new CommandFlowGroupEntity(
-            dbGuild,
-            name,
-            description,
-            type,
-            messageSent.id,
-            channelId,
-            messageText,
-            reactions
-        );
+        const commandFlowGroup = await this.prisma.commandFlowGroup.create({
+            data: {
+                guildId: dbGuild.id,
+                name,
+                description,
+                type,
+                messageId: messageSent.id,
+                channelId,
+                messageText,
+                reactions
+            }
+        });
 
-        // Create a new command flow group
-        em.persist(commandFlowGroup);
-
-        for (const commandFlow of commandFlows) {
-            em.persist(
-                new CommandFlowEntity(
-                    commandFlowGroup,
-                    commandFlow.onType,
-                    commandFlow.buildingBlockType,
-                    JSON.stringify(commandFlow.options),
-                    commandFlow.order,
-                    commandFlow.checkType,
-                    commandFlow.checkValue
-                )
-            );
+        for await (const commandFlow of commandFlows) {
+            await this.prisma.commandFlow.create({
+                data: {
+                    commandFlowGroup: {
+                        connect: {
+                            id: commandFlowGroup.id
+                        }
+                    },
+                    onType: commandFlow.onType,
+                    buildingBlockType: commandFlow.buildingBlockType,
+                    options: JSON.stringify(commandFlow.options),
+                    order: commandFlow.order,
+                    checkType: commandFlow.checkType,
+                    checkValue: commandFlow.checkValue
+                }
+            });
         }
-
-        await em.flush();
     }
 
     public async deleteReactionCollector(data: { id: number }) {
-        const em = database.getORM().em.fork();
-
         const { id } = data;
 
-        const dbCommandFlowGroup = await em.findOne(
-            CommandFlowGroupEntity,
-            {
-                id,
+        const dbCommandFlowGroup = await this.prisma.commandFlowGroup.findFirst({
+            where: {
+                id: {
+                    equals: id
+                }
             },
-            {
-                populate: ["commandFlows"],
+            include: {
+                commandFlows: true
             }
-        );
+        })
         if (!dbCommandFlowGroup) throw new Error("Not found error");
 
         const discordClient = discord.getClient();
@@ -252,13 +253,19 @@ class DiscordService {
             await message.delete();
         }
 
-        for (const commandFlow of dbCommandFlowGroup.commandFlows) {
-            em.remove(commandFlow);
+        for await (const commandFlow of dbCommandFlowGroup.commandFlows) {
+            await this.prisma.commandFlow.delete({
+                where: {
+                    id: commandFlow.id
+                }
+            });
         }
 
-        await em.flush();
-        em.remove(dbCommandFlowGroup);
-        await em.flush();
+        await this.prisma.commandFlowGroup.delete({
+            where: {
+                id: dbCommandFlowGroup.id
+            }
+        });
 
         return null;
     }

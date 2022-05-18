@@ -2,8 +2,6 @@ import http from "http";
 import express, { NextFunction, Request, Response } from "express";
 import logger from "../logger";
 import Config from "../common/config";
-import database from "../database";
-import { RequestContext } from "@mikro-orm/core";
 
 // Middleware
 import bodyParser from "body-parser";
@@ -40,12 +38,6 @@ class Web {
         this.app.use(cors());
         this.app.use(bodyParser.urlencoded({ extended: true }));
         this.app.use(bodyParser.json());
-
-        this.app.use((req: Request, res: Response, next: NextFunction) => {
-            if (database.orm) {
-                RequestContext.create(database.orm.em, next);
-            }
-        });
 
         // Routers
         this.setupRoutes();

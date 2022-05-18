@@ -1,26 +1,30 @@
+import { PrismaClient } from "@prisma/client";
 import database from "../../database";
-import { ReportEntity } from "../../database/entities/ReportEntity";
-import { EntityRepository } from "@mikro-orm/mysql";
 
 class ReportService {
-    private getReportRepository(): EntityRepository<ReportEntity> {
-        return database.getORM().em.fork().getRepository(ReportEntity);
+    private prisma: PrismaClient;
+
+    /**
+     *
+     */
+    constructor() {
+        this.prisma = database.getPrisma();   
     }
 
     public async getAllReports() {
-        const reportRepository = this.getReportRepository();
-
-        return reportRepository.find(
-            {},
-        );
+        return this.prisma.report.findMany();
     }
 
     public async getReport(data: { id: number }) {
-        const reportRepository = this.getReportRepository();
-
         const { id } = data;
 
-        return reportRepository.findOne(id);
+        return this.prisma.report.findFirst({
+            where: {
+                id: {
+                    equals: id
+                }
+            }
+        });
     }
 
     public async updateReport(
@@ -29,17 +33,18 @@ class ReportService {
         },
         data: { resolved: boolean }
     ) {
-        const reportRepository = this.getReportRepository();
-
         const { id } = find;
         const { resolved } = data;
 
-        const dbReport = await reportRepository.findOne(id);
+        const dbReport = await this.prisma.report.update({
+            where: {
+                id: id
+            },
+            data: {
+                resolved
+            }
+        });
         if (!dbReport) throw new Error("Not found error");
-
-        dbReport.resolved = resolved;
-
-        await reportRepository.flush();
 
         return dbReport;
     }

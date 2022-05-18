@@ -1,26 +1,33 @@
-import database from "../../database";
-import { CommandInvocationEntity } from "../../database/entities/CommandInvocationEntity";
-import { GuildEntity } from "../../database/entities/GuildEntity";
-import { GuildMemberEntity } from "../../database/entities/GuildMemberEntity";
+import { PrismaClient } from "@prisma/client";
 import { Interaction } from "discord.js";
+import database from "../../database";
 import logger from "../../logger";
 
 class LogUsage {
+    private prisma: PrismaClient;
+
+    /**
+     *
+     */
+    constructor() {
+        this.prisma = database.getPrisma();
+    }
+
     public async interaction(interaction: Interaction) {
         if (!interaction.isCommand()) {
             logger.error(`Interaction is not a command!`);
             return;
         };
 
-        const em = database.getORM().em.fork();
-
         if (!interaction.guild) {
             logger.error(`Interaction does not contain guild!`);
             return;
         }
 
-        const dbGuild = await em.findOne(GuildEntity, {
-            snowflake: interaction.guild?.id,
+        const dbGuild = await this.prisma.guild.findFirst({
+            where: {
+                snowflake: interaction.guild?.id
+            }
         });
 
         if (!dbGuild) {
@@ -30,8 +37,17 @@ class LogUsage {
             return;
         }
 
-        const dbGuildMember = await em.findOne(GuildMemberEntity, {
-            $and: [{ snowflake: interaction.member?.user.id }, { guild: dbGuild }],
+        const dbGuildMember = await this.prisma.guildMember.findFirst({
+            where: {
+                AND: [
+                    {
+                        snowflake: interaction.member?.user.id
+                    },
+                    {
+                        guildId: dbGuild.id
+                    }
+                ]
+            }
         });
 
         if (!dbGuildMember) {
@@ -41,15 +57,13 @@ class LogUsage {
             return;
         }
 
-        const commandInvocation = new CommandInvocationEntity(
-            interaction.commandName,
-            dbGuild || undefined,
-            dbGuildMember || undefined
-        );
-
-        em.persist(commandInvocation);
-
-        await em.flush();
+        await this.prisma.commandInvocation.create({
+            data: {
+                commandName: interaction.commandName,
+                guildId: dbGuild.id,
+                guildMemberId: dbGuildMember.id
+            }
+        })
     }
 }
 

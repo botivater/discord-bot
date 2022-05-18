@@ -1,9 +1,7 @@
-import database from "../../database";
-import { GuildMemberEntity } from "../../database/entities/GuildMemberEntity";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CronJob } from "cron";
 import { GuildMember, Interaction } from "discord.js";
-import discord from "..";
+import database from "../../database";
 import logUsage from "../helpers/logUsage";
 
 export default {
@@ -32,8 +30,6 @@ export default {
                 throw new Error("Je hebt geen verjaardag opgegeven.");
             }
 
-
-
             const parsedBirthday = new Date(birthday);
             if (
                 !(
@@ -44,18 +40,21 @@ export default {
                 throw new Error("Je hebt een ongeldige verjaardag opgegeven.");
             }
 
-            const em = database.getORM().em.fork();
-            const dbGuildMember = await em.findOne(GuildMemberEntity, {
-                $and: [
-                    {
-                        guild: {
-                            snowflake: interaction.guildId,
+            const prisma = database.getPrisma();
+
+            const dbGuildMember = await prisma.guildMember.findFirst({
+                where: {
+                    AND: [
+                        {
+                            guild: {
+                                snowflake: interaction.guildId || ""
+                            }
                         },
-                    },
-                    {
-                        snowflake: interaction.member?.user.id,
-                    },
-                ],
+                        {
+                            snowflake: interaction.member?.user.id
+                        }
+                    ]
+                }
             });
             if (!dbGuildMember) {
                 throw new Error(
@@ -63,9 +62,14 @@ export default {
                 );
             }
 
-            dbGuildMember.birthday = parsedBirthday;
-            em.persist(dbGuildMember);
-            await em.flush();
+            await prisma.guildMember.update({
+                where: {
+                    id: dbGuildMember.id
+                },
+                data: {
+                    birthday: parsedBirthday
+                }
+            })
 
             await logUsage.interaction(interaction);
 

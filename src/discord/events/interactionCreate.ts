@@ -10,8 +10,6 @@ import {
 import Config from "../../common/config";
 import logger from "../../logger";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import database from "../../database";
-import { CommandListEntity } from "../../database/entities/CommandListEntity";
 import logUsage from "../helpers/logUsage";
 
 // Commands
@@ -23,6 +21,8 @@ import setBirthday from "../commands/set-birthday";
 import recreateFlows from "../commands/recreate-flows";
 import report from "../commands/report";
 import help from "../commands/help";
+import database from "../../database";
+import { Prisma } from "@prisma/client";
 
 export type CommandMap = {
     [index: string]: (interaction: Interaction) => Promise<void>;
@@ -65,11 +65,9 @@ const registerCommands = async (client: Client) => {
     registerCommand(help);
 
     // Register database commands
-    const orm = database.getORM();
-    const commandListRepository = orm.em
-        .fork()
-        .getRepository(CommandListEntity);
-    const commandListEntities = await commandListRepository.find({});
+    const prisma = database.getPrisma();
+
+    const commandListEntities = await prisma.commandList.findMany();
     for (const commandListEntity of commandListEntities) {
         let command = {
             command: new SlashCommandBuilder()
@@ -82,10 +80,16 @@ const registerCommands = async (client: Client) => {
                 await interaction.deferReply();
 
                 try {
+                    if (!commandListEntity.options) {
+                        throw new Error("No options found in command list!");
+                    }
+
+                    const options: string[] = <string[]> commandListEntity.options;
+
                     const randomText =
-                        commandListEntity.options[
+                        options[
                             Math.floor(
-                                Math.random() * commandListEntity.options.length
+                                Math.random() * options.length
                             )
                         ];
 

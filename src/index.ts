@@ -1,9 +1,9 @@
 require("dotenv").config();
 import discord from "./discord";
 import web from "./web";
-import database from './database';
 import { DiscordSyncCron } from "./cron/DiscordSyncCron";
 import { DiscordBirthdayCron } from "./cron/DiscordBirthdayCron";
+import database from "./database";
 
 class DiscordBot {
     constructor() {
@@ -11,7 +11,6 @@ class DiscordBot {
     }
 
     private async setup() {
-        await database.setup();
         await web.setup();
         await discord.setup();
         
@@ -21,9 +20,9 @@ class DiscordBot {
     private async onDiscordReadyHandler() {
         const discordClient = discord.getClient();
 
-        new DiscordSyncCron(discordClient);
-        new DiscordBirthdayCron(discordClient);
+        new DiscordSyncCron(discordClient, database.getPrisma());
+        new DiscordBirthdayCron(discordClient, database.getPrisma());
     }
 }
 
-export default new DiscordBot();
+export const discordBot = new DiscordBot();

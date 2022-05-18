@@ -1,7 +1,6 @@
-import database from "../../database";
-import { GuildMemberEntity } from "../../database/entities/GuildMemberEntity";
 import { Snowflake } from "discord.js";
 import discord from "..";
+import database from "../../database";
 
 class ActivityHelper {
     public async registerActivity(data: {
@@ -15,33 +14,38 @@ class ActivityHelper {
             throw new Error("Missing parameter");
         }
 
-        const em = database.getORM().em.fork();
-        const dbGuildMember = await em.findOne(
-            GuildMemberEntity,
-            {
-                $and: [
+        const prisma = database.getPrisma();
+
+        const dbGuildMember = await prisma.guildMember.findFirst({
+            where: {
+                AND: [
                     {
-                        snowflake: guildMemberUid,
+                        snowflake: guildMemberUid
                     },
                     {
                         guild: {
-                            snowflake: guildUid,
-                        },
-                    },
-                ],
+                            snowflake: guildUid
+                        }
+                    }
+                ]
             },
-            { populate: ["guild"] }
-        );
-
+            include: {
+                guild: true
+            }
+        });
         if (!dbGuildMember) {
             throw new Error("Guild member not found");
         }
 
-        dbGuildMember.lastInteraction = timestamp;
-        dbGuildMember.active = true;
-
-        em.persist(dbGuildMember);
-        await em.flush();
+        await prisma.guildMember.update({
+            where: {
+                id: dbGuildMember.id
+            },
+            data: {
+                lastInteraction: timestamp,
+                active: true
+            }
+        });
 
         const hasRole = await this.hasInactiveRole({
             guildUid,

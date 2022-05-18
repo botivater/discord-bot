@@ -1,18 +1,18 @@
 import { IMessageChannel } from "./IMessageChannel";
 import Discord from "discord.js";
-import { GuildEntity } from "../database/entities/GuildEntity";
 import { DiscordGuildNotFoundError } from "../error/DiscordGuildNotFoundError";
 import { DiscordGuildChannelNotTextError } from "../error/DiscordGuildChannelNotTextError";
+import { Guild } from "@prisma/client";
 
 export class DiscordSystemMessageChannel implements IMessageChannel {
     private discordClient: Discord.Client;
-    private databaseGuild: GuildEntity;
+    private databaseGuild: Guild;
 
     /**
      * @param discordClient Inject an instance of Discord.JS.
      * @param databaseGuild Database guild to act upon.
      */
-    constructor(discordClient: Discord.Client, databaseGuild: GuildEntity) {
+    constructor(discordClient: Discord.Client, databaseGuild: Guild) {
         this.discordClient = discordClient;
         this.databaseGuild = databaseGuild;
     }

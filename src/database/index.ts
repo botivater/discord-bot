@@ -1,19 +1,17 @@
-import { Connection, IDatabaseDriver, MikroORM } from "@mikro-orm/core";
-import mikroOrmConfig from "../common/mikro-orm.config";
-import logger from "../logger";
+import { PrismaClient } from "@prisma/client";
 
 class Database {
-    public orm: MikroORM<IDatabaseDriver<Connection>> | undefined = undefined;
+    private prisma: PrismaClient;
 
-    public async setup() {
-        logger.info("Database is starting up...");
-        this.orm = await MikroORM.init(mikroOrmConfig);
-        logger.info("Database is ready.");
+    /**
+     *
+     */
+    constructor() {
+        this.prisma = new PrismaClient();
     }
 
-    public getORM() {
-        if (!this.orm) throw new Error("ORM is not defined.")
-        return this.orm;
+    public getPrisma() {
+        return this.prisma;
     }
 }
 

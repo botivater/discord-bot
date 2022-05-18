@@ -3,13 +3,19 @@ jest.mock('../database/entities/GuildEntity')
 
 import { DiscordSystemMessageChannel } from "./DiscordSystemMessageChannel";
 import Discord, { Intents } from "discord.js";
-import { GuildEntity } from "../database/entities/GuildEntity";
+import { Guild } from "@prisma/client";
 
 test('DiscordSystemMessageChannel constructs', () => {
     const discordClient = new Discord.Client({
         intents: []
     });
-    const databaseGuild = new GuildEntity("1234", "Test");
+    const databaseGuild: Guild = {
+        id: 0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        name: "Test",
+        snowflake: "1234"
+    }
 
     const discordSystemMessageChannel = new DiscordSystemMessageChannel(discordClient, databaseGuild);
 

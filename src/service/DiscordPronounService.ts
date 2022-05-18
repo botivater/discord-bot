@@ -1,29 +1,32 @@
 import PronounChecker from "../common/pronounChecker";
-import { GuildEntity } from "../database/entities/GuildEntity";
 import logger from "../logger";
-import GuildMemberEntityRepository from "../repository/GuildMemberEntityRepository";
 import { bold, userMention } from "@discordjs/builders";
 import Discord from "discord.js";
 import { IMessageChannel } from "./IMessageChannel";
+import { Guild, PrismaClient } from "@prisma/client";
 
 export class DiscordPronounService {
     private discordClient: Discord.Client;
+    private prisma: PrismaClient;
     private messageChannel: IMessageChannel;
-    private guildMemberEntityRepository;
 
     /**
      * @param discordClient Inject an instance of Discord.JS.
      * @param messageChannel Inject an instance of a message channel.
      */
-    constructor(discordClient: Discord.Client, messageChannel: IMessageChannel) {
+    constructor(discordClient: Discord.Client, prisma: PrismaClient, messageChannel: IMessageChannel) {
         this.discordClient = discordClient;
+        this.prisma = prisma;
         this.messageChannel = messageChannel;
-        this.guildMemberEntityRepository = GuildMemberEntityRepository.getRepository();
     }
 
-    public async handle(databaseGuild: GuildEntity): Promise<void> {
-        const databaseGuildMembers = await this.guildMemberEntityRepository.find({
-            guild: databaseGuild
+    public async handle(databaseGuild: Guild): Promise<void> {
+        const databaseGuildMembers = await this.prisma.guildMember.findMany({
+            where: {
+                guild: {
+                    id: databaseGuild.id
+                }
+            }
         });
 
         await this.discordClient.guilds.fetch(databaseGuild.snowflake);
@@ -56,11 +59,15 @@ export class DiscordPronounService {
                     logger.error(e);
                 }
 
-                databaseGuildMember.name = nickname;
-                this.guildMemberEntityRepository.persist(databaseGuildMember);
+                await this.prisma.guildMember.update({
+                    where: {
+                        id: databaseGuildMember.id
+                    },
+                    data: {
+                        name: nickname
+                    }
+                });
             }
         }
-
-        await this.guildMemberEntityRepository.flush();
     }
 }

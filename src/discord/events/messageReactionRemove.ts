@@ -1,10 +1,10 @@
-import { OnType } from "../../database/entities/CommandFlowEntity";
 import {
     MessageReaction,
     PartialMessageReaction,
     PartialUser,
     User,
 } from "discord.js";
+import { OnType } from "../../common/OnType";
 import messageReaction from "./messageReaction";
 
 const handle = async (

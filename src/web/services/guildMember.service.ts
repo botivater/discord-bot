@@ -1,24 +1,30 @@
+import { PrismaClient } from "@prisma/client";
 import database from "../../database";
-import { GuildMemberEntity } from "../../database/entities/GuildMemberEntity";
-import { EntityRepository } from "@mikro-orm/mysql";
 
 class GuildMemberService {
-    private getGuildMemberRepository(): EntityRepository<GuildMemberEntity> {
-        return database.getORM().em.fork().getRepository(GuildMemberEntity);
+    private prisma: PrismaClient;
+
+    /**
+     *
+     */
+    constructor() {
+        this.prisma = database.getPrisma();
     }
 
     public async getAllGuildMembers() {
-        const guildMemberRepository = this.getGuildMemberRepository();
-
-        return guildMemberRepository.find({});
+        return this.prisma.guildMember.findMany();
     }
 
     public async getGuildMember(data: { id: number }) {
-        const guildMemberRepository = this.getGuildMemberRepository();
-
         const { id } = data;
 
-        return guildMemberRepository.findOne(id);
+        return this.prisma.guildMember.findFirst({
+            where: {
+                id: {
+                    equals: id
+                }
+            }
+        });
     }
 }
 

@@ -115,37 +115,6 @@ class CommandController {
             next(e);
         }
     }
-
-    public async attachListCommand(
-        req: Request,
-        res: Response,
-        next: NextFunction
-    ) {
-        try {
-            const { commandListId, guildId } = req.body;
-
-            return res.json(
-                APIResponse.fromData(
-                    StatusCode.OK,
-                    await commandListService.attachListCommandToGuild({ commandListId, guildId })
-                )
-            );
-        } catch (e) {
-            next(e);
-        }
-    }
-
-    public async detachListCommand(
-        req: Request,
-        res: Response,
-        next: NextFunction
-    ) {
-        try {
-            throw new NotImplementedError(req.originalUrl);
-        } catch (e) {
-            next(e);
-        }
-    }
 }
 
 export default new CommandController();

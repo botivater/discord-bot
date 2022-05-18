@@ -1,11 +1,11 @@
-import database from "../../database";
-import { CommandFlowGroupEntity } from "../../database/entities/CommandFlowGroupEntity";
 import GuildChannelNotFoundError from "../../errors/GuildChannelNotFoundError";
 import GuildChannelNotTextChannelError from "../../errors/GuildChannelNotTextChannelError";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { Interaction } from "discord.js";
 import discord from "..";
 import logUsage from "../helpers/logUsage";
+import { PrismaClient } from "@prisma/client";
+import database from "../../database";
 
 export default {
     command: new SlashCommandBuilder()
@@ -16,18 +16,14 @@ export default {
         if (!interaction.isCommand()) return;
         await interaction.deferReply();
 
-        const em = database.getORM().em.fork();
+        const prisma: PrismaClient = database.getPrisma();
         const discordClient = discord.getClient();
 
-        const commandFlowGroups = await em.find(
-            CommandFlowGroupEntity,
-            {},
-            {
-                orderBy: {
-                    id: "asc",
-                },
+        const commandFlowGroups = await prisma.commandFlowGroup.findMany({
+            orderBy: {
+                id: "asc"
             }
-        );
+        });
 
         for (const commandFlowGroup of commandFlowGroups) {
             const channel = discordClient.channels.cache.get(
@@ -43,16 +39,19 @@ export default {
             const messageSent = await channel.send(
                 commandFlowGroup.messageText
             );
-            for (const reaction of commandFlowGroup.reactions) {
+            for (const reaction of JSON.parse(commandFlowGroup.reactions?.toString() || "[]")) {
                 await messageSent.react(reaction);
             }
-
-            commandFlowGroup.messageId = messageSent.id;
-
-            em.persist(commandFlowGroup);
+            
+            await prisma.commandFlowGroup.update({
+                where: {
+                    id: commandFlowGroup.id
+                },
+                data: {
+                    messageId: messageSent.id
+                }
+            })
         }
-
-        await em.flush();
 
         await interaction.editReply({
             content: "Done.",
