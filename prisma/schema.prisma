@@ -17,16 +17,26 @@ model Guild {
   commandLists       CommandList[]
   commandInvocations CommandInvocation[]
   commandFlowGroups  CommandFlowGroup[]
-  config             GuildConfig?
+  configId           Int                 @db.UnsignedInt @unique
+  config             GuildConfig         @relation(fields: [configId], references: [id])
 }
 
 model GuildConfig {
-  id                    Int      @id @default(autoincrement()) @db.UnsignedInt
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-  guildId               Int      @unique @db.UnsignedInt
-  guild                 Guild    @relation(fields: [guildId], references: [id])
-  welcomeMessageEnabled Boolean  @default(false)
+  id                     Int                   @id @default(autoincrement()) @db.UnsignedInt
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+  Guild                  Guild?
+  welcomeMessageEnabled  Boolean               @default(false)
+  welcomeMessageConfigId Int?                  @unique @db.UnsignedInt
+  welcomeMessageConfig   WelcomeMessageConfig? @relation(fields: [welcomeMessageConfigId], references: [id])
+}
+
+model WelcomeMessageConfig {
+  id          Int          @id @default(autoincrement()) @db.UnsignedInt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  format      String       @db.Text
+  GuildConfig GuildConfig?
 }
 
 model GuildMember {
