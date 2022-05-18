@@ -1,6 +1,6 @@
-import GuildNotFoundError from "../../errors/GuildNotFoundError";
+import GuildNotFoundError from "../../../errors/GuildNotFoundError";
 import { PrismaClient } from "@prisma/client";
-import database from "../../database";
+import database from "../../../database";
 
 class CommandListService {
     private prisma: PrismaClient;

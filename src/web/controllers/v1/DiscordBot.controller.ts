@@ -1,8 +1,8 @@
-import NotImplementedError from "../../errors/NotImplementedError";
+import NotImplementedError from "../../../errors/NotImplementedError";
 import { NextFunction, Request, Response } from "express";
-import { StatusCode } from "../enum/StatusCode";
-import APIResponse from "../responses/APIResponse";
-import discordBotService from "../services/discordBot.service";
+import { StatusCode } from "../../enum/StatusCode";
+import APIResponse from "../../responses/APIResponse";
+import discordBotService from "../../services/v1/discordBot.service";
 
 class DiscordBotController {
     public async index(req: Request, res: Response, next: NextFunction) {

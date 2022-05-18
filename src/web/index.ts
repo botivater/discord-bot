@@ -13,6 +13,7 @@ import { auth } from "express-oauth2-jwt-bearer";
 
 // Routers
 import { v1Router } from "./routers/v1.router";
+import { v2Router } from "./routers/v2.router";
 
 
 class Web {
@@ -63,6 +64,7 @@ class Web {
 
         // Routers
         this.app.use("/api/v1", this.authMiddleware, v1Router);
+        this.app.use("/api/v2", this.authMiddleware, v2Router);
     }
 }
 

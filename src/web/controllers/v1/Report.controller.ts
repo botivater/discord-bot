@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { StatusCode } from "../enum/StatusCode";
-import APIResponse from "../responses/APIResponse";
-import reportService from "../services/report.service";
+import { StatusCode } from "../../enum/StatusCode";
+import APIResponse from "../../responses/APIResponse";
+import reportService from "../../services/v1/report.service";
 
 class ReportController {
     public async getAllReports(

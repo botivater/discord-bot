@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { StatusCode } from "../enum/StatusCode";
-import APIResponse from "../responses/APIResponse";
-import guildMemberService from "../services/guildMember.service";
+import { StatusCode } from "../../enum/StatusCode";
+import APIResponse from "../../responses/APIResponse";
+import guildMemberService from "../../services/v1/guildMember.service";
 
 class GuildMemberController {
     public async getAllGuildMembers(

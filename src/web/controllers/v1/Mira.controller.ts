@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { StatusCode } from "../enum/StatusCode";
-import APIResponse from "../responses/APIResponse";
-import DiscordService from "../services/discord.service";
+import { StatusCode } from "../../enum/StatusCode";
+import APIResponse from "../../responses/APIResponse";
+import DiscordService from "../../services/v1/discord.service";
 
 class MiraController {
     public async index(req: Request, res: Response, next: NextFunction) {

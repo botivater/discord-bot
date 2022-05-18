@@ -1,21 +1,21 @@
-import discord from "../../discord";
-import GuildChannelNotFoundError from "../../errors/GuildChannelNotFoundError";
-import GuildChannelNotTextChannelError from "../../errors/GuildChannelNotTextChannelError";
-import GuildNotFoundError from "../../errors/GuildNotFoundError";
-import MissingParameterError from "../../errors/MissingParameterError";
+import discord from "../../../discord";
+import GuildChannelNotFoundError from "../../../errors/GuildChannelNotFoundError";
+import GuildChannelNotTextChannelError from "../../../errors/GuildChannelNotTextChannelError";
+import GuildNotFoundError from "../../../errors/GuildNotFoundError";
+import MissingParameterError from "../../../errors/MissingParameterError";
 import {
     CategoryChannel,
     GuildChannel,
     Message,
     ThreadChannel,
 } from "discord.js";
-import { FriendshipBubble } from "../../typings/FriendshipBubble";
+import { FriendshipBubble } from "../../../typings/FriendshipBubble";
 import { PrismaClient } from "@prisma/client";
-import { CommandFlowGroupType } from "../../common/CommandFlowGroupType";
-import { BuildingBlockType } from "../../common/BuildingBlockType";
-import { OnType } from "../../common/OnType";
-import { CheckType } from "../../common/CheckType";
-import database from "../../database";
+import { CommandFlowGroupType } from "../../../common/CommandFlowGroupType";
+import { BuildingBlockType } from "../../../common/BuildingBlockType";
+import { OnType } from "../../../common/OnType";
+import { CheckType } from "../../../common/CheckType";
+import database from "../../../database";
 
 class DiscordService {
     private prisma: PrismaClient;

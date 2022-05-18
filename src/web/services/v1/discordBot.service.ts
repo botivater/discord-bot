@@ -1,5 +1,5 @@
-import discord from "../../discord";
-import interactionCreate from "../../discord/events/interactionCreate";
+import discord from "../../../discord";
+import interactionCreate from "../../../discord/events/interactionCreate";
 
 class DiscordBotService {
     public async reloadCommands() {

@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import database from "../../database";
+import database from "../../../database";
 
 type CommandUsageStatistic = {
     commandName: string;
