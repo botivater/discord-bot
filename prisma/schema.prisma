@@ -17,22 +17,30 @@ model Guild {
   commandLists       CommandList[]
   commandInvocations CommandInvocation[]
   commandFlowGroups  CommandFlowGroup[]
+  config             GuildConfig?
+}
+
+model GuildConfig {
+  id                    Int      @id @default(autoincrement()) @db.UnsignedInt
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  guildId               Int      @unique @db.UnsignedInt
+  guild                 Guild    @relation(fields: [guildId], references: [id])
+  welcomeMessageEnabled Boolean  @default(false)
 }
 
 model GuildMember {
-  id               Int       @id @default(autoincrement()) @db.UnsignedInt
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  snowflake        String    @db.VarChar(64)
-  name             String?   @db.VarChar(255)
-  identifier       String?   @db.VarChar(255)
-  birthday         DateTime? @db.Date
-  lastInteraction  DateTime? @default(now())
-  active           Boolean   @default(true)
-
-  guildId Int   @db.UnsignedInt
-  guild   Guild @relation(fields: [guildId], references: [id])
-
+  id                 Int                 @id @default(autoincrement()) @db.UnsignedInt
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  snowflake          String              @db.VarChar(64)
+  name               String?             @db.VarChar(255)
+  identifier         String?             @db.VarChar(255)
+  birthday           DateTime?           @db.Date
+  lastInteraction    DateTime?           @default(now())
+  active             Boolean             @default(true)
+  guildId            Int                 @db.UnsignedInt
+  guild              Guild               @relation(fields: [guildId], references: [id])
   commandInvocations CommandInvocation[]
   submittedReports   Report[]            @relation("GuildMemberToReportGuildMemberId")
   reports            Report[]            @relation("GuildMemberToReportReportedGuildMemberId")
@@ -48,36 +56,30 @@ model CommandList {
   name        String   @unique() @db.VarChar(255)
   description String   @db.VarChar(255)
   options     Json
-
-  guildId Int   @db.UnsignedInt
-  guild   Guild @relation(fields: [guildId], references: [id])
+  guildId     Int      @db.UnsignedInt
+  guild       Guild    @relation(fields: [guildId], references: [id])
 }
 
 model CommandInvocation {
-  id        Int      @id @default(autoincrement()) @db.UnsignedInt
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  guildId Int?   @db.UnsignedInt
-  guild   Guild? @relation(fields: [guildId], references: [id])
-
+  id            Int          @id @default(autoincrement()) @db.UnsignedInt
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  guildId       Int?         @db.UnsignedInt
+  guild         Guild?       @relation(fields: [guildId], references: [id])
   guildMemberId Int?         @db.UnsignedInt
   guildMember   GuildMember? @relation(fields: [guildMemberId], references: [id])
-
-  commandName String @db.VarChar(255)
+  commandName   String       @db.VarChar(255)
 
   @@index([guildId])
   @@index([guildMemberId])
 }
 
 model CommandFlowGroup {
-  id        Int      @id @default(autoincrement()) @db.UnsignedInt
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  guildId Int   @db.UnsignedInt
-  guild   Guild @relation(fields: [guildId], references: [id])
-
+  id           Int           @id @default(autoincrement()) @db.UnsignedInt
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  guildId      Int           @db.UnsignedInt
+  guild        Guild         @relation(fields: [guildId], references: [id])
   name         String        @db.VarChar(255)
   description  String        @db.VarChar(255)
   type         Int           @db.TinyInt
@@ -91,17 +93,15 @@ model CommandFlowGroup {
 }
 
 model CommandFlow {
-  id        Int      @id @default(autoincrement()) @db.UnsignedInt
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  onType            Int     @db.TinyInt
-  buildingBlockType Int     @db.TinyInt
-  checkType         Int?    @db.TinyInt
-  checkValue        String? @db.VarChar(255)
-  options           String  @db.VarChar(255)
-  order             Int
-
+  id                 Int              @id @default(autoincrement()) @db.UnsignedInt
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  onType             Int              @db.TinyInt
+  buildingBlockType  Int              @db.TinyInt
+  checkType          Int?             @db.TinyInt
+  checkValue         String?          @db.VarChar(255)
+  options            String           @db.VarChar(255)
+  order              Int
   commandFlowGroupId Int              @db.UnsignedInt
   commandFlowGroup   CommandFlowGroup @relation(fields: [commandFlowGroupId], references: [id])
 
@@ -109,21 +109,17 @@ model CommandFlow {
 }
 
 model Report {
-  id        Int      @id @default(autoincrement()) @db.UnsignedInt
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  guildMemberId Int?         @db.UnsignedInt
-  guildMember   GuildMember? @relation("GuildMemberToReportGuildMemberId", fields: [guildMemberId], references: [id])
-
-  channelId   String? @db.VarChar(255)
-  description String? @db.Text
-
+  id                    Int          @id @default(autoincrement()) @db.UnsignedInt
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+  guildMemberId         Int?         @db.UnsignedInt
+  guildMember           GuildMember? @relation("GuildMemberToReportGuildMemberId", fields: [guildMemberId], references: [id])
+  channelId             String?      @db.VarChar(255)
+  description           String?      @db.Text
   reportedGuildMemberId Int?         @db.UnsignedInt
   reportedGuildMember   GuildMember? @relation("GuildMemberToReportReportedGuildMemberId", fields: [reportedGuildMemberId], references: [id])
-
-  anonymous Boolean @default(true)
-  resolved  Boolean @default(false)
+  anonymous             Boolean      @default(true)
+  resolved              Boolean      @default(false)
 
   @@index([guildMemberId])
   @@index([reportedGuildMemberId])
