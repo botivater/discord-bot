@@ -8,7 +8,7 @@
     "license": "GPL-3.0-or-later",
     "scripts": {
         "dev": "nodemon",
-        "build": "rimraf ./dist && tsc",
+        "build": "rimraf ./dist && prisma generate && tsc",
         "serve": "node ./dist/src/index.js",
         "test": "jest",
         "docker:build": "docker build . -t registry.jonasclaes.be/friendshipbubble/discord-bot:latest && docker tag registry.jonasclaes.be/friendshipbubble/discord-bot:latest registry.jonasclaes.be/friendshipbubble/discord-bot:$(git rev-parse --short HEAD)",
