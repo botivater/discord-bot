@@ -6,7 +6,6 @@ import interactionCreate from "./events/interactionCreate";
 import messageCreate from "./events/messageCreate";
 import messageReactionAdd from "./events/messageReactionAdd";
 import messageReactionRemove from "./events/messageReactionRemove";
-import ready from "./events/ready";
 import voiceStateUpdate from "./events/voiceStateUpdate";
 
 export class Discord extends Client {
@@ -35,7 +34,7 @@ export class Discord extends Client {
         });
 
         // Set event handlers
-        this.once("ready", ready.handle.bind(this));
+        this.once("ready", interactionCreate.registerCommands.bind(this));
         this.on(
             "interactionCreate",
             interactionCreate.handle.bind(this)

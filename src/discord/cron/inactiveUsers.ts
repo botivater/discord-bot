@@ -1,8 +1,7 @@
 import logger from "../../logger";
 import { bold, italic, userMention } from "@discordjs/builders";
-import activityHelper from "../helpers/activityHelper";
-import database from "../../database";
-import { discordBot } from "../..";
+import { container } from "../../configureContainer";
+import { Discord } from "..";
 
 // Timeout in seconds.
 // 60 => 60 seconds
@@ -17,7 +16,8 @@ export default {
         const now = new Date().getTime();
         const comparisonDate = new Date(now - timeoutSeconds * 1000);
 
-        const prisma = database.getPrisma();
+        const prisma = container.resolve('prisma');
+        const activityHelper = container.resolve('activityHelper');
 
         const dbGuildMembers = await prisma.guildMember.findMany({
             where: {
@@ -31,7 +31,7 @@ export default {
         })
         if (dbGuildMembers.length === 0) return;
 
-        const discordClient = discordBot.getDiscord();
+        const discordClient: Discord = container.resolve('discord');
 
         const guild = discordClient.guilds.cache.get("803327192662671463");
 

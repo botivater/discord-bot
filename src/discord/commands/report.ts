@@ -6,8 +6,7 @@ import {
     userMention,
 } from "@discordjs/builders";
 import { Interaction } from "discord.js";
-import logUsage from "../helpers/logUsage";
-import database from "../../database";
+import { container } from "../../configureContainer";
 
 export default {
     command: <SlashCommandBuilder>new SlashCommandBuilder()
@@ -54,7 +53,7 @@ export default {
                 throw new Error("Guild not found in interaction!");
             }
 
-            const prisma = database.getPrisma();
+            const prisma = container.resolve('prisma');
 
             const dbGuildMemberSender = await prisma.guildMember.findFirst({
                 where: {
@@ -118,7 +117,7 @@ export default {
                 }
             });
 
-            await logUsage.interaction(interaction);
+            await container.resolve('logUsage').interaction(interaction);
 
             await interaction.guild.channels.fetch()
             let systemChannel = interaction.guild.channels.cache.find(channel => channel.name == "systeem");

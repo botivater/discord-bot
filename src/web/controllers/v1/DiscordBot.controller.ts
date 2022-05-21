@@ -1,10 +1,21 @@
-import NotImplementedError from "../../error/NotImplementedError";
 import { NextFunction, Request, Response } from "express";
+import { container } from "../../../configureContainer";
 import { StatusCode } from "../../enum/StatusCode";
 import APIResponse from "../../responses/APIResponse";
-import discordBotService from "../../services/v1/discordBot.service";
+import { DiscordBotService } from "../../services/v1/discordBot.service";
 
-class DiscordBotController {
+
+export class DiscordBotController {
+    private discordBotService: DiscordBotService;
+
+    /**
+     * Create a new instance.
+     * This class utilises Dependency Injection to get the correct services.
+     */
+    constructor() {
+        this.discordBotService = container.resolve('discordBotService');
+    }
+
     public async index(req: Request, res: Response, next: NextFunction) {
         try {
             return res.json(APIResponse.fromData(StatusCode.OK, null));
@@ -22,7 +33,7 @@ class DiscordBotController {
             return res.json(
                 APIResponse.fromData(
                     StatusCode.OK,
-                    await discordBotService.reloadCommands()
+                    await this.discordBotService.reloadCommands()
                 )
             );
         } catch (e) {
@@ -30,5 +41,3 @@ class DiscordBotController {
         }
     }
 }
-
-export default new DiscordBotController();

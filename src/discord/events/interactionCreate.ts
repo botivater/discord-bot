@@ -10,7 +10,7 @@ import {
 import Config from "../../common/config";
 import logger from "../../logger";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import logUsage from "../helpers/logUsage";
+import { container } from "../../configureContainer";
 
 // Commands
 import ping from "../commands/ping";
@@ -21,8 +21,6 @@ import setBirthday from "../commands/set-birthday";
 import recreateFlows from "../commands/recreate-flows";
 import report from "../commands/report";
 import help from "../commands/help";
-import database from "../../database";
-import { Prisma } from "@prisma/client";
 
 export type CommandMap = {
     [index: string]: (interaction: Interaction) => Promise<void>;
@@ -65,7 +63,7 @@ const registerCommands = async (client: Client) => {
     registerCommand(help);
 
     // Register database commands
-    const prisma = database.getPrisma();
+    const prisma = container.resolve('prisma');
 
     const commandListEntities = await prisma.commandList.findMany();
     for (const commandListEntity of commandListEntities) {
@@ -93,7 +91,7 @@ const registerCommands = async (client: Client) => {
                             )
                         ];
 
-                    await logUsage.interaction(interaction);
+                    await container.resolve('logUsage').interaction(interaction);
 
                     await interaction.editReply(randomText);
                 } catch (e) {

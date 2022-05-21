@@ -1,16 +1,20 @@
 require("dotenv").config();
 import { Discord } from "./discord";
-import { Web } from "./web";
+import { Web } from "./web/index";
 import { DiscordSyncCron } from "./cron/DiscordSyncCron";
 import { DiscordBirthdayCron } from "./cron/DiscordBirthdayCron";
-import database from "./database";
+import { container } from "./configureContainer";
+import { CronJob } from "cron";
+import inactiveUsers from "./discord/cron/inactiveUsers";
+import logger from "./logger";
 
-class DiscordBot {
+export class DiscordBot {
+    private static instance: DiscordBot;
     private discord: Discord;
     private web: Web;
 
     constructor() {
-        this.discord = new Discord();
+        this.discord = container.resolve('discord');
         this.discord.on("ready", this.onDiscordReadyHandler.bind(this));
 
         this.web = new Web();
@@ -24,17 +28,29 @@ class DiscordBot {
     }
 
     private async onDiscordReadyHandler() {
-        new DiscordSyncCron(this.discord, database.getPrisma());
-        new DiscordBirthdayCron(this.discord, database.getPrisma());
-    }
-    
-    public getDiscord(): Discord {
-        return this.discord;
+        const inactiveUsersCronJob = new CronJob(
+            "0 */5 * * * *",
+            inactiveUsers.handle,
+            null,
+            true,
+            "Europe/Brussels"
+        );
+        inactiveUsersCronJob.start();
+
+        new DiscordSyncCron();
+        new DiscordBirthdayCron();
+
+        logger.info("Discord bot is ready.");
     }
 
     public getWeb(): Web {
         return this.web;
     }
+
+    public static getInstance(): DiscordBot {
+        if (!DiscordBot.instance) DiscordBot.instance = new DiscordBot();
+        return DiscordBot.instance;
+    }
 }
 
-export const discordBot = new DiscordBot();
+const discordBot = new DiscordBot();

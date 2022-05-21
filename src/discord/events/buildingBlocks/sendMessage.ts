@@ -1,5 +1,6 @@
 import Handlebars from "handlebars";
-import { discordBot } from "../../..";
+import { Discord } from "../..";
+import { container } from "../../../configureContainer";
 
 export enum SendMessageTo {
     SENDER = 0,
@@ -19,7 +20,7 @@ Handlebars.registerHelper('pickFirstName', function(name) {
 });
 
 const handle = async (configuration: SendMessageConfiguration) => {
-    const client = discordBot.getDiscord();
+    const client: Discord = container.resolve('discord');
 
     const stringTemplate = Handlebars.compile(configuration.messageFormat);
 

@@ -1,6 +1,7 @@
 import logger from "../../logger";
 import { Message, PartialMessage } from "discord.js";
-import activityHelper from "../helpers/activityHelper";
+import { container } from "../../configureContainer";
+
 
 const handle = async (message: Message | PartialMessage) => {
     if (message.partial) await message.fetch();
@@ -14,7 +15,7 @@ const handle = async (message: Message | PartialMessage) => {
     if (author.bot) return;
 
     try {
-        await activityHelper.registerActivity({
+        await container.resolve('activityHelper').registerActivity({
             guildUid: guildId,
             guildMemberUid: author.id,
             timestamp: new Date(createdTimestamp),

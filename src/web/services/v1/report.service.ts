@@ -1,14 +1,13 @@
 import { PrismaClient } from "@prisma/client";
-import database from "../../../database";
 
-class ReportService {
+export class ReportService {
     private prisma: PrismaClient;
 
     /**
-     *
+     * @param prisma Inject an instance of PrismaClient.
      */
-    constructor() {
-        this.prisma = database.getPrisma();   
+     constructor(prisma: PrismaClient) {
+        this.prisma = prisma;
     }
 
     public async getAllReports() {
@@ -49,5 +48,3 @@ class ReportService {
         return dbReport;
     }
 }
-
-export default new ReportService();

@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { GuildMember, Interaction } from "discord.js";
-import logUsage from "../helpers/logUsage";
+import { container } from "../../configureContainer";
 
 export default {
     command: new SlashCommandBuilder()
@@ -12,6 +12,6 @@ export default {
 
         await interaction.reply("Pong!");
 
-        await logUsage.interaction(interaction);
+        await container.resolve('logUsage').interaction(interaction);
     },
 };

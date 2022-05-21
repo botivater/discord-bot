@@ -1,11 +1,24 @@
-import NotImplementedError from "../../error/NotImplementedError";
 import { NextFunction, Request, Response } from "express";
 import { StatusCode } from "../../enum/StatusCode";
 import APIResponse from "../../responses/APIResponse";
-import commandListService from "../../services/v1/commandList.service";
-import commandUsageService from "../../services/v1/commandUsage.service";
+import { CommandUsageService } from "../../services/v1/commandUsage.service";
+import { CommandListService } from "../../services/v1/commandList.service";
+import { container } from "../../../configureContainer";
 
-class CommandController {
+
+export class CommandController {
+    private commandUsageService: CommandUsageService;
+    private commandListService: CommandListService;
+
+    /**
+     * Create a new instance.
+     * This class utilises Dependency Injection to get the correct services.
+     */
+    constructor() {
+        this.commandUsageService = container.resolve('commandUsageService');
+        this.commandListService = container.resolve('commandListService');
+    }
+
     public async index(req: Request, res: Response, next: NextFunction) {
         try {
             return res.json(APIResponse.fromData(StatusCode.OK, null));
@@ -16,7 +29,7 @@ class CommandController {
 
     public async getAllUsage(req: Request, res: Response, next: NextFunction) {
         try {
-            return res.json(APIResponse.fromData(StatusCode.OK, await commandUsageService.findAll()));
+            return res.json(APIResponse.fromData(StatusCode.OK, await this.commandUsageService.findAll()));
         } catch (e) {
             next(e);
         }
@@ -31,7 +44,7 @@ class CommandController {
             return res.json(
                 APIResponse.fromData(
                     StatusCode.OK,
-                    await commandListService.findAllListCommands()
+                    await this.commandListService.findAllListCommands()
                 )
             );
         } catch (e) {
@@ -50,7 +63,7 @@ class CommandController {
             return res.json(
                 APIResponse.fromData(
                     StatusCode.OK,
-                    await commandListService.findListCommand({ id: Number(id) })
+                    await this.commandListService.findListCommand({ id: Number(id) })
                 )
             );
         } catch (e) {
@@ -69,7 +82,7 @@ class CommandController {
             return res.json(
                 APIResponse.fromData(
                     StatusCode.OK,
-                    await commandListService.storeListCommand({ name, description, options, guildId })
+                    await this.commandListService.storeListCommand({ name, description, options, guildId })
                 )
             );
         } catch (e) {
@@ -89,7 +102,7 @@ class CommandController {
             return res.json(
                 APIResponse.fromData(
                     StatusCode.OK,
-                    await commandListService.updateListCommand({ id: Number(id) }, { name, description, options })
+                    await this.commandListService.updateListCommand({ id: Number(id) }, { name, description, options })
                 )
             );
         } catch (e) {
@@ -108,7 +121,7 @@ class CommandController {
             return res.json(
                 APIResponse.fromData(
                     StatusCode.OK,
-                    await commandListService.deleteListCommand({ id: Number(id) })
+                    await this.commandListService.deleteListCommand({ id: Number(id) })
                 )
             );
         } catch (e) {
@@ -116,5 +129,3 @@ class CommandController {
         }
     }
 }
-
-export default new CommandController();

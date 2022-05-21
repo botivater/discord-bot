@@ -3,6 +3,8 @@ import { CronJob } from "cron";
 import Discord from "discord.js";
 import { DiscordBirthdayService } from "../service/DiscordBirthdayService";
 import { PrismaClient } from "@prisma/client";
+import { container } from "../configureContainer";
+
 
 export class DiscordBirthdayCron {
     private discordClient: Discord.Client;
@@ -11,11 +13,11 @@ export class DiscordBirthdayCron {
     private cronJob: CronJob;
 
     /**
-     * @param discordClient Inject an instance of Discord.JS.
+     *
      */
-    constructor(discordClient: Discord.Client, prisma: PrismaClient) {
-        this.discordClient = discordClient;
-        this.prisma = prisma;
+    constructor() {
+        this.discordClient = container.resolve('discord');
+        this.prisma = container.resolve('prisma');
         this.discordBirthdayService = new DiscordBirthdayService(this.discordClient, this.prisma);
 
         // Setup background sync cron job.

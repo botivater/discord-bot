@@ -1,7 +1,18 @@
-import { Router } from "express";
-import GuildMemberController from "../../controllers/v1/GuildMember.controller";
+import { GuildMemberController } from "../../controllers/v1/GuildMember.controller";
+import { Router } from "../Router";
 
-export const guildMemberRouter = Router();
 
-guildMemberRouter.get("/", GuildMemberController.getAllGuildMembers);
-guildMemberRouter.get("/:id", GuildMemberController.getGuildMember);
+export class GuildMemberRouter extends Router {
+    private guildMemberController: GuildMemberController;
+
+    /**
+     *
+     */
+    constructor() {
+        super();
+        this.guildMemberController = new GuildMemberController();
+
+        this.router.get("/", this.guildMemberController.getAllGuildMembers.bind(this.guildMemberController));
+        this.router.get("/:id", this.guildMemberController.getGuildMember.bind(this.guildMemberController));
+    }
+}

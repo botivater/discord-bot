@@ -1,8 +1,20 @@
+import { PrismaClient } from "@prisma/client";
 import { Snowflake } from "discord.js";
-import { discordBot } from "../..";
-import database from "../../database";
+import { Discord } from "..";
 
-class ActivityHelper {
+
+export class ActivityHelper {
+    private discord: Discord;
+    private prisma: PrismaClient;
+
+    /**
+     *
+     */
+    constructor(discord: Discord, prisma: PrismaClient) {
+        this.discord = discord;
+        this.prisma = prisma;
+    }
+
     public async registerActivity(data: {
         guildUid: Snowflake;
         guildMemberUid: Snowflake;
@@ -14,9 +26,7 @@ class ActivityHelper {
             throw new Error("Missing parameter");
         }
 
-        const prisma = database.getPrisma();
-
-        const dbGuildMember = await prisma.guildMember.findFirst({
+        const dbGuildMember = await this.prisma.guildMember.findFirst({
             where: {
                 AND: [
                     {
@@ -37,7 +47,7 @@ class ActivityHelper {
             throw new Error("Guild member not found");
         }
 
-        await prisma.guildMember.update({
+        await this.prisma.guildMember.update({
             where: {
                 id: dbGuildMember.id
             },
@@ -66,9 +76,7 @@ class ActivityHelper {
     }) {
         const { guildUid, guildMemberUid } = data;
 
-        const discordClient = discordBot.getDiscord();
-
-        const guild = discordClient.guilds.cache.get(guildUid);
+        const guild = this.discord.guilds.cache.get(guildUid);
         if (!guild) throw new Error("Guild not found");
 
         const guildMember = guild.members.cache.get(guildMemberUid);
@@ -87,9 +95,7 @@ class ActivityHelper {
     }) {
         const { guildUid, guildMemberUid } = data;
 
-        const discordClient = discordBot.getDiscord();
-
-        const guild = discordClient.guilds.cache.get(guildUid);
+        const guild = this.discord.guilds.cache.get(guildUid);
         if (!guild) throw new Error("Guild not found");
 
         const guildMember = guild.members.cache.get(guildMemberUid);
@@ -104,9 +110,7 @@ class ActivityHelper {
     }) {
         const { guildUid, guildMemberUid } = data;
 
-        const discordClient = discordBot.getDiscord();
-
-        const guild = discordClient.guilds.cache.get(guildUid);
+        const guild = this.discord.guilds.cache.get(guildUid);
         if (!guild) throw new Error("Guild not found");
 
         const guildMember = guild.members.cache.get(guildMemberUid);
@@ -115,5 +119,3 @@ class ActivityHelper {
         await guildMember.roles.remove("922109645030555680");
     }
 }
-
-export default new ActivityHelper();

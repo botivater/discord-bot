@@ -1,15 +1,14 @@
 import GuildNotFoundError from "../../error/GuildNotFoundError";
 import { PrismaClient } from "@prisma/client";
-import database from "../../../database";
 
-class CommandListService {
+export class CommandListService {
     private prisma: PrismaClient;
 
     /**
-     *
+     * @param prisma Inject an instance of PrismaClient.
      */
-    constructor() {
-        this.prisma = database.getPrisma();
+     constructor(prisma: PrismaClient) {
+        this.prisma = prisma;
     }
 
     public async findAllListCommands() {
@@ -97,5 +96,3 @@ class CommandListService {
         return null;
     }
 }
-
-export default new CommandListService();

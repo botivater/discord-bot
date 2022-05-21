@@ -4,7 +4,8 @@ import {
     userMention,
 } from "@discordjs/builders";
 import { Interaction } from "discord.js";
-import logUsage from "../helpers/logUsage";
+import { container } from "../../configureContainer";
+
 
 export enum HelpCommandEnum {
     REPORT = "report",
@@ -51,7 +52,7 @@ export default {
                     break;
             }
 
-            await logUsage.interaction(interaction);
+            await container.resolve('logUsage').interaction(interaction);
 
             await interaction.editReply({
                 content: message,

@@ -1,8 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CronJob } from "cron";
 import { GuildMember, Interaction } from "discord.js";
-import database from "../../database";
-import logUsage from "../helpers/logUsage";
+import { container } from "../../configureContainer";
+
 
 export default {
     command: <SlashCommandBuilder>new SlashCommandBuilder()
@@ -40,7 +39,7 @@ export default {
                 throw new Error("Je hebt een ongeldige verjaardag opgegeven.");
             }
 
-            const prisma = database.getPrisma();
+            const prisma = container.resolve('prisma')
 
             const dbGuildMember = await prisma.guildMember.findFirst({
                 where: {
@@ -71,7 +70,7 @@ export default {
                 }
             })
 
-            await logUsage.interaction(interaction);
+            await container.resolve('logUsage').interaction(interaction);
 
             await interaction.editReply({
                 content: `Ik heb jouw verjaardag opgeslagen. Jouw verjaardag is op ${parsedBirthday.toLocaleDateString(

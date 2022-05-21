@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import database from "../../../database";
 
 type CommandUsageStatistic = {
     commandName: string;
@@ -8,19 +7,17 @@ type CommandUsageStatistic = {
 
 type CommandUsageStatistics = CommandUsageStatistic[];
 
-class CommandUsageService {
+export class CommandUsageService {
     private prisma: PrismaClient;
 
     /**
-     *
+     * @param prisma Inject an instance of PrismaClient.
      */
-    constructor() {
-        this.prisma = database.getPrisma();
+     constructor(prisma: PrismaClient) {
+        this.prisma = prisma;
     }
 
     public async findAll(): Promise<CommandUsageStatistics> {
         return await this.prisma.$queryRaw`SELECT commandName, count(*) as invocations FROM CommandInvocation GROUP BY commandName`;
     }
 }
-
-export default new CommandUsageService();

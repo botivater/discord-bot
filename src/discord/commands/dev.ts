@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { Interaction } from "discord.js";
-import logUsage from "../helpers/logUsage";
+import { container } from "../../configureContainer";
 
 export default {
     command: new SlashCommandBuilder()
@@ -18,6 +18,6 @@ export default {
             },
         });
 
-        await logUsage.interaction(interaction);
+        await container.resolve('logUsage').interaction(interaction);
     },
 };

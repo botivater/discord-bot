@@ -1,10 +1,10 @@
 import { WelcomeMessageConfig } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
-import database from "../../../database";
+import { container } from "../../../configureContainer";
 import { StatusCode } from "../../enum/StatusCode";
 import APIResponse from "../../responses/APIResponse";
 import { IService } from "../../services/IService";
-import { WelcomeMessageConfigServiceV2 } from "../../services/v2/welcomeMessageConfig";
+import { WelcomeMessageConfigServiceV2 } from "../../services/v2/welcomeMessageConfig.service";
 import { IRestController } from "../IRestController";
 
 class WelcomeMessageConfigControllerV2 implements IRestController<WelcomeMessageConfig> {
@@ -102,5 +102,4 @@ class WelcomeMessageConfigControllerV2 implements IRestController<WelcomeMessage
     }
 }
 
-const welcomeMessageConfigServiceV2 = new WelcomeMessageConfigServiceV2(database.getPrisma());
-export const welcomeMessageConfigControllerV2 = new WelcomeMessageConfigControllerV2(welcomeMessageConfigServiceV2);
+export const welcomeMessageConfigControllerV2 = new WelcomeMessageConfigControllerV2(container.resolve('welcomeMessageConfigServiceV2'));

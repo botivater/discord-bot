@@ -1,6 +1,7 @@
 import logger from "../../logger";
 import { VoiceState } from "discord.js";
-import activityHelper from "../helpers/activityHelper";
+import { container } from "../../configureContainer";
+
 
 const handle = async (oldState: VoiceState, newState: VoiceState) => {
     const { guild, id } = newState;
@@ -8,6 +9,8 @@ const handle = async (oldState: VoiceState, newState: VoiceState) => {
     if (!guild || !id) {
         return;
     }
+
+    const activityHelper = container.resolve('activityHelper');
 
     try {
         await activityHelper.registerActivity({

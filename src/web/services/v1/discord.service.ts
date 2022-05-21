@@ -14,20 +14,20 @@ import { CommandFlowGroupType } from "../../../common/CommandFlowGroupType";
 import { BuildingBlockType } from "../../../common/BuildingBlockType";
 import { OnType } from "../../../common/OnType";
 import { CheckType } from "../../../common/CheckType";
-import database from "../../../database";
 import { Discord } from "../../../discord";
-import { discordBot } from "../../..";
 
-class DiscordService {
+
+export class DiscordService {
     private prisma: PrismaClient;
     private discord: Discord;
 
     /**
-     *
+     * @param prisma Inject an instance of PrismaClient.
+     * @param discord Inject an instance of Discord.
      */
-    constructor() {
-        this.prisma = database.getPrisma();
-        this.discord = discordBot.getDiscord();
+    constructor(prisma: PrismaClient, discord: Discord) {
+        this.prisma = prisma;
+        this.discord = discord;
     }
 
     public async getAllGuilds(): Promise<FriendshipBubble.DiscordBot.Guild[]> {
@@ -265,5 +265,3 @@ class DiscordService {
         return null;
     }
 }
-
-export default new DiscordService();

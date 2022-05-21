@@ -1,16 +1,15 @@
 import { PrismaClient } from "@prisma/client";
 import { Interaction } from "discord.js";
-import database from "../../database";
 import logger from "../../logger";
 
-class LogUsage {
+export class LogUsage {
     private prisma: PrismaClient;
 
     /**
      *
      */
-    constructor() {
-        this.prisma = database.getPrisma();
+    constructor(prisma: PrismaClient) {
+        this.prisma = prisma;
     }
 
     public async interaction(interaction: Interaction) {
@@ -66,5 +65,3 @@ class LogUsage {
         })
     }
 }
-
-export default new LogUsage();

@@ -1,9 +1,21 @@
 import { NextFunction, Request, Response } from "express";
+import { container } from "../../../configureContainer";
 import { StatusCode } from "../../enum/StatusCode";
 import APIResponse from "../../responses/APIResponse";
-import DiscordService from "../../services/v1/discord.service";
+import { DiscordService } from "../../services/v1/discord.service";
 
-class DiscordController {
+
+export class DiscordController {
+    private discordService: DiscordService;
+
+    /**
+     * Create a new instance.
+     * This class utilises Dependency Injection to get the correct services.
+     */
+    constructor() {
+        this.discordService = container.resolve('discordService');
+    }
+
     public async index(req: Request, res: Response, next: NextFunction) {
         try {
             return res.json(APIResponse.fromData(StatusCode.OK, null));
@@ -14,7 +26,7 @@ class DiscordController {
 
     public async getAllGuilds(req: Request, res: Response, next: NextFunction) {
         try {
-            const data = await DiscordService.getAllGuilds();
+            const data = await this.discordService.getAllGuilds();
 
             return res.json(APIResponse.fromData(StatusCode.OK, data));
         } catch (e) {
@@ -25,7 +37,7 @@ class DiscordController {
     public async getGuild(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const data = await DiscordService.getGuild({ id });
+            const data = await this.discordService.getGuild({ id });
 
             return res.json(APIResponse.fromData(StatusCode.OK, data));
         } catch (e) {
@@ -41,7 +53,7 @@ class DiscordController {
         try {
             const { id } = req.params;
             const { type = "" } = req.query;
-            const data = await DiscordService.getGuildChannels({
+            const data = await this.discordService.getGuildChannels({
                 id,
                 type: <string>type,
             });
@@ -59,7 +71,7 @@ class DiscordController {
     ) {
         try {
             const { id } = req.params;
-            const data = await DiscordService.getGuildMembers({ id });
+            const data = await this.discordService.getGuildMembers({ id });
 
             return res.json(APIResponse.fromData(StatusCode.OK, data));
         } catch (e) {
@@ -74,7 +86,7 @@ class DiscordController {
     ) {
         try {
             const { id } = req.params;
-            const data = await DiscordService.getGuildRoles({ id });
+            const data = await this.discordService.getGuildRoles({ id });
 
             return res.json(APIResponse.fromData(StatusCode.OK, data));
         } catch (e) {
@@ -91,7 +103,7 @@ class DiscordController {
             return res.json(
                 APIResponse.fromData(
                     StatusCode.OK,
-                    await DiscordService.getAllReactionCollectors()
+                    await this.discordService.getAllReactionCollectors()
                 )
             );
         } catch (e) {
@@ -110,7 +122,7 @@ class DiscordController {
             return res.json(
                 APIResponse.fromData(
                     StatusCode.OK,
-                    await DiscordService.getReactionCollector({
+                    await this.discordService.getReactionCollector({
                         id: Number(id),
                     })
                 )
@@ -140,7 +152,7 @@ class DiscordController {
             return res.json(
                 APIResponse.fromData(
                     StatusCode.OK,
-                    await DiscordService.storeReactionCollector({
+                    await this.discordService.storeReactionCollector({
                         guildId,
                         name,
                         description,
@@ -168,7 +180,7 @@ class DiscordController {
             return res.json(
                 APIResponse.fromData(
                     StatusCode.OK,
-                    await DiscordService.deleteReactionCollector({
+                    await this.discordService.deleteReactionCollector({
                         id: Number(id),
                     })
                 )
@@ -179,5 +191,3 @@ class DiscordController {
         }
     }
 }
-
-export default new DiscordController();

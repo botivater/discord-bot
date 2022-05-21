@@ -1,9 +1,21 @@
 import { NextFunction, Request, Response } from "express";
+import { container } from "../../../configureContainer";
 import { StatusCode } from "../../enum/StatusCode";
 import APIResponse from "../../responses/APIResponse";
-import DiscordService from "../../services/v1/discord.service";
+import { DiscordService } from "../../services/v1/discord.service";
 
-class MiraController {
+
+export class MiraController {
+    private discordService: DiscordService;
+
+    /**
+     * Create a new instance.
+     * This class utilises Dependency Injection to get the correct services.
+     */
+    constructor() {
+        this.discordService = container.resolve('discordService');
+    }
+
     public async index(req: Request, res: Response, next: NextFunction) {
         try {
             return res.json(APIResponse.fromData(StatusCode.OK, null));
@@ -15,7 +27,7 @@ class MiraController {
     public async speak(req: Request, res: Response, next: NextFunction) {
         try {
             const { channelId, message } = req.body;
-            await DiscordService.sendMessage({ channelId, message });
+            await this.discordService.sendMessage({ channelId, message });
 
             return res.json(APIResponse.fromData(StatusCode.OK, null));
         } catch (e) {
@@ -23,5 +35,3 @@ class MiraController {
         }
     }
 }
-
-export default new MiraController();

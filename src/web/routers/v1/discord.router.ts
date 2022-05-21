@@ -1,20 +1,31 @@
-import { Router } from "express";
-import DiscordController from "../../controllers/v1/Discord.controller";
+import { DiscordController } from "../../controllers/v1/Discord.controller";
+import { Router } from "../Router";
 
-export const discordRouter = Router();
 
-// Index
-discordRouter.get("/", DiscordController.index);
+export class DiscordRouter extends Router {
+    private discordController: DiscordController;
 
-// Guilds
-discordRouter.get("/guilds", DiscordController.getAllGuilds);
-discordRouter.get("/guilds/:id", DiscordController.getGuild);
-discordRouter.get("/guilds/:id/channels", DiscordController.getGuildChannels);
-discordRouter.get("/guilds/:id/members", DiscordController.getGuildMembers);
-discordRouter.get("/guilds/:id/roles", DiscordController.getGuildRoles);
+    /**
+     *
+     */
+    constructor() {
+        super();
+        this.discordController = new DiscordController();
 
-// Reaction collector
-discordRouter.get("/reactionCollectors", DiscordController.getAllReactionCollectors);
-discordRouter.get("/reactionCollectors/:id", DiscordController.getReactionCollector);
-discordRouter.post("/reactionCollectors", DiscordController.createReactionCollector);
-discordRouter.delete("/reactionCollectors/:id", DiscordController.deleteReactionCollector);
+        // Index
+        this.router.get("/", this.discordController.index.bind(this.discordController));
+
+        // Guilds
+        this.router.get("/guilds", this.discordController.getAllGuilds.bind(this.discordController));
+        this.router.get("/guilds/:id", this.discordController.getGuild.bind(this.discordController));
+        this.router.get("/guilds/:id/channels", this.discordController.getGuildChannels.bind(this.discordController));
+        this.router.get("/guilds/:id/members", this.discordController.getGuildMembers.bind(this.discordController));
+        this.router.get("/guilds/:id/roles", this.discordController.getGuildRoles.bind(this.discordController));
+
+        // Reaction collector
+        this.router.get("/reactionCollectors", this.discordController.getAllReactionCollectors.bind(this.discordController));
+        this.router.get("/reactionCollectors/:id", this.discordController.getReactionCollector.bind(this.discordController));
+        this.router.post("/reactionCollectors", this.discordController.createReactionCollector.bind(this.discordController));
+        this.router.delete("/reactionCollectors/:id", this.discordController.deleteReactionCollector.bind(this.discordController));
+    }
+}

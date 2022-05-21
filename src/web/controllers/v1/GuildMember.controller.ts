@@ -1,9 +1,21 @@
 import { NextFunction, Request, Response } from "express";
+import { container } from "../../../configureContainer";
 import { StatusCode } from "../../enum/StatusCode";
 import APIResponse from "../../responses/APIResponse";
-import guildMemberService from "../../services/v1/guildMember.service";
+import { GuildMemberService } from "../../services/v1/guildMember.service";
 
-class GuildMemberController {
+
+export class GuildMemberController {
+    private guildMemberService: GuildMemberService;
+
+    /**
+     * Create a new instance.
+     * This class utilises Dependency Injection to get the correct services.
+     */
+    constructor() {
+        this.guildMemberService = container.resolve('guildMemberService');
+    }
+
     public async getAllGuildMembers(
         req: Request,
         res: Response,
@@ -13,7 +25,7 @@ class GuildMemberController {
             return res.json(
                 APIResponse.fromData(
                     StatusCode.OK,
-                    await guildMemberService.getAllGuildMembers()
+                    await this.guildMemberService.getAllGuildMembers()
                 )
             );
         } catch (e) {
@@ -32,7 +44,7 @@ class GuildMemberController {
             return res.json(
                 APIResponse.fromData(
                     StatusCode.OK,
-                    await guildMemberService.getGuildMember({
+                    await this.guildMemberService.getGuildMember({
                         id: Number(id)
                     })
                 )
@@ -42,5 +54,3 @@ class GuildMemberController {
         }
     }
 }
-
-export default new GuildMemberController();

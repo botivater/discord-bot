@@ -1,4 +1,3 @@
-import { discordBot } from "../..";
 import logger from "../../logger";
 import {
     MessageReaction,
@@ -10,13 +9,14 @@ import { OnType } from "../../common/OnType";
 import { CommandFlowGroupType } from "../../common/CommandFlowGroupType";
 import { CheckType } from "../../common/CheckType";
 import { BuildingBlockType } from "../../common/BuildingBlockType";
+import { container } from "../../configureContainer";
 
 // Building blocks
 import sendMessage, { SendMessageTo } from "./buildingBlocks/sendMessage";
 import addRole from "./buildingBlocks/addRole";
 import removeRole from "./buildingBlocks/removeRole";
-import activityHelper from "../helpers/activityHelper";
-import database from "../../database";
+import { Discord } from "..";
+
 
 const handle = async (
     reaction: MessageReaction | PartialMessageReaction,
@@ -24,7 +24,8 @@ const handle = async (
     onType: OnType = OnType.NONE
 ) => {
     try {
-        const client = discordBot.getDiscord();
+        const client: Discord = container.resolve('discord');
+        const activityHelper = container.resolve('activityHelper');
 
         if (reaction.partial) await reaction.fetch();
         if (reaction.message.partial) await reaction.message.fetch();
@@ -64,7 +65,7 @@ const handle = async (
         );
 
         // Get the command flow from the database.
-        const prisma = database.getPrisma();
+        const prisma = container.resolve('prisma');
         // const commandFlowGroup = await em.findOne(
         //     CommandFlowGroupEntity,
         //     {

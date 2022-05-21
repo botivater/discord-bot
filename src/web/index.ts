@@ -12,14 +12,16 @@ import { routingErrorHandler } from "./middleware/routingErrorHandler";
 import { auth } from "express-oauth2-jwt-bearer";
 
 // Routers
-import { v1Router } from "./routers/v1.router";
-import { v2Router } from "./routers/v2.router";
+import { V1Router } from "./routers/v1.router";
+import { V2Router } from "./routers/v2.router";
 
 
 export class Web {
-    protected app: express.Express;
-    protected server: http.Server;
-    protected authMiddleware: express.Handler;
+    private app: express.Express;
+    private server: http.Server;
+    private authMiddleware: express.Handler;
+    private v1Router: V1Router;
+    private v2Router: V2Router;
 
     /**
      *
@@ -42,8 +44,11 @@ export class Web {
         this.app.use(bodyParser.json());
 
         // Routers
-        this.app.use("/api/v1", this.authMiddleware, v1Router);
-        this.app.use("/api/v2", this.authMiddleware, v2Router);
+        this.v1Router = new V1Router();
+        this.app.use("/api/v1", this.authMiddleware, this.v1Router.getRouter());
+
+        this.v2Router = new V2Router();
+        this.app.use("/api/v2", this.authMiddleware, this.v2Router.getRouter());
 
         // Error middleware
         this.app.use(routingErrorHandler);

@@ -6,6 +6,8 @@ import { IMessageChannel } from "../service/IMessageChannel";
 import { CronJob } from "cron";
 import Discord from "discord.js";
 import { Guild, PrismaClient } from "@prisma/client";
+import { container } from "../configureContainer";
+
 
 export class DiscordSyncCron {
     private discordClient: Discord.Client;
@@ -14,11 +16,11 @@ export class DiscordSyncCron {
     private cronJob: CronJob;
 
     /**
-     * @param discordClient Inject an instance of Discord.JS.
+     *
      */
-    constructor(discordClient: Discord.Client, prisma: PrismaClient) {
-        this.discordClient = discordClient;
-        this.prisma = prisma;
+    constructor() {
+        this.discordClient = container.resolve('discord');
+        this.prisma = container.resolve('prisma');
         this.discordSyncService = new DiscordSyncService(this.discordClient, this.prisma);
 
         this.handleCronJob();

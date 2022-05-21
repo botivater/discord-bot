@@ -1,9 +1,21 @@
 import { NextFunction, Request, Response } from "express";
+import { container } from "../../../configureContainer";
 import { StatusCode } from "../../enum/StatusCode";
 import APIResponse from "../../responses/APIResponse";
-import reportService from "../../services/v1/report.service";
+import { ReportService } from "../../services/v1/report.service";
 
-class ReportController {
+
+export class ReportController {
+    private reportService: ReportService;
+
+    /**
+     * Create a new instance.
+     * This class utilises Dependency Injection to get the correct services.
+     */
+    constructor() {
+        this.reportService = container.resolve('reportService');
+    }
+
     public async getAllReports(
         req: Request,
         res: Response,
@@ -13,7 +25,7 @@ class ReportController {
             return res.json(
                 APIResponse.fromData(
                     StatusCode.OK,
-                    await reportService.getAllReports()
+                    await this.reportService.getAllReports()
                 )
             );
         } catch (e) {
@@ -32,7 +44,7 @@ class ReportController {
             return res.json(
                 APIResponse.fromData(
                     StatusCode.OK,
-                    await reportService.getReport({
+                    await this.reportService.getReport({
                         id: Number(id)
                     })
                 )
@@ -54,7 +66,7 @@ class ReportController {
             return res.json(
                 APIResponse.fromData(
                     StatusCode.OK,
-                    await reportService.updateReport(
+                    await this.reportService.updateReport(
                         {
                             id: Number(id)
                         },
@@ -69,5 +81,3 @@ class ReportController {
         }
     }
 }
-
-export default new ReportController();

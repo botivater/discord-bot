@@ -1,10 +1,9 @@
 import { GuildMember } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
-import database from "../../../database";
+import { container } from "../../../configureContainer";
 import { StatusCode } from "../../enum/StatusCode";
 import APIResponse from "../../responses/APIResponse";
 import { IService } from "../../services/IService";
-import { GuildMemberServiceV2 } from "../../services/v2/guildMember.service";
 import { IRestController } from "../IRestController";
 
 class GuildMemberControllerV2 implements IRestController<GuildMember> {
@@ -82,5 +81,4 @@ class GuildMemberControllerV2 implements IRestController<GuildMember> {
     }
 }
 
-const guildMemberServiceV2 = new GuildMemberServiceV2(database.getPrisma());
-export const guildMemberControllerV2 = new GuildMemberControllerV2(guildMemberServiceV2);
+export const guildMemberControllerV2 = new GuildMemberControllerV2(container.resolve('guildMemberServiceV2'));

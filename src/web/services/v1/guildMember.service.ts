@@ -1,14 +1,13 @@
 import { PrismaClient } from "@prisma/client";
-import database from "../../../database";
 
-class GuildMemberService {
+export class GuildMemberService {
     private prisma: PrismaClient;
 
     /**
-     *
+     * @param prisma Inject an instance of PrismaClient.
      */
-    constructor() {
-        this.prisma = database.getPrisma();
+     constructor(prisma: PrismaClient) {
+        this.prisma = prisma;
     }
 
     public async getAllGuildMembers() {
@@ -27,5 +26,3 @@ class GuildMemberService {
         });
     }
 }
-
-export default new GuildMemberService();

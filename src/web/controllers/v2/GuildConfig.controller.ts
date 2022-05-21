@@ -1,6 +1,6 @@
 import { GuildConfig } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
-import database from "../../../database";
+import { container } from "../../../configureContainer";
 import { StatusCode } from "../../enum/StatusCode";
 import APIResponse from "../../responses/APIResponse";
 import { IService } from "../../services/IService";
@@ -102,5 +102,4 @@ class GuildConfigControllerV2 implements IRestController<GuildConfig> {
     }
 }
 
-const guildConfigServiceV2 = new GuildConfigServiceV2(database.getPrisma());
-export const guildConfigControllerV2 = new GuildConfigControllerV2(guildConfigServiceV2);
+export const guildConfigControllerV2 = new GuildConfigControllerV2(container.resolve('guildConfigServiceV2'));
