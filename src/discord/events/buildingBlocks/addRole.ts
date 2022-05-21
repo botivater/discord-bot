@@ -1,4 +1,4 @@
-import discord from "../../../discord";
+import { discordBot } from "../../..";
 
 export type AddRoleConfiguration = {
     guildId: string;
@@ -7,7 +7,7 @@ export type AddRoleConfiguration = {
 }
 
 const handle = async (configuration: AddRoleConfiguration) => {
-    const client = discord.getClient();
+    const client = discordBot.getDiscord();
 
     const guild = client.guilds.cache.get(configuration.guildId);
     if (!guild) return;

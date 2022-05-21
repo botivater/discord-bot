@@ -1,5 +1,5 @@
 import http from "http";
-import express, { NextFunction, Request, Response } from "express";
+import express from "express";
 import logger from "../logger";
 import Config from "../common/config";
 
@@ -16,14 +16,15 @@ import { v1Router } from "./routers/v1.router";
 import { v2Router } from "./routers/v2.router";
 
 
-class Web {
-    protected app: express.Express | undefined = undefined;
+export class Web {
+    protected app: express.Express;
+    protected server: http.Server;
+    protected authMiddleware: express.Handler;
 
-    protected server: http.Server | undefined = undefined;
-
-    protected authMiddleware: express.Handler | undefined = undefined;
-
-    public async setup() {
+    /**
+     *
+     */
+    constructor() {
         logger.info("Web server is starting up...");
 
         this.app = express();
@@ -41,7 +42,8 @@ class Web {
         this.app.use(bodyParser.json());
 
         // Routers
-        this.setupRoutes();
+        this.app.use("/api/v1", this.authMiddleware, v1Router);
+        this.app.use("/api/v2", this.authMiddleware, v2Router);
 
         // Error middleware
         this.app.use(routingErrorHandler);
@@ -49,23 +51,13 @@ class Web {
 
         // HTTP server
         this.server = http.createServer(this.app);
+    }
+
+    public async setup() {
         await new Promise<void>((resolve) => {
-            if (!this.server) throw new Error("Server is undefined.");
             this.server.listen(Config.getAPIPort(), "0.0.0.0", resolve);
         });
         logger.info("Web server is ready.");
         logger.info(`REST API is available on http://localhost:${Config.getAPIPort()}`);
     }
-
-    protected setupRoutes() {
-        if (!this.app) throw new Error("App is undefined.");
-        if (!this.authMiddleware)
-            throw new Error("Auth middleware is undefined.");
-
-        // Routers
-        this.app.use("/api/v1", this.authMiddleware, v1Router);
-        this.app.use("/api/v2", this.authMiddleware, v2Router);
-    }
 }
-
-export default new Web();

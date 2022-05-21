@@ -1,5 +1,5 @@
-import discord from "../../../discord";
 import Handlebars from "handlebars";
+import { discordBot } from "../../..";
 
 export enum SendMessageTo {
     SENDER = 0,
@@ -19,7 +19,7 @@ Handlebars.registerHelper('pickFirstName', function(name) {
 });
 
 const handle = async (configuration: SendMessageConfiguration) => {
-    const client = discord.getClient();
+    const client = discordBot.getDiscord();
 
     const stringTemplate = Handlebars.compile(configuration.messageFormat);
 

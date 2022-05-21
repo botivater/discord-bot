@@ -2,10 +2,10 @@ import GuildChannelNotFoundError from "../../web/error/GuildChannelNotFoundError
 import GuildChannelNotTextChannelError from "../../web/error/GuildChannelNotTextChannelError";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { Interaction } from "discord.js";
-import discord from "..";
 import logUsage from "../helpers/logUsage";
 import { PrismaClient } from "@prisma/client";
 import database from "../../database";
+import { discordBot } from "../..";
 
 export default {
     command: new SlashCommandBuilder()
@@ -17,7 +17,7 @@ export default {
         await interaction.deferReply();
 
         const prisma: PrismaClient = database.getPrisma();
-        const discordClient = discord.getClient();
+        const discordClient = discordBot.getDiscord();
 
         const commandFlowGroups = await prisma.commandFlowGroup.findMany({
             orderBy: {

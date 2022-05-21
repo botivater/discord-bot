@@ -1,4 +1,3 @@
-import discord from "../../../discord";
 import GuildChannelNotFoundError from "../../error/GuildChannelNotFoundError";
 import GuildChannelNotTextChannelError from "../../error/GuildChannelNotTextChannelError";
 import GuildNotFoundError from "../../error/GuildNotFoundError";
@@ -16,22 +15,25 @@ import { BuildingBlockType } from "../../../common/BuildingBlockType";
 import { OnType } from "../../../common/OnType";
 import { CheckType } from "../../../common/CheckType";
 import database from "../../../database";
+import { Discord } from "../../../discord";
+import { discordBot } from "../../..";
 
 class DiscordService {
     private prisma: PrismaClient;
+    private discord: Discord;
 
     /**
      *
      */
     constructor() {
         this.prisma = database.getPrisma();
+        this.discord = discordBot.getDiscord();
     }
 
     public async getAllGuilds(): Promise<FriendshipBubble.DiscordBot.Guild[]> {
-        const client = discord.getClient();
         const data: FriendshipBubble.DiscordBot.Guild[] = [];
 
-        for (const guild of client.guilds.cache.values()) {
+        for (const guild of this.discord.guilds.cache.values()) {
             data.push(guild);
         }
 
@@ -41,9 +43,8 @@ class DiscordService {
     public async getGuild(data: {
         id: FriendshipBubble.DiscordBot.Snowflake;
     }): Promise<FriendshipBubble.DiscordBot.Guild> {
-        const client = discord.getClient();
         const guilds: FriendshipBubble.DiscordBot.Guild =
-            await client.guilds.fetch(data.id);
+            await this.discord.guilds.fetch(data.id);
 
         return guilds;
     }
@@ -52,10 +53,9 @@ class DiscordService {
         id: FriendshipBubble.DiscordBot.Snowflake;
         type: string;
     }): Promise<FriendshipBubble.DiscordBot.GuildChannel[]> {
-        const client = discord.getClient();
         const guildChannels: FriendshipBubble.DiscordBot.GuildChannel[] = [];
 
-        const guild = client.guilds.cache.get(data.id);
+        const guild = this.discord.guilds.cache.get(data.id);
         if (!guild) throw new GuildNotFoundError(data.id);
 
         for (const channel of guild.channels.cache.values()) {
@@ -73,10 +73,9 @@ class DiscordService {
     public async getGuildMembers(data: {
         id: FriendshipBubble.DiscordBot.Snowflake;
     }): Promise<FriendshipBubble.DiscordBot.GuildMember[]> {
-        const client = discord.getClient();
         const guildMembers: FriendshipBubble.DiscordBot.GuildMember[] = [];
 
-        const guild = client.guilds.cache.get(data.id);
+        const guild = this.discord.guilds.cache.get(data.id);
         if (!guild) throw new GuildNotFoundError(data.id);
 
         for (const member of guild.members.cache.values()) {
@@ -89,10 +88,9 @@ class DiscordService {
     public async getGuildRoles(data: {
         id: FriendshipBubble.DiscordBot.Snowflake;
     }): Promise<FriendshipBubble.DiscordBot.Role[]> {
-        const client = discord.getClient();
         const guildRoles: FriendshipBubble.DiscordBot.Role[] = [];
 
-        const guild = client.guilds.cache.get(data.id);
+        const guild = this.discord.guilds.cache.get(data.id);
         if (!guild) throw new GuildNotFoundError(data.id);
 
         for (const role of guild.roles.cache.values()) {
@@ -106,8 +104,7 @@ class DiscordService {
         if (!data.channelId) throw new MissingParameterError("channelId");
         if (!data.message) throw new MissingParameterError("message");
 
-        const client = discord.getClient();
-        const channel = client.channels.cache.get(data.channelId);
+        const channel = this.discord.channels.cache.get(data.channelId);
         if (!channel) throw new GuildChannelNotFoundError(data.channelId);
         if (!channel.isText())
             throw new GuildChannelNotTextChannelError(data.channelId);
@@ -176,8 +173,7 @@ class DiscordService {
         });
         if (!dbGuild) throw new GuildNotFoundError();
 
-        const discordClient = discord.getClient();
-        const channel = discordClient.channels.cache.get(channelId);
+        const channel = this.discord.channels.cache.get(channelId);
         if (!channel) throw new GuildChannelNotFoundError(data.channelId);
         if (!channel.isText())
             throw new GuildChannelNotTextChannelError(data.channelId);
@@ -234,8 +230,7 @@ class DiscordService {
         })
         if (!dbCommandFlowGroup) throw new Error("Not found error");
 
-        const discordClient = discord.getClient();
-        const channel = discordClient.channels.cache.get(
+        const channel = this.discord.channels.cache.get(
             dbCommandFlowGroup.channelId
         );
         if (!channel)

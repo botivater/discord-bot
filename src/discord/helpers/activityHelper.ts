@@ -1,5 +1,5 @@
 import { Snowflake } from "discord.js";
-import discord from "..";
+import { discordBot } from "../..";
 import database from "../../database";
 
 class ActivityHelper {
@@ -66,7 +66,7 @@ class ActivityHelper {
     }) {
         const { guildUid, guildMemberUid } = data;
 
-        const discordClient = discord.getClient();
+        const discordClient = discordBot.getDiscord();
 
         const guild = discordClient.guilds.cache.get(guildUid);
         if (!guild) throw new Error("Guild not found");
@@ -87,7 +87,7 @@ class ActivityHelper {
     }) {
         const { guildUid, guildMemberUid } = data;
 
-        const discordClient = discord.getClient();
+        const discordClient = discordBot.getDiscord();
 
         const guild = discordClient.guilds.cache.get(guildUid);
         if (!guild) throw new Error("Guild not found");
@@ -104,7 +104,7 @@ class ActivityHelper {
     }) {
         const { guildUid, guildMemberUid } = data;
 
-        const discordClient = discord.getClient();
+        const discordClient = discordBot.getDiscord();
 
         const guild = discordClient.guilds.cache.get(guildUid);
         if (!guild) throw new Error("Guild not found");

@@ -1,4 +1,4 @@
-import discord from "../../../discord";
+import { discordBot } from "../../..";
 
 export type RemoveRoleConfiguration = {
     guildId: string;
@@ -7,7 +7,7 @@ export type RemoveRoleConfiguration = {
 }
 
 const handle = async (configuration: RemoveRoleConfiguration) => {
-    const client = discord.getClient();
+    const client = discordBot.getDiscord();
 
     const guild = client.guilds.cache.get(configuration.guildId);
     if (!guild) return;

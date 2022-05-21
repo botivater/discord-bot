@@ -1,10 +1,19 @@
-import discord from "../../../discord";
+import { discordBot } from "../../..";
+import { Discord } from "../../../discord";
 import interactionCreate from "../../../discord/events/interactionCreate";
 
 class DiscordBotService {
+    private discord: Discord;
+
+    /**
+     *
+     */
+    constructor() {
+        this.discord = discordBot.getDiscord();
+    }
+
     public async reloadCommands() {
-        const discordClient = discord.getClient();
-        await interactionCreate.registerCommands(discordClient);
+        await interactionCreate.registerCommands(this.discord);
     }
 }
 

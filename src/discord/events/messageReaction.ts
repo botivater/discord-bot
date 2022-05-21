@@ -1,4 +1,4 @@
-import discord from "../../discord";
+import { discordBot } from "../..";
 import logger from "../../logger";
 import {
     MessageReaction,
@@ -24,7 +24,7 @@ const handle = async (
     onType: OnType = OnType.NONE
 ) => {
     try {
-        const client = discord.getClient();
+        const client = discordBot.getDiscord();
 
         if (reaction.partial) await reaction.fetch();
         if (reaction.message.partial) await reaction.message.fetch();

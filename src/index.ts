@@ -1,27 +1,39 @@
 require("dotenv").config();
-import discord from "./discord";
-import web from "./web";
+import { Discord } from "./discord";
+import { Web } from "./web";
 import { DiscordSyncCron } from "./cron/DiscordSyncCron";
 import { DiscordBirthdayCron } from "./cron/DiscordBirthdayCron";
 import database from "./database";
 
 class DiscordBot {
+    private discord: Discord;
+    private web: Web;
+
     constructor() {
+        this.discord = new Discord();
+        this.discord.on("ready", this.onDiscordReadyHandler.bind(this));
+
+        this.web = new Web();
+
         this.setup();
     }
 
     private async setup() {
-        await web.setup();
-        await discord.setup();
-        
-        discord.getClient().on("ready", this.onDiscordReadyHandler.bind(this));
+        await this.discord.setup();
+        await this.web.setup();
     }
 
     private async onDiscordReadyHandler() {
-        const discordClient = discord.getClient();
+        new DiscordSyncCron(this.discord, database.getPrisma());
+        new DiscordBirthdayCron(this.discord, database.getPrisma());
+    }
+    
+    public getDiscord(): Discord {
+        return this.discord;
+    }
 
-        new DiscordSyncCron(discordClient, database.getPrisma());
-        new DiscordBirthdayCron(discordClient, database.getPrisma());
+    public getWeb(): Web {
+        return this.web;
     }
 }
 

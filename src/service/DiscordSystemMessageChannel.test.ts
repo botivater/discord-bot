@@ -14,7 +14,8 @@ test('DiscordSystemMessageChannel constructs', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
         name: "Test",
-        snowflake: "1234"
+        snowflake: "1234",
+        configId: null
     }
 
     const discordSystemMessageChannel = new DiscordSystemMessageChannel(discordClient, databaseGuild);

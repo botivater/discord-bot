@@ -1,8 +1,8 @@
 import logger from "../../logger";
 import { bold, italic, userMention } from "@discordjs/builders";
-import discord from "..";
 import activityHelper from "../helpers/activityHelper";
 import database from "../../database";
+import { discordBot } from "../..";
 
 // Timeout in seconds.
 // 60 => 60 seconds
@@ -31,7 +31,7 @@ export default {
         })
         if (dbGuildMembers.length === 0) return;
 
-        const discordClient = discord.getClient();
+        const discordClient = discordBot.getDiscord();
 
         const guild = discordClient.guilds.cache.get("803327192662671463");
 

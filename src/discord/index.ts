@@ -9,13 +9,13 @@ import messageReactionRemove from "./events/messageReactionRemove";
 import ready from "./events/ready";
 import voiceStateUpdate from "./events/voiceStateUpdate";
 
-class Discord {
-    protected client: Client | null = null;
-
-    public async setup() {
-        logger.info("Discord bot is starting up...");
-
-        this.client = new Client({
+export class Discord extends Client {
+    /**
+     *
+     */
+    constructor() {
+        logger.info("Discord bot initializing");
+        super({
             intents: [
                 Intents.FLAGS.GUILDS,
                 Intents.FLAGS.GUILD_MEMBERS,
@@ -35,32 +35,30 @@ class Discord {
         });
 
         // Set event handlers
-        this.client.once("ready", ready.handle.bind(this));
-        this.client.on(
+        this.once("ready", ready.handle.bind(this));
+        this.on(
             "interactionCreate",
             interactionCreate.handle.bind(this)
         );
 
-        this.client.on(
+        this.on(
             "messageReactionAdd",
             messageReactionAdd.handle.bind(this)
         );
 
-        this.client.on(
+        this.on(
             "messageReactionRemove",
             messageReactionRemove.handle.bind(this)
         );
 
-        this.client.on("messageCreate", messageCreate.handle.bind(this));
-        this.client.on("voiceStateUpdate", voiceStateUpdate.handle.bind(this));
+        this.on("messageCreate", messageCreate.handle.bind(this));
+        this.on("voiceStateUpdate", voiceStateUpdate.handle.bind(this));
 
-        this.client.login(process.env.BOT_TOKEN);
+        logger.info("Discord bot is initialized");
     }
 
-    public getClient(): Client {
-        if (!this.client) throw new Error("Client is undefined.");
-        return this.client;
+    public async setup() {
+        await this.login(process.env.BOT_TOKEN);
+        logger.info("Discord bot is logged in");
     }
 }
-
-export default new Discord();
