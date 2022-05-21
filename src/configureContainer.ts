@@ -22,7 +22,6 @@ export const container = createContainer({
 });
 
 container.register({
-    discordService: asClass(DiscordService),
     discord: asClass(Discord).singleton(),
     prisma: asValue(prisma),
     activityHelper: asClass(ActivityHelper),
