@@ -10,7 +10,7 @@ datasource db {
 model Guild {
   id                 Int                 @id @default(autoincrement()) @db.UnsignedInt
   createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
+  updatedAt          DateTime            @updatedAt @default(now())
   snowflake          String              @unique() @db.VarChar(64)
   name               String?             @db.VarChar(255)
   guildMembers       GuildMember[]
@@ -24,7 +24,7 @@ model Guild {
 model GuildConfig {
   id                     Int                   @id @default(autoincrement()) @db.UnsignedInt
   createdAt              DateTime              @default(now())
-  updatedAt              DateTime              @updatedAt
+  updatedAt              DateTime              @updatedAt @default(now())
   Guild                  Guild?
   welcomeMessageEnabled  Boolean               @default(false)
   welcomeMessageConfigId Int?                  @unique @db.UnsignedInt
@@ -34,7 +34,7 @@ model GuildConfig {
 model WelcomeMessageConfig {
   id               Int          @id @default(autoincrement()) @db.UnsignedInt
   createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  updatedAt        DateTime     @updatedAt @default(now())
   channelSnowflake String       @db.VarChar(64)
   format           String       @db.Text
   GuildConfig      GuildConfig?
@@ -43,7 +43,7 @@ model WelcomeMessageConfig {
 model GuildMember {
   id                 Int                 @id @default(autoincrement()) @db.UnsignedInt
   createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
+  updatedAt          DateTime            @updatedAt @default(now())
   snowflake          String              @db.VarChar(64)
   name               String?             @db.VarChar(255)
   identifier         String?             @db.VarChar(255)
@@ -63,7 +63,7 @@ model GuildMember {
 model CommandList {
   id          Int      @id @default(autoincrement()) @db.UnsignedInt
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime @updatedAt @default(now())
   name        String   @unique() @db.VarChar(255)
   description String   @db.VarChar(255)
   options     Json
@@ -74,7 +74,7 @@ model CommandList {
 model CommandInvocation {
   id            Int          @id @default(autoincrement()) @db.UnsignedInt
   createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  updatedAt     DateTime     @updatedAt @default(now())
   guildId       Int?         @db.UnsignedInt
   guild         Guild?       @relation(fields: [guildId], references: [id])
   guildMemberId Int?         @db.UnsignedInt
@@ -88,7 +88,7 @@ model CommandInvocation {
 model CommandFlowGroup {
   id           Int           @id @default(autoincrement()) @db.UnsignedInt
   createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  updatedAt    DateTime      @updatedAt @default(now())
   guildId      Int           @db.UnsignedInt
   guild        Guild         @relation(fields: [guildId], references: [id])
   name         String        @db.VarChar(255)
@@ -106,7 +106,7 @@ model CommandFlowGroup {
 model CommandFlow {
   id                 Int              @id @default(autoincrement()) @db.UnsignedInt
   createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
+  updatedAt          DateTime         @updatedAt @default(now())
   onType             Int              @db.TinyInt
   buildingBlockType  Int              @db.TinyInt
   checkType          Int?             @db.TinyInt
@@ -122,7 +122,7 @@ model CommandFlow {
 model Report {
   id                    Int          @id @default(autoincrement()) @db.UnsignedInt
   createdAt             DateTime     @default(now())
-  updatedAt             DateTime     @updatedAt
+  updatedAt             DateTime     @updatedAt @default(now())
   guildMemberId         Int?         @db.UnsignedInt
   guildMember           GuildMember? @relation("GuildMemberToReportGuildMemberId", fields: [guildMemberId], references: [id])
   channelId             String?      @db.VarChar(255)
