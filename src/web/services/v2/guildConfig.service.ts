@@ -1,11 +1,12 @@
 import { GuildConfig, Prisma, PrismaClient } from "@prisma/client";
 import { NotFoundError } from "../../error/NotFoundError";
-import { IService } from "../IService";
+import { IGuildConfigService } from "./IGuildConfig.service";
+
 
 export class GuildConfigNotFound extends NotFoundError {};
 export class GuildConfigNotCreated extends Error {};
 
-export class GuildConfigServiceV2 implements IService<GuildConfig> {
+export class GuildConfigServiceV2 implements IGuildConfigService {
     private prisma: PrismaClient;
 
     /**
@@ -15,8 +16,10 @@ export class GuildConfigServiceV2 implements IService<GuildConfig> {
         this.prisma = prisma;
     }
 
-    async findAll(): Promise<GuildConfig[]> {
-        return this.prisma.guildConfig.findMany();
+    async findAll(where: Prisma.GuildConfigWhereInput): Promise<GuildConfig[]> {
+        return this.prisma.guildConfig.findMany({
+            where
+        });
     }
 
     async findOne(where: Prisma.GuildConfigWhereUniqueInput): Promise<GuildConfig> {

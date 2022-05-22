@@ -1,11 +1,12 @@
 import { GuildMember, Prisma, PrismaClient } from "@prisma/client";
 import { NotFoundError } from "../../error/NotFoundError";
-import { IService } from "../IService";
+import { IGuildMemberService } from "./IGuildMember.service";
+
 
 export class GuildMemberNotFound extends NotFoundError {};
 export class GuildMemberNotCreated extends Error {};
 
-export class GuildMemberServiceV2 implements IService<GuildMember> {
+export class GuildMemberServiceV2 implements IGuildMemberService {
     private prisma: PrismaClient;
 
     /**
@@ -15,8 +16,10 @@ export class GuildMemberServiceV2 implements IService<GuildMember> {
         this.prisma = prisma;
     }
 
-    async findAll(): Promise<GuildMember[]> {
-        return this.prisma.guildMember.findMany();
+    async findAll(where: Prisma.GuildMemberWhereInput): Promise<GuildMember[]> {
+        return this.prisma.guildMember.findMany({
+            where
+        });
     }
 
     async findOne(where: Prisma.GuildMemberWhereUniqueInput): Promise<GuildMember> {
@@ -32,7 +35,7 @@ export class GuildMemberServiceV2 implements IService<GuildMember> {
         throw new Error("Method not implemented.");
     }
 
-    async update(where: Prisma.GuildMemberWhereUniqueInput, data: Prisma.GuildMemberCreateInput): Promise<GuildMember> {
+    async update(where: Prisma.GuildMemberWhereUniqueInput, data: Prisma.GuildMemberUpdateInput): Promise<GuildMember> {
         throw new Error("Method not implemented.");
     }
 

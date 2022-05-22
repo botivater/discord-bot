@@ -9,7 +9,6 @@ import cors from "cors";
 import { poweredBy } from "./middleware/poweredBy";
 import { errorHandler } from "./middleware/errorHandler";
 import { routingErrorHandler } from "./middleware/routingErrorHandler";
-import { auth } from "express-oauth2-jwt-bearer";
 
 // Routers
 import { V1Router } from "./routers/v1.router";
@@ -19,24 +18,22 @@ import { V2Router } from "./routers/v2.router";
 export class Web {
     private app: express.Express;
     private server: http.Server;
-    private authMiddleware: express.Handler;
+    private apiAuthMiddleware: express.Handler;
     private v1Router: V1Router;
     private v2Router: V2Router;
 
     /**
      *
      */
-    constructor() {
+    constructor(apiAuthMiddleware: express.Handler, v2Router: V2Router) {
+        this.apiAuthMiddleware = apiAuthMiddleware;
+        this.v2Router = v2Router;
+
         logger.info("Web server is starting up...");
 
         this.app = express();
 
         // Middleware
-        this.authMiddleware = auth({
-            audience: Config.getAPIAuth0Audience(),
-            issuerBaseURL: `https://${Config.getAPIAuth0Domain()}`,
-        });
-
         this.app.use(poweredBy);
 
         this.app.use(cors());
@@ -45,10 +42,8 @@ export class Web {
 
         // Routers
         this.v1Router = new V1Router();
-        this.app.use("/api/v1", this.authMiddleware, this.v1Router.getRouter());
-
-        this.v2Router = new V2Router();
-        this.app.use("/api/v2", this.authMiddleware, this.v2Router.getRouter());
+        this.app.use("/api/v1", this.apiAuthMiddleware, this.v1Router.getRouter());
+        this.app.use("/api/v2", this.v2Router.getRouter());
 
         // Error middleware
         this.app.use(routingErrorHandler);

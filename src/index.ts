@@ -9,15 +9,14 @@ import inactiveUsers from "./discord/cron/inactiveUsers";
 import logger from "./logger";
 
 export class DiscordBot {
-    private static instance: DiscordBot;
     private discord: Discord;
     private web: Web;
 
-    constructor() {
-        this.discord = container.resolve('discord');
-        this.discord.on("ready", this.onDiscordReadyHandler.bind(this));
+    constructor(discord: Discord, web: Web) {
+        this.discord = discord;
+        this.web = web;
 
-        this.web = new Web();
+        this.discord.on("ready", this.onDiscordReadyHandler.bind(this));
 
         this.setup();
     }
@@ -42,15 +41,6 @@ export class DiscordBot {
 
         logger.info("Discord bot is ready.");
     }
-
-    public getWeb(): Web {
-        return this.web;
-    }
-
-    public static getInstance(): DiscordBot {
-        if (!DiscordBot.instance) DiscordBot.instance = new DiscordBot();
-        return DiscordBot.instance;
-    }
 }
 
-const discordBot = new DiscordBot();
+const discordBot = container.build(DiscordBot);

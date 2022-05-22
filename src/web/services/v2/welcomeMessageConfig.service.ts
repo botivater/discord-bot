@@ -1,11 +1,12 @@
 import { Prisma, PrismaClient, WelcomeMessageConfig } from "@prisma/client";
 import { NotFoundError } from "../../error/NotFoundError";
-import { IService } from "../IService";
+import { IWelcomeMessageConfigService } from "./IWelcomeMessageConfig.service";
+
 
 export class WelcomeMessageConfigNotFound extends NotFoundError {};
 export class WelcomeMessageConfigNotCreated extends Error {};
 
-export class WelcomeMessageConfigServiceV2 implements IService<WelcomeMessageConfig> {
+export class WelcomeMessageConfigServiceV2 implements IWelcomeMessageConfigService {
     private prisma: PrismaClient;
 
     /**
@@ -15,8 +16,10 @@ export class WelcomeMessageConfigServiceV2 implements IService<WelcomeMessageCon
         this.prisma = prisma;
     }
 
-    async findAll(): Promise<WelcomeMessageConfig[]> {
-        return this.prisma.welcomeMessageConfig.findMany();
+    async findAll(where: Prisma.WelcomeMessageConfigWhereInput): Promise<WelcomeMessageConfig[]> {
+        return this.prisma.welcomeMessageConfig.findMany({
+            where
+        });
     }
 
     async findOne(where: Prisma.WelcomeMessageConfigWhereUniqueInput): Promise<WelcomeMessageConfig> {

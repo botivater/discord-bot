@@ -5,7 +5,7 @@ import MissingParameterError from "../error/MissingParameterError";
 import NotImplementedError from "../error/NotImplementedError";
 import RouteNotFoundError from "../error/RouteNotFoundError";
 import logger from "../../logger";
-import { UnauthorizedError } from "express-oauth2-jwt-bearer";
+import { UnauthorizedError } from "../error/UnauthorizedError";
 import APIResponseDto from "../dto/APIResponse.dto";
 import { StatusCode } from "../enum/StatusCode";
 
@@ -68,6 +68,12 @@ export default class APIResponse<T> implements APIResponseDto<T> {
                 return new APIResponse({
                     statusCode: StatusCode.BAD_REQUEST,
                     error,
+                });
+
+            case error instanceof UnauthorizedError:
+                return new APIResponse({
+                    statusCode: StatusCode.UNAUTHORIZED,
+                    error
                 });
 
             case error instanceof Error:

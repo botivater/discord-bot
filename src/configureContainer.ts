@@ -16,9 +16,27 @@ import { ReportService } from './web/services/v1/report.service';
 import { GuildMemberAddEvent } from './discord/events/guildMemberAdd.event';
 import logger from './logger';
 import { DiscordEventManager } from './discord/events/DiscordEventManager';
+import { auth } from 'express-oauth2-jwt-bearer';
+import Config from './common/config';
+import { Web } from './web';
+import { NextFunction, Request, Response } from 'express';
+import APIResponse from './web/responses/APIResponse';
+import express from "express";
+import { V2Router } from './web/routers/v2.router';
+import { UnauthorizedError } from './web/error/UnauthorizedError';
 
 
 const prisma = new PrismaClient();
+
+const apiAuthMiddleware: express.Handler = auth({
+    audience: Config.getAPIAuth0Audience(),
+    issuerBaseURL: `https://${Config.getAPIAuth0Domain()}`,
+});
+
+const apiTokenMiddleware: express.Handler = (req: Request, res: Response, next: NextFunction) => {
+    if (req.headers['x-api-key'] === Config.getAPIToken()) return next();
+    return res.json(APIResponse.fromError(new UnauthorizedError()));
+};
 
 export const container = createContainer({
     injectionMode: InjectionMode.CLASSIC
@@ -26,10 +44,18 @@ export const container = createContainer({
 
 container.register({
     discord: asClass(Discord).singleton(),
+    web: asClass(Web).singleton(),
     prisma: asValue(prisma),
     activityHelper: asClass(ActivityHelper),
     logUsage: asClass(LogUsage),
     logger: asValue(logger),
+    apiAuthMiddleware: asValue(apiAuthMiddleware),
+    apiTokenMiddleware: asValue(apiTokenMiddleware),
+});
+
+// web/routers
+container.register({
+    v2Router: asClass(V2Router),
 });
 
 // discord/events
