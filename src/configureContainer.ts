@@ -13,6 +13,9 @@ import { CommandUsageService } from './web/services/v1/commandUsage.service';
 import { DiscordBotService } from './web/services/v1/discordBot.service';
 import { GuildMemberService } from './web/services/v1/guildMember.service';
 import { ReportService } from './web/services/v1/report.service';
+import { GuildMemberAddEvent } from './discord/events/guildMemberAdd.event';
+import logger from './logger';
+import { DiscordEventManager } from './discord/events/DiscordEventManager';
 
 
 const prisma = new PrismaClient();
@@ -25,7 +28,13 @@ container.register({
     discord: asClass(Discord).singleton(),
     prisma: asValue(prisma),
     activityHelper: asClass(ActivityHelper),
-    logUsage: asClass(LogUsage)
+    logUsage: asClass(LogUsage),
+    logger: asValue(logger),
+});
+
+// discord/events
+container.register({
+    guildMemberAddEvent: asClass(GuildMemberAddEvent),
 });
 
 // web/services/v1
@@ -35,7 +44,7 @@ container.register({
     discordService: asClass(DiscordService),
     discordBotService: asClass(DiscordBotService),
     guildMemberService: asClass(GuildMemberService),
-    reportService: asClass(ReportService)
+    reportService: asClass(ReportService),
 });
 
 // web/services/v2
@@ -43,5 +52,7 @@ container.register({
     guildServiceV2: asClass(GuildServiceV2),
     guildMemberServiceV2: asClass(GuildMemberServiceV2),
     guildConfigServiceV2: asClass(GuildConfigServiceV2),
-    welcomeMessageConfigServiceV2: asClass(WelcomeMessageConfigServiceV2)
+    welcomeMessageConfigServiceV2: asClass(WelcomeMessageConfigServiceV2),
 });
+
+container.build(DiscordEventManager);

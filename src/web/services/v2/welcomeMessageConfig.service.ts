@@ -32,6 +32,7 @@ export class WelcomeMessageConfigServiceV2 implements IService<WelcomeMessageCon
         const welcomeMessageConfig = await this.prisma.welcomeMessageConfig.create({
             data: {
                 format: data.format,
+                channelSnowflake: data.channelSnowflake,
                 GuildConfig: {
                     connect: {
                         id: data.guildConfigId

@@ -156,11 +156,10 @@ export class DiscordSyncService {
                     });
 
                     if (!found) {
-                        const nickname = discordGuildMember.nickname || discordGuildMember.user.username || "";
                         addableGuildMembers.push({
                             snowflake: discordGuildMember.id,
                             guildSnowflake: databaseGuild.snowflake,
-                            name: nickname,
+                            name: discordGuildMember.displayName,
                             identifier: discordGuildMember.user.tag
                         });
                     }

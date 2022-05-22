@@ -17,8 +17,8 @@ model Guild {
   commandLists       CommandList[]
   commandInvocations CommandInvocation[]
   commandFlowGroups  CommandFlowGroup[]
-  configId           Int?                 @db.UnsignedInt @unique
-  config             GuildConfig?         @relation(fields: [configId], references: [id])
+  configId           Int?                @unique @db.UnsignedInt
+  config             GuildConfig?        @relation(fields: [configId], references: [id])
 }
 
 model GuildConfig {
@@ -32,11 +32,12 @@ model GuildConfig {
 }
 
 model WelcomeMessageConfig {
-  id          Int          @id @default(autoincrement()) @db.UnsignedInt
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  format      String       @db.Text
-  GuildConfig GuildConfig?
+  id               Int          @id @default(autoincrement()) @db.UnsignedInt
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  channelSnowflake String       @db.VarChar(64)
+  format           String       @db.Text
+  GuildConfig      GuildConfig?
 }
 
 model GuildMember {

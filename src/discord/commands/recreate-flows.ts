@@ -3,7 +3,6 @@ import GuildChannelNotTextChannelError from "../../web/error/GuildChannelNotText
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { Interaction } from "discord.js";
 import { PrismaClient } from "@prisma/client";
-import { DiscordBot } from "../..";
 import { container } from "../../configureContainer";
 
 export default {

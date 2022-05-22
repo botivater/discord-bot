@@ -40,17 +40,15 @@ export class DiscordPronounService {
             const discordGuildMember = discordGuild.members.cache.get(databaseGuildMember.snowflake);
             if (!discordGuildMember) throw new Error("Discord guild member not found!");
 
-            const nickname = discordGuildMember.nickname || discordGuildMember.user.username || "";
-
-            if (databaseGuildMember.name !== nickname) {
+            if (databaseGuildMember.name !== discordGuildMember.displayName) {
                 // Check if the username or the nickname contain valid pronouns.
-                const hasValidPronouns = PronounChecker.checkString(nickname);
+                const hasValidPronouns = PronounChecker.checkString(discordGuildMember.displayName);
 
                 let message = ``;
                 message += `Iemands naam is veranderd.\n`;
                 message += `Gebruiker: ${userMention(databaseGuildMember.snowflake)} (${databaseGuildMember.identifier}).\n`;
                 message += `Oude naam: ${databaseGuildMember.name}.\n`;
-                message += `Nieuwe naam: ${nickname}.\n`;
+                message += `Nieuwe naam: ${discordGuildMember.displayName}.\n`;
                 message += `Pronouns zijn ${bold(hasValidPronouns ? 'in orde.' : 'niet in orde!')}`;
 
                 try {
@@ -64,7 +62,7 @@ export class DiscordPronounService {
                         id: databaseGuildMember.id
                     },
                     data: {
-                        name: nickname
+                        name: discordGuildMember.displayName
                     }
                 });
             }

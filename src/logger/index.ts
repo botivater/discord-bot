@@ -1,13 +1,10 @@
 import winston from "winston";
 
 const logger = winston.createLogger({
-    level: "debug",
+    level: process.env.LOG_LEVEL,
     format: winston.format.json(),
     transports: [
-        new winston.transports.File({ filename: "error.log", level: "error" }),
-        new winston.transports.File({ filename: "combined.log" }),
         new winston.transports.Console({
-            level: "silly",
             format: winston.format.combine(
                 winston.format.timestamp({ format: "YYYY-MM-DDTHH:mm:ssZ" }),
                 winston.format.align(),

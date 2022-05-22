@@ -1,12 +1,6 @@
 import { Client, Intents } from "discord.js";
 import logger from "../logger";
 
-// Events
-import interactionCreate from "./events/interactionCreate";
-import messageCreate from "./events/messageCreate";
-import messageReactionAdd from "./events/messageReactionAdd";
-import messageReactionRemove from "./events/messageReactionRemove";
-import voiceStateUpdate from "./events/voiceStateUpdate";
 
 export class Discord extends Client {
     /**
@@ -32,26 +26,6 @@ export class Discord extends Client {
             ],
             partials: ["MESSAGE", "CHANNEL", "REACTION"],
         });
-
-        // Set event handlers
-        this.once("ready", interactionCreate.registerCommands.bind(this));
-        this.on(
-            "interactionCreate",
-            interactionCreate.handle.bind(this)
-        );
-
-        this.on(
-            "messageReactionAdd",
-            messageReactionAdd.handle.bind(this)
-        );
-
-        this.on(
-            "messageReactionRemove",
-            messageReactionRemove.handle.bind(this)
-        );
-
-        this.on("messageCreate", messageCreate.handle.bind(this));
-        this.on("voiceStateUpdate", voiceStateUpdate.handle.bind(this));
 
         logger.info("Discord bot is initialized");
     }
