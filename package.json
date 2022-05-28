@@ -11,10 +11,6 @@
         "build": "rimraf ./dist && prisma generate && tsc",
         "serve": "node ./dist/src/index.js",
         "test": "jest",
-        "docker:build": "docker build . -t registry.jonasclaes.be/botivater/discord-bot:latest && docker tag registry.jonasclaes.be/botivater/discord-bot:latest registry.jonasclaes.be/botivater/discord-bot:$(git rev-parse --short HEAD)",
-        "docker:push": "docker push registry.jonasclaes.be/botivater/discord-bot:latest && docker push registry.jonasclaes.be/botivater/discord-bot:$(git rev-parse --short HEAD)",
-        "podman:build": "podman build . -t registry.jonasclaes.be/botivater/discord-bot:latest && podman tag registry.jonasclaes.be/botivater/discord-bot:latest registry.jonasclaes.be/botivater/discord-bot:$(git rev-parse --short HEAD)",
-        "podman:push": "podman push registry.jonasclaes.be/botivater/discord-bot:latest && podman push registry.jonasclaes.be/botivater/discord-bot:$(git rev-parse --short HEAD)",
         "migration:up": "prisma migrate deploy",
         "deploy": "yarn build && yarn test && yarn podman:build && yarn podman:push"
     },
