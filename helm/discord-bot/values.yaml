@@ -80,3 +80,17 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+settings:
+  general:
+    logLevel: debug
+    apiToken: xxx
+  database:
+    url: mysql://root:root@127.0.0.1:3306/discord-bot
+  discord:
+    applicationId: xxx
+    botToken: xxx
+  auth0:
+    domain: xxx
+    clientId: xxx
+    audience: xxx
