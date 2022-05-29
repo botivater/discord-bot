@@ -24,6 +24,7 @@ import APIResponse from './web/responses/APIResponse';
 import express from "express";
 import { V2Router } from './web/routers/v2.router';
 import { UnauthorizedError } from './web/error/UnauthorizedError';
+import {HealthRouter} from "./web/routers/health.router";
 
 
 const prisma = new PrismaClient();
@@ -55,6 +56,7 @@ container.register({
 
 // web/routers
 container.register({
+    healthRouter: asClass(HealthRouter),
     v2Router: asClass(V2Router),
 });
 

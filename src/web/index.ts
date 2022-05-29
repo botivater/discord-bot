@@ -13,20 +13,23 @@ import { routingErrorHandler } from "./middleware/routingErrorHandler";
 // Routers
 import { V1Router } from "./routers/v1.router";
 import { V2Router } from "./routers/v2.router";
+import { HealthRouter } from "./routers/health.router";
 
 
 export class Web {
     private app: express.Express;
     private server: http.Server;
     private apiAuthMiddleware: express.Handler;
+    private healthRouter: HealthRouter;
     private v1Router: V1Router;
     private v2Router: V2Router;
 
     /**
      *
      */
-    constructor(apiAuthMiddleware: express.Handler, v2Router: V2Router) {
+    constructor(apiAuthMiddleware: express.Handler, healthRouter: HealthRouter, v2Router: V2Router) {
         this.apiAuthMiddleware = apiAuthMiddleware;
+        this.healthRouter = healthRouter;
         this.v2Router = v2Router;
 
         logger.info("Web server is starting up...");
@@ -41,6 +44,7 @@ export class Web {
         this.app.use(bodyParser.json());
 
         // Routers
+        this.app.use("/health", this.healthRouter.getRouter());
         this.v1Router = new V1Router();
         this.app.use("/api/v1", this.apiAuthMiddleware, this.v1Router.getRouter());
         this.app.use("/api/v2", this.v2Router.getRouter());
