@@ -1,6 +1,6 @@
 {
     "name": "@botivater/discord-bot",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "The Botivater Discord bot.",
     "main": "./dist/src/index.js",
     "repository": "https://github.com/botivater/discord-bot",
